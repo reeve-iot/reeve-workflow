@@ -1,0 +1,10 @@
+<Project>
+
+  <Import Project="$(MSBuildThisFileDirectory)..\..\dotnet\Directory.Packages.props" />
+
+  <ItemGroup>
+    <PackageVersion Include="Testcontainers.PostgreSql" Version="4.16.0" />
+    <PackageVersion Include="Testcontainers.Redis" Version="4.16.0" />
+  </ItemGroup>
+
+</Project>

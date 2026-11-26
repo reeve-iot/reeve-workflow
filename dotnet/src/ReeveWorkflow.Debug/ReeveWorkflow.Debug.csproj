@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <IsPackable>true</IsPackable>
+    <PackageId>ReeveWorkflow.Debug</PackageId>
+    <Description>Stepping a workflow run: sessions, breakpoints and snapshots. The machinery only — how a client reaches it, and how a paused run reaches a client, are the host's transport to choose.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <PackageReference Include="Microsoft.Extensions.Options" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReeveWorkflow.EntityFrameworkCore\ReeveWorkflow.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,979 @@
+{
+  "formatVersion": 1,
+  "source": "ReeveWorkflow.Editor.WorkflowEditorApiEndpoints",
+  "endpoints": [
+    {
+      "operation": "createWorkflow",
+      "method": "POST",
+      "path": "api/workflows",
+      "pathParameters": [],
+      "queryParameters": [],
+      "requestBody": {
+        "type": "#CreateWorkflowRequest",
+        "required": true
+      },
+      "responses": [
+        {
+          "status": 201,
+          "type": "#WorkflowResponse"
+        },
+        {
+          "status": 400,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 401,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 409,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 503,
+          "type": "#WorkflowSaveUnpublishedProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "analyzeDraft",
+      "method": "POST",
+      "path": "api/workflows/analysis",
+      "pathParameters": [],
+      "queryParameters": [],
+      "requestBody": {
+        "type": "#DraftAnalysisRequest",
+        "required": true
+      },
+      "responses": [
+        {
+          "status": 200,
+          "type": "#DraftAnalysisResponse"
+        },
+        {
+          "status": 400,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 401,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 503,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getInvalidCompilations",
+      "method": "GET",
+      "path": "api/workflows/compilation/invalid",
+      "pathParameters": [],
+      "queryParameters": [
+        {
+          "name": "skip",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "take",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#CompilationReportResponse"
+        },
+        {
+          "status": 401,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getPortTypes",
+      "method": "GET",
+      "path": "api/workflows/port-types",
+      "pathParameters": [],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#PortTypeVocabularyResponse"
+        }
+      ]
+    },
+    {
+      "operation": "deleteWorkflow",
+      "method": "DELETE",
+      "path": "api/workflows/{id:guid}",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 204
+        },
+        {
+          "status": 401,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 409,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "updateWorkflow",
+      "method": "PUT",
+      "path": "api/workflows/{id:guid}",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "requestBody": {
+        "type": "#UpdateWorkflowRequest",
+        "required": true
+      },
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowResponse"
+        },
+        {
+          "status": 400,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 401,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 409,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 503,
+          "type": "#WorkflowSaveUnpublishedProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "publishWorkflow",
+      "method": "POST",
+      "path": "api/workflows/{id:guid}/publish",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowResponse"
+        },
+        {
+          "status": 400,
+          "type": "#CompilationProblemDetails"
+        },
+        {
+          "status": 401,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 409,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 500,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 503,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "rollbackWorkflow",
+      "method": "POST",
+      "path": "api/workflows/{id:guid}/versions/{versionNumber:int}/rollback",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "versionNumber",
+          "type": "integer",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowResponse"
+        },
+        {
+          "status": 400,
+          "type": "#CompilationProblemDetails"
+        },
+        {
+          "status": 401,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 409,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 500,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 503,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getVersionCompilation",
+      "method": "GET",
+      "path": "api/workflows/{versionId:guid}/compilation",
+      "pathParameters": [
+        {
+          "name": "versionId",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowCompilationResponse"
+        },
+        {
+          "status": 401,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 503,
+          "type": "#ProblemDetails"
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "CanvasPathSegment",
+      "properties": [
+        {
+          "name": "branchName",
+          "type": "string"
+        },
+        {
+          "name": "nodeId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CompilationDiagnostic",
+      "properties": [
+        {
+          "name": "blockSource",
+          "type": "string?"
+        },
+        {
+          "name": "canvasPath",
+          "type": "#CanvasPathSegment[]"
+        },
+        {
+          "name": "message",
+          "type": "string"
+        },
+        {
+          "name": "nodeId",
+          "type": "string?"
+        },
+        {
+          "name": "portName",
+          "type": "string?"
+        },
+        {
+          "name": "ruleId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CompilationProblemDetails",
+      "properties": [
+        {
+          "name": "code",
+          "type": "string?"
+        },
+        {
+          "name": "detail",
+          "type": "string"
+        },
+        {
+          "name": "diagnostics",
+          "type": "#CompilationDiagnostic[]"
+        },
+        {
+          "name": "status",
+          "type": "integer"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CompilationReportResponse",
+      "properties": [
+        {
+          "name": "failed",
+          "type": "#CompilationVersionResponse[]"
+        },
+        {
+          "name": "invalid",
+          "type": "#WorkflowCompilationResponse[]"
+        },
+        {
+          "name": "shared",
+          "type": "#CompilationSharedVersion[]"
+        },
+        {
+          "name": "skip",
+          "type": "integer"
+        },
+        {
+          "name": "take",
+          "type": "integer"
+        },
+        {
+          "name": "totalCount",
+          "type": "integer"
+        },
+        {
+          "name": "unsaved",
+          "type": "#CompilationVersionResponse[]"
+        }
+      ]
+    },
+    {
+      "name": "CompilationSharedVersion",
+      "properties": [
+        {
+          "name": "workflowIds",
+          "type": "uuid[]"
+        },
+        {
+          "name": "workflowVersionId",
+          "type": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "CompilationVersionResponse",
+      "properties": [
+        {
+          "name": "workflowId",
+          "type": "uuid"
+        },
+        {
+          "name": "workflowVersionId",
+          "type": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "CreateWorkflowRequest",
+      "properties": [
+        {
+          "name": "checkpointPolicyJson",
+          "type": "string?"
+        },
+        {
+          "name": "definitionJson",
+          "type": "string?"
+        },
+        {
+          "name": "description",
+          "type": "string?"
+        },
+        {
+          "name": "executionTimeoutSeconds",
+          "type": "integer?"
+        },
+        {
+          "name": "hostMetadata",
+          "type": "map\u003Cstring\u003E?"
+        },
+        {
+          "name": "importWarningsJson",
+          "type": "string?"
+        },
+        {
+          "name": "inputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "maxConcurrentRuns",
+          "type": "integer?"
+        },
+        {
+          "name": "maxQueuedRuns",
+          "type": "integer?"
+        },
+        {
+          "name": "mode",
+          "type": "string?"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "origin",
+          "type": "string?"
+        },
+        {
+          "name": "outputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "overflowBehavior",
+          "type": "string?"
+        },
+        {
+          "name": "retryPolicyJson",
+          "type": "string?"
+        }
+      ]
+    },
+    {
+      "name": "DraftAnalysisRequest",
+      "properties": [
+        {
+          "name": "definitionJson",
+          "type": "string?"
+        },
+        {
+          "name": "inputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "outputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "revision",
+          "type": "integer"
+        },
+        {
+          "name": "workflowId",
+          "type": "uuid?"
+        }
+      ]
+    },
+    {
+      "name": "DraftAnalysisResponse",
+      "properties": [
+        {
+          "name": "diagnostics",
+          "type": "#CompilationDiagnostic[]"
+        },
+        {
+          "name": "nodes",
+          "type": "#NodeAnalysis[]"
+        },
+        {
+          "name": "registryGeneration",
+          "type": "integer"
+        },
+        {
+          "name": "revision",
+          "type": "integer"
+        }
+      ]
+    },
+    {
+      "name": "NodeAnalysis",
+      "properties": [
+        {
+          "name": "canvasPath",
+          "type": "#CanvasPathSegment[]"
+        },
+        {
+          "name": "inputs",
+          "type": "#PortAnalysis[]"
+        },
+        {
+          "name": "nodeId",
+          "type": "string"
+        },
+        {
+          "name": "outputs",
+          "type": "#PortAnalysis[]"
+        },
+        {
+          "name": "typeArguments",
+          "type": "map\u003Cstring?\u003E"
+        }
+      ]
+    },
+    {
+      "name": "PortAnalysis",
+      "properties": [
+        {
+          "name": "declared",
+          "type": "string?"
+        },
+        {
+          "name": "effective",
+          "type": "string?"
+        },
+        {
+          "name": "expression",
+          "type": "string?"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "projection",
+          "type": "string?"
+        },
+        {
+          "name": "state",
+          "type": "string"
+        },
+        {
+          "name": "unbound",
+          "type": "string[]"
+        }
+      ]
+    },
+    {
+      "name": "PortCapabilityDescriptor",
+      "properties": [
+        {
+          "name": "associated",
+          "type": "string[]?"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "PortLiteralDescriptor",
+      "properties": [
+        {
+          "name": "format",
+          "type": "string?"
+        },
+        {
+          "name": "gradedAs",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "PortTypeConstructorDescriptor",
+      "properties": [
+        {
+          "name": "allowedArguments",
+          "type": "string[]?"
+        },
+        {
+          "name": "arity",
+          "type": "integer"
+        },
+        {
+          "name": "implements",
+          "type": "string[]"
+        },
+        {
+          "name": "key",
+          "type": "string?"
+        },
+        {
+          "name": "literal",
+          "type": "#PortLiteralDescriptor?"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "owner",
+          "type": "string"
+        },
+        {
+          "name": "variance",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "PortTypeDescriptor",
+      "properties": [
+        {
+          "name": "aliases",
+          "type": "string[]"
+        },
+        {
+          "name": "implements",
+          "type": "string[]"
+        },
+        {
+          "name": "literal",
+          "type": "#PortLiteralDescriptor?"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "owner",
+          "type": "string"
+        },
+        {
+          "name": "widensTo",
+          "type": "string[]"
+        }
+      ]
+    },
+    {
+      "name": "PortTypeVocabularyResponse",
+      "properties": [
+        {
+          "name": "capabilities",
+          "type": "#PortCapabilityDescriptor[]"
+        },
+        {
+          "name": "constructors",
+          "type": "#PortTypeConstructorDescriptor[]"
+        },
+        {
+          "name": "generation",
+          "type": "integer"
+        },
+        {
+          "name": "secretCodec",
+          "type": "boolean"
+        },
+        {
+          "name": "types",
+          "type": "#PortTypeDescriptor[]"
+        }
+      ]
+    },
+    {
+      "name": "ProblemDetails",
+      "properties": [
+        {
+          "name": "detail",
+          "type": "string?"
+        },
+        {
+          "name": "instance",
+          "type": "string?"
+        },
+        {
+          "name": "status",
+          "type": "integer?"
+        },
+        {
+          "name": "title",
+          "type": "string?"
+        },
+        {
+          "name": "type",
+          "type": "string?"
+        }
+      ]
+    },
+    {
+      "name": "UpdateWorkflowRequest",
+      "properties": [
+        {
+          "name": "autoPublish",
+          "type": "boolean"
+        },
+        {
+          "name": "changeMessage",
+          "type": "string?"
+        },
+        {
+          "name": "checkpointPolicyJson",
+          "type": "string?"
+        },
+        {
+          "name": "definitionJson",
+          "type": "string?"
+        },
+        {
+          "name": "description",
+          "type": "string?"
+        },
+        {
+          "name": "executionTimeoutSeconds",
+          "type": "integer?"
+        },
+        {
+          "name": "expectedRevision",
+          "type": "integer?"
+        },
+        {
+          "name": "hostMetadata",
+          "type": "map\u003Cstring\u003E?"
+        },
+        {
+          "name": "inputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "maxConcurrentRuns",
+          "type": "integer?"
+        },
+        {
+          "name": "maxQueuedRuns",
+          "type": "integer?"
+        },
+        {
+          "name": "mode",
+          "type": "string?"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "outputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "overflowBehavior",
+          "type": "string?"
+        },
+        {
+          "name": "retryPolicyJson",
+          "type": "string?"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowCompilationResponse",
+      "properties": [
+        {
+          "name": "diagnostics",
+          "type": "#CompilationDiagnostic[]"
+        },
+        {
+          "name": "isValid",
+          "type": "boolean"
+        },
+        {
+          "name": "workflowId",
+          "type": "uuid"
+        },
+        {
+          "name": "workflowVersionId",
+          "type": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowResponse",
+      "properties": [
+        {
+          "name": "checkpointPolicyJson",
+          "type": "string?"
+        },
+        {
+          "name": "createdAtUtc",
+          "type": "date-time"
+        },
+        {
+          "name": "createdByUserId",
+          "type": "uuid"
+        },
+        {
+          "name": "currentVersionId",
+          "type": "uuid?"
+        },
+        {
+          "name": "currentVersionNumber",
+          "type": "integer?"
+        },
+        {
+          "name": "definitionJson",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string?"
+        },
+        {
+          "name": "documentsFrom",
+          "type": "string?"
+        },
+        {
+          "name": "draftVersionId",
+          "type": "uuid?"
+        },
+        {
+          "name": "draftVersionNumber",
+          "type": "integer?"
+        },
+        {
+          "name": "executionTimeoutSeconds",
+          "type": "integer?"
+        },
+        {
+          "name": "hasImportWarnings",
+          "type": "boolean"
+        },
+        {
+          "name": "hostMetadata",
+          "type": "map\u003Cstring\u003E?"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "importWarningsJson",
+          "type": "string?"
+        },
+        {
+          "name": "inputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "maxConcurrentRuns",
+          "type": "integer"
+        },
+        {
+          "name": "maxQueuedRuns",
+          "type": "integer"
+        },
+        {
+          "name": "mode",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "outputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "overflowBehavior",
+          "type": "string"
+        },
+        {
+          "name": "retryPolicyJson",
+          "type": "string?"
+        },
+        {
+          "name": "revision",
+          "type": "integer"
+        },
+        {
+          "name": "updatedAtUtc",
+          "type": "date-time"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowSaveUnpublishedProblemDetails",
+      "properties": [
+        {
+          "name": "detail",
+          "type": "string"
+        },
+        {
+          "name": "status",
+          "type": "integer"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "type": "string"
+        },
+        {
+          "name": "versionId",
+          "type": "uuid"
+        },
+        {
+          "name": "versionNumber",
+          "type": "integer"
+        },
+        {
+          "name": "workflow",
+          "type": "#WorkflowResponse"
+        }
+      ]
+    }
+  ]
+}

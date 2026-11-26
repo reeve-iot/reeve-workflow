@@ -1,0 +1,38 @@
+<Project>
+
+  <PropertyGroup>
+    <Version>1.1.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <TargetFramework>net11.0</TargetFramework>
+    <Features>$(Features);runtime-async=on</Features>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <Authors>grzonu</Authors>
+    <Company>grzonu</Company>
+    <RepositoryUrl>https://github.com/reeve-iot/reeve-workflow</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/reeve-iot/reeve-workflow</PackageProjectUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright (c) 2026 grzonu</Copyright>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageTags>workflow;workflow-engine;graph;automation;low-code;expressions</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)../README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,2692 @@
+{
+  "$note": [
+    "One corpus, two implementations. The editor validates in TypeScript (@reeve-iot/workflow-core) to tell an",
+    "author what is wrong; the backend compiles in C# to refuse to publish or start what the run would not",
+    "execute as drawn. They are separate code in separate languages and they drift. This file grades both.",
+    "",
+    "VERDICT is graded on every case, on both sides. A side `gradedBy` lists must reach the case's verdict: if",
+    "one listed side calls a definition valid and another rejects it, that is a defect on one of them, never a",
+    "difference of opinion. A side it leaves out must call the definition valid, since a side is left out only",
+    "for a rule it does not implement. RULE identity is graded on each side a case lists: that side must report",
+    "one of the case's `rules`, ids of contracts/rule-parity.json, which an invalid case names and a valid one",
+    "does not. Message TEXT is graded nowhere — see exemptions.",
+    "",
+    "`gradedBy` names each side that grades a case. A side it leaves out is a key of `notGradedBy`, whose value",
+    "says why, so its silence is recorded rather than implied. Both harnesses run every case, so a marker that",
+    "goes stale fails too. A case holds no key but name, why, gradedBy, notGradedBy, signature, definition and",
+    "expect, and `expect` none but verdict and rules; the backend harness refuses any other rather than ignore it.",
+    "",
+    "The marker follows from the rules a case expects: the backend is always listed, and the editor exactly when",
+    "the case is valid or every rule it expects is one rule-parity.json classes editor. So a case cannot record",
+    "a rule the editor grades only in part (a `part` in rule-parity.json), nor a finding the editor alone reports.",
+    "",
+    "The definition shape is the editor's ({nodes, edges}). The backend reads it with StoredWorkflowDocument.Read,",
+    "which matches keys exactly and refuses a key it does not list, so one document loads",
+    "on both sides by the same keys, without a translation layer that could itself drift. `blocks` is the",
+    "catalogue both sides grade against; `signature`, where a case has one, holds the workflow's stored input and",
+    "output parameter lists.",
+    "",
+    "The backend harness reads a case as the compilation service reads a stored version: the definition text",
+    "through StoredWorkflowDocument.Read, the parameter lists through CanvasSignature.TryRead, then",
+    "WorkflowCompiler.Compile, whose structure phase runs the run's own ValidateRootCanvas and TopologicalSort.",
+    "The editor harness grades validateStructureFindings on the document as held and the store's",
+    "validateWorkflowFindings with the document loaded; both read each finding's rule id.",
+    "",
+    "Each case pins one rule, with its reason; not every rule-parity.json id has a case here. The generated",
+    "matrices both halves grade exactly are contracts/rule-agreement.json (the rules whose rule-parity.json row",
+    "names it, at each depth; graded by RuleAgreementTests and ruleAgreement.test.ts) and",
+    "contracts/dangling-edge-agreement.json (a wire naming a missing node, by depth, end and mapping kind; graded",
+    "by DanglingEdgeAgreementTests and danglingEdgeAgreement.test.ts).",
+    "Harnesses: dotnet/tests/ReeveWorkflow.Core.Tests/Model/WorkflowValidationCorpusTests.cs and",
+    "packages/core/src/editor/validationCorpus.test.ts"
+  ],
+  "exemptions": [
+    {
+      "what": "message wording",
+      "reason": "Already drifted and harmlessly so: the backend says 'Workflow contains a cycle.' and the editor 'Workflow contains a cycle'. Grading text would fail on a full stop, get weakened, and end up proving nothing."
+    },
+    {
+      "what": "how many findings come back",
+      "reason": "The backend's root structure check stops at the FIRST broken rule because it only has to refuse; the editor collects every finding because its job is to show an author the whole list. A corpus demanding equal counts would be demanding the editor stop being useful."
+    }
+  ],
+  "blocks": [
+    {
+      "blockTypeId": "Log",
+      "inputs": [
+        {
+          "name": "Value",
+          "type": "String",
+          "isRequired": false
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Out",
+          "type": "String"
+        }
+      ],
+      "subCanvases": [],
+      "subCanvasInputs": {},
+      "hasDynamicPorts": false,
+      "supportsDeclaredOutputs": true
+    },
+    {
+      "blockTypeId": "Notify",
+      "inputs": [
+        {
+          "name": "Message",
+          "type": "String",
+          "isRequired": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Text",
+          "type": "String"
+        }
+      ],
+      "subCanvases": [],
+      "subCanvasInputs": {},
+      "hasDynamicPorts": false
+    },
+    {
+      "blockTypeId": "Count",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "N",
+          "type": "Number"
+        }
+      ],
+      "subCanvases": [],
+      "subCanvasInputs": {},
+      "hasDynamicPorts": false
+    },
+    {
+      "blockTypeId": "Gate",
+      "inputs": [
+        {
+          "name": "Flag",
+          "type": "Boolean",
+          "isRequired": false
+        }
+      ],
+      "outputs": [],
+      "subCanvases": [],
+      "subCanvasInputs": {},
+      "hasDynamicPorts": false
+    },
+    {
+      "blockTypeId": "ForEach",
+      "inputs": [],
+      "outputs": [],
+      "subCanvases": [
+        "Body"
+      ],
+      "subCanvasInputs": {
+        "Body": [
+          {
+            "name": "Item",
+            "type": "String",
+            "isRequired": false
+          }
+        ]
+      },
+      "hasDynamicPorts": false
+    },
+    {
+      "blockTypeId": "Filter",
+      "typeParameters": [
+        {
+          "name": "T",
+          "constraints": []
+        }
+      ],
+      "inputs": [
+        {
+          "name": "Collection",
+          "type": "Collection<$T>",
+          "isRequired": true
+        }
+      ],
+      "outputs": [
+        {
+          "name": "Filtered",
+          "type": "Collection<$T>",
+          "isRequired": false
+        }
+      ],
+      "subCanvases": [],
+      "subCanvasInputs": {},
+      "hasDynamicPorts": false
+    },
+    {
+      "blockTypeId": "Dynamic",
+      "inputs": [],
+      "outputs": [],
+      "subCanvases": [],
+      "subCanvasInputs": {},
+      "hasDynamicPorts": true
+    },
+    {
+      "blockTypeId": "dispatch.echo-json",
+      "inputs": [],
+      "outputs": [],
+      "subCanvases": [],
+      "subCanvasInputs": {},
+      "hasDynamicPorts": true
+    },
+    {
+      "blockTypeId": "Branch",
+      "inputs": [],
+      "outputs": [],
+      "subCanvases": [
+        "Then"
+      ],
+      "subCanvasInputs": {
+        "Then": []
+      },
+      "hasDynamicPorts": false,
+      "supportsDeclaredOutputs": true
+    }
+  ],
+  "cases": [
+    {
+      "name": "empty-graph",
+      "why": "A canvas with nothing on it is not an error; both sides return before any rule runs.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [],
+        "edges": []
+      },
+      "expect": {
+        "verdict": "valid"
+      }
+    },
+    {
+      "name": "minimal-valid",
+      "why": "The smallest thing that must pass: one start node and one node wired to it.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "valid"
+      }
+    },
+    {
+      "name": "no-start-node",
+      "why": "Nodes exist but nothing says where execution begins.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": []
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "no-start-node"
+        ]
+      }
+    },
+    {
+      "name": "extra-root",
+      "why": "A second entry point. Execution would have to guess which one starts the run.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "b",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 80
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "extra-root"
+        ]
+      }
+    },
+    {
+      "name": "cycle",
+      "why": "Every node has an incoming edge, so only acyclicity catches this.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "b",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "a",
+            "targetNodeId": "b",
+            "mappings": {}
+          },
+          {
+            "id": "e3",
+            "sourceNodeId": "b",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "cycle"
+        ]
+      }
+    },
+    {
+      "name": "disconnected-cycle-island",
+      "why": "A two-node cycle off to the side. Both nodes have an incoming edge, so it is not an extra root. Both sides reach the unreachability rule first — the backend throws there and the editor lists it before the cycle — so this pins 'unreachable', not either-of-two.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "b",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 80
+            },
+            "configuration": {}
+          },
+          {
+            "id": "c",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 200,
+              "y": 80
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "b",
+            "targetNodeId": "c",
+            "mappings": {}
+          },
+          {
+            "id": "e3",
+            "sourceNodeId": "c",
+            "targetNodeId": "b",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "unreachable"
+        ]
+      }
+    },
+    {
+      "name": "input-has-incoming",
+      "why": "Something wires back into the start node. Its source has no incoming edge either, and both sides name the start node's rule for it.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "a",
+            "targetNodeId": "in",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "input-has-incoming"
+        ]
+      }
+    },
+    {
+      "name": "duplicate-input-mapping",
+      "why": "Two parents map the same input on one node. Single start, everything reachable, acyclic — this is the only rule that can refuse it, and it is the rule the corpus had no case for.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": -40
+            },
+            "configuration": {}
+          },
+          {
+            "id": "b",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 40
+            },
+            "configuration": {}
+          },
+          {
+            "id": "c",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "in",
+            "targetNodeId": "b",
+            "mappings": {}
+          },
+          {
+            "id": "e3",
+            "sourceNodeId": "a",
+            "targetNodeId": "c",
+            "mappings": {
+              "Value": {
+                "sourceOutputName": "Out",
+                "type": "direct"
+              }
+            }
+          },
+          {
+            "id": "e4",
+            "sourceNodeId": "b",
+            "targetNodeId": "c",
+            "mappings": {
+              "Value": {
+                "sourceOutputName": "Out",
+                "type": "direct"
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "duplicate-input-mapping"
+        ]
+      }
+    },
+    {
+      "name": "duplicate-edge-pair",
+      "why": "Two wires join one source and one target. Single start, everything reachable, acyclic, no input mapped twice: only the pair rule refuses it.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "duplicate-edge-pair"
+        ]
+      }
+    },
+    {
+      "name": "required-input-unfed",
+      "why": "A required input nothing feeds: no mapping, no configured value. The run would hand the block nothing where it declared it needs a value.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "n",
+            "blockTypeId": "Notify",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "n",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "required-input-unfed"
+        ]
+      }
+    },
+    {
+      "name": "wire-port-unknown",
+      "why": "A mapping reads an output its source does not have. The run finds nothing under that name for the input.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "b",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "a",
+            "targetNodeId": "b",
+            "mappings": {
+              "Value": {
+                "type": "direct",
+                "sourceOutputName": "Missing"
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "wire-port-unknown"
+        ]
+      }
+    },
+    {
+      "name": "wire-port-unknown-root-output-mapping",
+      "why": "A wire into the exit node writes 'result', and the workflow declares only 'Result': the run writes the name anyway, as any wire into the exit node naming it.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "signature": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "Result",
+            "type": "String",
+            "isRequired": false
+          }
+        ]
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "out",
+            "blockTypeId": "WorkflowOutput",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "a",
+            "targetNodeId": "out",
+            "mappings": {
+              "result": {
+                "type": "direct",
+                "sourceOutputName": "Out"
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "wire-port-unknown"
+        ]
+      }
+    },
+    {
+      "name": "root-output-mapping-declared",
+      "why": "The same wire, with 'result' among the workflow's declared outputs.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "signature": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "String",
+            "isRequired": false
+          }
+        ]
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "out",
+            "blockTypeId": "WorkflowOutput",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "a",
+            "targetNodeId": "out",
+            "mappings": {
+              "result": {
+                "type": "direct",
+                "sourceOutputName": "Out"
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "valid"
+      }
+    },
+    {
+      "name": "declared-output-shadows-static",
+      "why": "A node declares an output under the name of one its block already has, so one name would stand for two ports.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Out",
+                "displayName": "Out",
+                "type": "String"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "declared-output-shadows-static"
+        ]
+      }
+    },
+    {
+      "name": "port-type-mismatch",
+      "why": "A Number output wired into a Boolean input; the widening table has no path from one to the other. The run hands the Boolean input the number unconverted.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "rule-parity.json classes port-type-mismatch compiler-only: the editor does not implement it, and calls this definition valid."
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "c",
+            "blockTypeId": "Count",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "g",
+            "blockTypeId": "Gate",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "c",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "c",
+            "targetNodeId": "g",
+            "mappings": {
+              "Flag": {
+                "type": "direct",
+                "sourceOutputName": "N"
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-mismatch"
+        ]
+      }
+    },
+    {
+      "name": "expression-syntax",
+      "why": "An expression the expression language cannot parse.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "rule-parity.json classes expression-syntax compiler-only: the editor does not implement it, and calls this definition valid."
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "n",
+            "blockTypeId": "Notify",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "Message": "expr:${a.b} +"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "n",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "expression-syntax"
+        ]
+      }
+    },
+    {
+      "name": "expression-out-of-scope",
+      "why": "A node inside a loop body reads a node on the parent canvas. It looks legal, but the body's run sees only the outputs of its own canvas, so the reference evaluates to null without a word.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "rule-parity.json classes expression-out-of-scope compiler-only: the editor does not implement it, and calls this definition valid."
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "p",
+            "blockTypeId": "Notify",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "Message": "hi"
+            }
+          },
+          {
+            "id": "loop",
+            "blockTypeId": "ForEach",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {},
+            "subCanvases": {
+              "Body": {
+                "nodes": [
+                  {
+                    "id": "bin",
+                    "blockTypeId": "WorkflowInput",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "configuration": {}
+                  },
+                  {
+                    "id": "x",
+                    "blockTypeId": "Notify",
+                    "position": {
+                      "x": 100,
+                      "y": 0
+                    },
+                    "configuration": {
+                      "Message": "expr:${previous.p.Text}"
+                    }
+                  }
+                ],
+                "edges": [
+                  {
+                    "id": "b1",
+                    "sourceNodeId": "bin",
+                    "targetNodeId": "x",
+                    "mappings": {}
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "p",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "p",
+            "targetNodeId": "loop",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "expression-out-of-scope"
+        ]
+      }
+    },
+    {
+      "name": "declared-output-type-null-corpus",
+      "why": "The declared-output type is null; the reader and compiler refuse malformed port types.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Extra",
+                "displayName": "Extra",
+                "type": null
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "declared-output-type-absent-corpus",
+      "why": "The declared-output type is absent; the reader and compiler refuse malformed port types.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Extra",
+                "displayName": "Extra"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "parameter-type-null-corpus",
+      "why": "The parameter type is null; the reader and compiler refuse malformed port types.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "signature": {
+        "inputs": [
+          {
+            "name": "level",
+            "isRequired": true,
+            "type": null
+          }
+        ],
+        "outputs": []
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "parameter-type-absent-corpus",
+      "why": "The parameter type is absent; the reader and compiler refuse malformed port types.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "signature": {
+        "inputs": [
+          {
+            "name": "level",
+            "isRequired": true
+          }
+        ],
+        "outputs": []
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "port-entry-type-null-corpus",
+      "why": "The port-entry type is null; the reader and compiler refuse malformed port types.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "d",
+            "blockTypeId": "dispatch.echo-json",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "InputPorts": "[{\"name\":\"Items\",\"type\":null}]"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "d",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "port-entry-type-absent-corpus",
+      "why": "The port-entry type is absent; the reader and compiler refuse malformed port types.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "d",
+            "blockTypeId": "dispatch.echo-json",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "InputPorts": "[{\"name\":\"Items\"}]"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "d",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "type-parameter-unbound-absent-literal-corpus",
+      "why": "The registered Filter's Collection<$T> is fed a literal with no literalValue, which gives no evidence, so the literal needs a T that nothing binds.",
+      "gradedBy": [
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "filter",
+            "blockTypeId": "Filter",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "filter",
+            "mappings": {
+              "Collection": {
+                "type": "literal"
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "type-parameter-unbound"
+        ]
+      },
+      "notGradedBy": {
+        "editor": "type-parameter-unbound is compiler-only; the editor does not grade compiler rules."
+      }
+    },
+    {
+      "name": "type-parameter-conflict-mixed-literal-corpus",
+      "why": "The registered Filter's Collection<$T> is fed the literal [1, \"a\"]: T >= Int and T >= String have no least upper bound.",
+      "gradedBy": [
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "filter",
+            "blockTypeId": "Filter",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "filter",
+            "mappings": {
+              "Collection": {
+                "type": "literal",
+                "literalValue": [
+                  1,
+                  "a"
+                ]
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "type-parameter-conflict"
+        ]
+      },
+      "notGradedBy": {
+        "editor": "type-parameter-conflict is compiler-only; the editor does not grade compiler rules."
+      }
+    },
+    {
+      "name": "port-type-malformed-dynamic-output",
+      "why": "A dynamic output typed CollectionFoo on a block with dynamic ports: a spelling the grammar refuses.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "d",
+            "blockTypeId": "Dynamic",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "OutputPorts": "[{\"name\":\"Items\",\"type\":\"CollectionFoo\"}]"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "d",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "port-type-malformed-parameter",
+      "why": "A workflow input parameter with no type.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "signature": {
+        "inputs": [
+          {
+            "name": "level",
+            "isRequired": true
+          }
+        ],
+        "outputs": []
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "port-type-malformed-output-parameter",
+      "why": "A workflow output parameter whose type never closes its angle bracket: the stored output list is read on both sides.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "signature": {
+        "inputs": [],
+        "outputs": [
+          {
+            "name": "result",
+            "type": "Collection<Foo",
+            "isRequired": false
+          }
+        ]
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "port-type-malformed-declared-output",
+      "why": "A declared output typed Collection<Foo, its bracket never closed.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Extra",
+                "displayName": "Extra",
+                "type": "Collection<Foo"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-malformed"
+        ]
+      }
+    },
+    {
+      "name": "sub-canvas-valid",
+      "why": "A loop body reads the branch input its block declares and a name its container passes through, both wired from the body's entry node. The body's signature is the two together.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "src",
+            "blockTypeId": "Notify",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "Message": "m"
+            }
+          },
+          {
+            "id": "loop",
+            "blockTypeId": "ForEach",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {},
+            "passthrough": [
+              "Carry"
+            ],
+            "subCanvases": {
+              "Body": {
+                "nodes": [
+                  {
+                    "id": "bin",
+                    "blockTypeId": "WorkflowInput",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "configuration": {}
+                  },
+                  {
+                    "id": "a",
+                    "blockTypeId": "Log",
+                    "position": {
+                      "x": 100,
+                      "y": 0
+                    },
+                    "configuration": {}
+                  },
+                  {
+                    "id": "b",
+                    "blockTypeId": "Log",
+                    "position": {
+                      "x": 100,
+                      "y": 80
+                    },
+                    "configuration": {}
+                  }
+                ],
+                "edges": [
+                  {
+                    "id": "b1",
+                    "sourceNodeId": "bin",
+                    "targetNodeId": "a",
+                    "mappings": {
+                      "Value": {
+                        "type": "direct",
+                        "sourceOutputName": "Item"
+                      }
+                    }
+                  },
+                  {
+                    "id": "b2",
+                    "sourceNodeId": "bin",
+                    "targetNodeId": "b",
+                    "mappings": {
+                      "Value": {
+                        "type": "direct",
+                        "sourceOutputName": "Carry"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "src",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "src",
+            "targetNodeId": "loop",
+            "mappings": {
+              "Carry": {
+                "type": "direct",
+                "sourceOutputName": "Text"
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "valid"
+      }
+    },
+    {
+      "name": "sub-canvas-name-unknown",
+      "why": "A node holds a branch under a name its block never declares.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "loop",
+            "blockTypeId": "ForEach",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "subCanvases": {
+              "Else": {
+                "nodes": [
+                  {
+                    "id": "bin",
+                    "blockTypeId": "WorkflowInput",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "configuration": {}
+                  },
+                  {
+                    "id": "a",
+                    "blockTypeId": "Log",
+                    "position": {
+                      "x": 100,
+                      "y": 0
+                    },
+                    "configuration": {}
+                  }
+                ],
+                "edges": [
+                  {
+                    "id": "b1",
+                    "sourceNodeId": "bin",
+                    "targetNodeId": "a",
+                    "mappings": {}
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "loop",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "sub-canvas-name-unknown"
+        ]
+      }
+    },
+    {
+      "name": "edge-endpoint-unknown",
+      "why": "A wire names a source node that is not on the canvas. The run cannot deliver anything along it.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "ghost",
+            "targetNodeId": "a",
+            "mappings": {
+              "Value": {
+                "type": "direct",
+                "sourceOutputName": "Out"
+              }
+            }
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "edge-endpoint-unknown"
+        ]
+      }
+    },
+    {
+      "name": "edge-endpoint-unknown-in-sub-canvas",
+      "why": "Inside a loop body, a wire names a target node that is not on the body's canvas: the root-only structure rules stop there and this one still holds.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "loop",
+            "blockTypeId": "ForEach",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "subCanvases": {
+              "Body": {
+                "nodes": [
+                  {
+                    "id": "bin",
+                    "blockTypeId": "WorkflowInput",
+                    "position": {
+                      "x": 0,
+                      "y": 0
+                    },
+                    "configuration": {}
+                  },
+                  {
+                    "id": "a",
+                    "blockTypeId": "Log",
+                    "position": {
+                      "x": 100,
+                      "y": 0
+                    },
+                    "configuration": {}
+                  }
+                ],
+                "edges": [
+                  {
+                    "id": "b1",
+                    "sourceNodeId": "bin",
+                    "targetNodeId": "a",
+                    "mappings": {}
+                  },
+                  {
+                    "id": "b2",
+                    "sourceNodeId": "a",
+                    "targetNodeId": "ghost",
+                    "mappings": {}
+                  }
+                ]
+              }
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "loop",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "edge-endpoint-unknown"
+        ]
+      }
+    },
+    {
+      "name": "declared-output-type-alias-corpus",
+      "why": "The declared-output type is spelled by an alias of a registered type; the compile refuses it.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "port-type-alias is compiler-only; the editor does not grade compiler rules."
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Extra",
+                "displayName": "Extra",
+                "type": "string"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-alias"
+        ]
+      }
+    },
+    {
+      "name": "port-entry-type-alias-corpus",
+      "why": "The port-entry type is spelled by an alias of a registered type; the compile refuses it.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "port-type-alias is compiler-only; the editor does not grade compiler rules."
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "d",
+            "blockTypeId": "dispatch.echo-json",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "InputPorts": "[{\"name\":\"Items\",\"type\":\"string\"}]"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "d",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-alias"
+        ]
+      }
+    },
+    {
+      "name": "parameter-type-alias-corpus",
+      "why": "The parameter type is spelled by an alias of a registered type; the compile refuses it.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "port-type-alias is compiler-only; the editor does not grade compiler rules."
+      },
+      "signature": {
+        "inputs": [
+          {
+            "name": "level",
+            "isRequired": true,
+            "type": "string"
+          }
+        ],
+        "outputs": []
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-alias"
+        ]
+      }
+    },
+    {
+      "name": "declared-output-type-unregistered-corpus",
+      "why": "The declared-output type names no type the host's vocabulary registers; the compile refuses it.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "port-type-unregistered is compiler-only; the editor does not grade compiler rules."
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Extra",
+                "displayName": "Extra",
+                "type": "Consignment"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-unregistered"
+        ]
+      }
+    },
+    {
+      "name": "port-entry-type-unregistered-corpus",
+      "why": "The port-entry type names no type the host's vocabulary registers; the compile refuses it.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "port-type-unregistered is compiler-only; the editor does not grade compiler rules."
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "d",
+            "blockTypeId": "dispatch.echo-json",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "InputPorts": "[{\"name\":\"Items\",\"type\":\"Consignment\"}]"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "d",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-unregistered"
+        ]
+      }
+    },
+    {
+      "name": "parameter-type-unregistered-corpus",
+      "why": "The parameter type names no type the host's vocabulary registers; the compile refuses it.",
+      "gradedBy": [
+        "backend"
+      ],
+      "notGradedBy": {
+        "editor": "port-type-unregistered is compiler-only; the editor does not grade compiler rules."
+      },
+      "signature": {
+        "inputs": [
+          {
+            "name": "level",
+            "isRequired": true,
+            "type": "Consignment"
+          }
+        ],
+        "outputs": []
+      },
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Log",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-type-unregistered"
+        ]
+      }
+    },
+    {
+      "name": "port-list-without-dynamic-ports",
+      "why": "A port list sits in the configuration of a block that declares no dynamic ports; the run reads no such list.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Gate",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {
+              "InputPorts": "[{\"name\":\"P\",\"type\":\"String\"}]"
+            }
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-list-without-dynamic-ports"
+        ]
+      }
+    },
+    {
+      "name": "declared-outputs-unsupported",
+      "why": "A node declares an output and its block supports no declared outputs, so the editor offers none there.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Gate",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Extra",
+                "displayName": "Extra",
+                "type": "String"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "declared-outputs-unsupported"
+        ]
+      }
+    },
+    {
+      "name": "port-list-on-entry-node",
+      "why": "The library's entry node declares no dynamic ports, so a port list in its configuration is read by nothing; the editor grades it as the compile does.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {
+              "InputPorts": "[{\"name\":\"P\",\"type\":\"String\"}]"
+            }
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Gate",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "port-list-without-dynamic-ports"
+        ]
+      }
+    },
+    {
+      "name": "declared-outputs-on-exit-node",
+      "why": "The library's exit node supports no declared outputs, so one declared on it is read by nothing; the editor grades it as the compile does.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Gate",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "out",
+            "blockTypeId": "WorkflowOutput",
+            "position": {
+              "x": 200,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Extra",
+                "displayName": "Extra",
+                "type": "String"
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          },
+          {
+            "id": "e2",
+            "sourceNodeId": "a",
+            "targetNodeId": "out",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "declared-outputs-unsupported"
+        ]
+      }
+    },
+    {
+      "name": "declared-output-source-unknown",
+      "why": "A declared output takes its source from a key that is no sub-canvas of its block.",
+      "gradedBy": [
+        "editor",
+        "backend"
+      ],
+      "definition": {
+        "nodes": [
+          {
+            "id": "in",
+            "blockTypeId": "WorkflowInput",
+            "position": {
+              "x": 0,
+              "y": 0
+            },
+            "configuration": {}
+          },
+          {
+            "id": "a",
+            "blockTypeId": "Branch",
+            "position": {
+              "x": 100,
+              "y": 0
+            },
+            "configuration": {},
+            "outputPorts": [
+              {
+                "name": "Result",
+                "displayName": "Result",
+                "type": "String",
+                "sources": {
+                  "Nowhere": "k"
+                }
+              }
+            ]
+          }
+        ],
+        "edges": [
+          {
+            "id": "e1",
+            "sourceNodeId": "in",
+            "targetNodeId": "a",
+            "mappings": {}
+          }
+        ]
+      },
+      "expect": {
+        "verdict": "invalid",
+        "rules": [
+          "declared-output-source-unknown"
+        ]
+      }
+    }
+  ]
+}

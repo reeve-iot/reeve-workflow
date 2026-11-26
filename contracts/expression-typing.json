@@ -1,0 +1,3574 @@
+{
+  "$note": [
+    "Written by hand, never generated. ExpressionTypingContractTests types every vector in its scope and grades the answer.",
+    "`scope` names an entry of `scopes`: `workflow` has node outputs, parameters, host namespaces, a helper and the clock; `outside` has only namespaces, a helper and the clock; `bare` has the clock alone, with no helper resolver.",
+    "A path holds its closed `term` and the `value` a run reads there; a namespace path is its key joined by dots. Outputs and parameters hold values in the CLR type of their term. A node output with `absent: true` has a term and no value: the run finds no such output.",
+    "A vector either has a `refusal` rule id (with `refusalCount` refusals when given, `position` of the first, and a fragment its message holds) or a result `term`.",
+    "`tree` is the preorder list of overload ids and conversions (`widen`, `to-text`, `convert`) the typed tree holds; every row of expression-functions.json occurs in one.",
+    "`value` is what the typed evaluator answers, inside `term`; `failure` is the category it throws instead. A vector with neither is typed and not evaluated.",
+    "`owner` is the task that provides the rule; the test grades the rows of dbc.10 and fails on an owner it does not know, so a later task adds its rows with its own owner and grader. dbc.10s adds the scopes declaring-item and declaring-value, which hold the variables an Expression<T> input declares."
+  ],
+  "version": 1,
+  "scopes": {
+    "workflow": {
+      "previous": {
+        "n": {
+          "i": {
+            "term": "Int",
+            "value": 7
+          },
+          "x": {
+            "term": "Number",
+            "value": 2.5
+          },
+          "s": {
+            "term": "String",
+            "value": "abc"
+          },
+          "b": {
+            "term": "Boolean",
+            "value": true
+          },
+          "d": {
+            "term": "DateTime",
+            "value": "2026-03-05T14:07:09+00:00"
+          },
+          "j": {
+            "term": "Json",
+            "value": {
+              "a": 1
+            }
+          },
+          "jn": {
+            "term": "Json?",
+            "value": null
+          },
+          "ja": {
+            "term": "Json",
+            "absent": true
+          },
+          "jd": {
+            "term": "Json",
+            "value": {
+              "count": 3,
+              "ratio": 2.5,
+              "name": "abc",
+              "ok": true,
+              "at": "2026-03-05T14:07:09+00:00",
+              "ids": [1, 2, 3],
+              "tags": ["a", "b"],
+              "obj": {
+                "k": 1
+              },
+              "none": null
+            }
+          },
+          "ni": {
+            "term": "Int?",
+            "value": null
+          },
+          "ki": {
+            "term": "Int?",
+            "value": 5
+          },
+          "nx": {
+            "term": "Number?",
+            "value": null
+          },
+          "kx": {
+            "term": "Number?",
+            "value": 1.5
+          },
+          "ns": {
+            "term": "String?",
+            "value": null
+          },
+          "ks": {
+            "term": "String?",
+            "value": "z"
+          },
+          "nb": {
+            "term": "Boolean?",
+            "value": null
+          },
+          "ci": {
+            "term": "Collection<Int>",
+            "value": [1, 2]
+          },
+          "cn": {
+            "term": "Collection<Number>",
+            "value": [1.5]
+          },
+          "cni": {
+            "term": "Collection<Int?>",
+            "value": [1, null]
+          },
+          "mi": {
+            "term": "Map<String,Int>",
+            "value": {"a": 1, "b": 2}
+          },
+          "mi2": {
+            "term": "Map<String,Int>",
+            "value": {"b": 2, "a": 1}
+          },
+          "mn": {
+            "term": "Map<String,Number>",
+            "value": {"a": 1.5}
+          },
+          "mc": {
+            "term": "Map<String,Collection<Int>>",
+            "value": {"a": [1, 2]}
+          },
+          "mni": {
+            "term": "Map<String,Int?>",
+            "value": {"a": 1, "b": null}
+          },
+          "mk": {
+            "term": "Map<String,Int>",
+            "value": {"X-A": 1, "x-a": 2}
+          },
+          "me": {
+            "term": "Map<String,Int>",
+            "value": {}
+          },
+          "mnull": {
+            "term": "Map<String,Int>?",
+            "value": null
+          },
+          "cm": {
+            "term": "Collection<Map<String,Int>>",
+            "value": [{"a": 1}]
+          },
+          "cs": {
+            "term": "Collection<String>",
+            "value": ["a"]
+          },
+          "su": {
+            "term": "String",
+            "value": "zażółć \"q\" <a>&'+"
+          },
+          "csu": {
+            "term": "Collection<String>",
+            "value": ["zażółć \"q\" <a>&'+"]
+          },
+          "big": {
+            "term": "Int",
+            "value": 9223372036854775807
+          },
+          "lo": {
+            "term": "Int",
+            "value": -9223372036854775808
+          },
+          "zero": {
+            "term": "Int",
+            "value": 0
+          },
+          "zx": {
+            "term": "Number",
+            "value": 0.0
+          },
+          "huge": {
+            "term": "Number",
+            "value": 1e+308
+          }
+        }
+      },
+      "parameters": {
+        "p": {
+          "term": "Int",
+          "value": 3
+        },
+        "q": {
+          "term": "Number?",
+          "optional": true,
+          "value": 4.5
+        }
+      },
+      "namespaces": {
+        "trig": {
+          "keySegments": 1,
+          "paths": {
+            "count": {
+              "term": "Int",
+              "value": 4
+            },
+            "label": {
+              "term": "String?",
+              "value": "x"
+            },
+            "payload": {
+              "term": "Json?",
+              "value": {
+                "k": 1
+              }
+            },
+            "flag": {
+              "term": "Boolean",
+              "value": true
+            }
+          }
+        },
+        "dev": {
+          "keySegments": 2,
+          "paths": {
+            "kitchen.temp": {
+              "term": "Number",
+              "value": 21.5
+            }
+          }
+        }
+      },
+      "helpers": {
+        "level": {
+          "term": "Number",
+          "value": 0.5
+        }
+      },
+      "now": "2026-03-05T14:07:09+00:00",
+      "localNow": "2026-03-05T16:07:09+02:00"
+    },
+    "bare": {
+      "$note": "no helper resolver and no namespace: ${helper.*} is expression-unknown-namespace",
+      "namespaces": {},
+      "now": "2026-03-05T14:07:09+00:00",
+      "localNow": "2026-03-05T16:07:09+02:00"
+    },
+    "declaring-item": {
+      "$note": "the Expression<T> input that declares the variable item: Int; no other name is in scope",
+      "namespaces": {},
+      "variables": {
+        "item": {
+          "term": "Int",
+          "value": 7
+        }
+      },
+      "now": "2026-03-05T14:07:09+00:00",
+      "localNow": "2026-03-05T16:07:09+02:00"
+    },
+    "declaring-value": {
+      "$note": "the Expression<T> input that declares the variable value: String",
+      "namespaces": {},
+      "variables": {
+        "value": {
+          "term": "String",
+          "value": "abc"
+        }
+      },
+      "now": "2026-03-05T14:07:09+00:00",
+      "localNow": "2026-03-05T16:07:09+02:00"
+    },
+    "outside": {
+      "namespaces": {
+        "trig": {
+          "keySegments": 1,
+          "paths": {
+            "count": {
+              "term": "Int",
+              "value": 4
+            },
+            "label": {
+              "term": "String?",
+              "value": "x"
+            },
+            "payload": {
+              "term": "Json?",
+              "value": {
+                "k": 1
+              }
+            },
+            "flag": {
+              "term": "Boolean",
+              "value": true
+            }
+          }
+        },
+        "dev": {
+          "keySegments": 2,
+          "paths": {
+            "kitchen.temp": {
+              "term": "Number",
+              "value": 21.5
+            }
+          }
+        }
+      },
+      "helpers": {
+        "level": {
+          "term": "Number",
+          "value": 0.5
+        }
+      },
+      "now": "2026-03-05T14:07:09+00:00",
+      "localNow": "2026-03-05T16:07:09+02:00"
+    }
+  },
+  "vectors": [
+    {
+      "id": "literal-01",
+      "owner": "dbc.10",
+      "expression": "5",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 5
+    },
+    {
+      "id": "literal-02",
+      "owner": "dbc.10",
+      "expression": "5.5",
+      "scope": "workflow",
+      "term": "Number",
+      "value": 5.5
+    },
+    {
+      "id": "literal-03",
+      "owner": "dbc.10",
+      "expression": ".5",
+      "scope": "workflow",
+      "term": "Number",
+      "value": 0.5
+    },
+    {
+      "id": "literal-04",
+      "owner": "dbc.10",
+      "expression": "9223372036854775807",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 9223372036854775807
+    },
+    {
+      "id": "literal-05",
+      "owner": "dbc.10",
+      "expression": "\"a\"",
+      "scope": "workflow",
+      "term": "String",
+      "value": "a"
+    },
+    {
+      "id": "literal-06",
+      "owner": "dbc.10",
+      "expression": "\"he said \\\"x\\\"\"",
+      "scope": "workflow",
+      "term": "String",
+      "value": "he said \"x\""
+    },
+    {
+      "id": "literal-07",
+      "owner": "dbc.10",
+      "expression": "true",
+      "scope": "workflow",
+      "term": "Boolean",
+      "value": true
+    },
+    {
+      "id": "literal-08",
+      "owner": "dbc.10",
+      "expression": "null",
+      "scope": "workflow",
+      "term": "null",
+      "value": null
+    },
+    {
+      "id": "literal-09",
+      "owner": "dbc.10",
+      "expression": "9223372036854775808",
+      "scope": "workflow",
+      "refusal": "expression-syntax",
+      "messageContains": "Int",
+      "position": 0
+    },
+    {
+      "id": "literal-10",
+      "owner": "dbc.10",
+      "expression": "99999999999999999999",
+      "scope": "workflow",
+      "refusal": "expression-syntax",
+      "messageContains": "Int",
+      "position": 0
+    },
+    {
+      "id": "literal-11",
+      "owner": "dbc.10",
+      "expression": "999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999.0",
+      "scope": "workflow",
+      "refusal": "expression-syntax",
+      "messageContains": "not finite",
+      "position": 0
+    },
+    {
+      "id": "syntax-01",
+      "owner": "dbc.10",
+      "expression": "1 +",
+      "scope": "workflow",
+      "refusal": "expression-syntax"
+    },
+    {
+      "id": "syntax-02",
+      "owner": "dbc.10",
+      "expression": "",
+      "scope": "workflow",
+      "refusal": "expression-syntax"
+    },
+    {
+      "id": "syntax-03",
+      "owner": "dbc.10",
+      "expression": "foo",
+      "scope": "workflow",
+      "refusal": "expression-syntax"
+    },
+    {
+      "id": "add-01",
+      "owner": "dbc.10",
+      "expression": "1 + 2",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-add"],
+      "value": 3
+    },
+    {
+      "id": "add-02",
+      "owner": "dbc.10",
+      "expression": "1 + 2.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-add", "widen"],
+      "value": 3.5
+    },
+    {
+      "id": "add-03",
+      "owner": "dbc.10",
+      "expression": "2.5 + 1",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-add", "widen"],
+      "value": 3.5
+    },
+    {
+      "id": "add-04",
+      "owner": "dbc.10",
+      "expression": "${previous.n.i} + ${previous.n.i}",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-add"],
+      "value": 14
+    },
+    {
+      "id": "add-05",
+      "owner": "dbc.10",
+      "expression": "${previous.n.x} + ${previous.n.i}",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-add", "widen"],
+      "value": 9.5
+    },
+    {
+      "id": "add-06",
+      "owner": "dbc.10",
+      "expression": "${previous.n.big} + 0",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-add"],
+      "value": 9223372036854775807
+    },
+    {
+      "id": "add-07",
+      "owner": "dbc.10",
+      "expression": "${previous.n.big} + 1",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-add"],
+      "failure": "overflow"
+    },
+    {
+      "id": "add-08",
+      "owner": "dbc.10",
+      "expression": "${previous.n.huge} + ${previous.n.huge}",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-add"],
+      "failure": "overflow"
+    },
+    {
+      "id": "sub-01",
+      "owner": "dbc.10",
+      "expression": "7 - 10",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-sub"],
+      "value": -3
+    },
+    {
+      "id": "sub-02",
+      "owner": "dbc.10",
+      "expression": "2.5 - 1",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-sub", "widen"],
+      "value": 1.5
+    },
+    {
+      "id": "sub-03",
+      "owner": "dbc.10",
+      "expression": "${previous.n.lo} - 1",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-sub"],
+      "failure": "overflow"
+    },
+    {
+      "id": "mul-01",
+      "owner": "dbc.10",
+      "expression": "3 * 4",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-mul"],
+      "value": 12
+    },
+    {
+      "id": "mul-02",
+      "owner": "dbc.10",
+      "expression": "3 * 1.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-mul", "widen"],
+      "value": 4.5
+    },
+    {
+      "id": "mul-03",
+      "owner": "dbc.10",
+      "expression": "${previous.n.big} * 2",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-mul"],
+      "failure": "overflow"
+    },
+    {
+      "id": "mul-04",
+      "owner": "dbc.10",
+      "expression": "${previous.n.huge} * 10",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-mul", "widen"],
+      "failure": "overflow"
+    },
+    {
+      "id": "rem-01",
+      "owner": "dbc.10",
+      "expression": "7 % 4",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-rem"],
+      "value": 3
+    },
+    {
+      "id": "rem-02",
+      "owner": "dbc.10",
+      "expression": "7.5 % 2",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-rem", "widen"],
+      "value": 1.5
+    },
+    {
+      "id": "rem-03",
+      "owner": "dbc.10",
+      "expression": "7 % ${previous.n.zero}",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-rem"],
+      "failure": "division-by-zero"
+    },
+    {
+      "id": "rem-04",
+      "owner": "dbc.10",
+      "expression": "${previous.n.x} % ${previous.n.zx}",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-rem"],
+      "failure": "division-by-zero"
+    },
+    {
+      "id": "rem-05",
+      "owner": "dbc.10",
+      "expression": "${previous.n.lo} % -1",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-rem", "int-neg"],
+      "value": 0
+    },
+    {
+      "id": "div-01",
+      "owner": "dbc.10",
+      "expression": "7 / 2",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-div", "widen", "widen"],
+      "value": 3.5
+    },
+    {
+      "id": "div-02",
+      "owner": "dbc.10",
+      "expression": "7.5 / 2.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-div"],
+      "value": 3.0
+    },
+    {
+      "id": "div-03",
+      "owner": "dbc.10",
+      "expression": "7 / ${previous.n.zero}",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-div", "widen", "widen"],
+      "failure": "division-by-zero"
+    },
+    {
+      "id": "div-04",
+      "owner": "dbc.10",
+      "expression": "${previous.n.x} / ${previous.n.zx}",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-div"],
+      "failure": "division-by-zero"
+    },
+    {
+      "id": "div-05",
+      "owner": "dbc.10",
+      "expression": "${previous.n.huge} / 0.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-div"],
+      "failure": "overflow"
+    },
+    {
+      "id": "neg-01",
+      "owner": "dbc.10",
+      "expression": "-7",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-neg"],
+      "value": -7
+    },
+    {
+      "id": "neg-02",
+      "owner": "dbc.10",
+      "expression": "-2.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-neg"],
+      "value": -2.5
+    },
+    {
+      "id": "neg-03",
+      "owner": "dbc.10",
+      "expression": "- -7",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-neg", "int-neg"],
+      "value": 7
+    },
+    {
+      "id": "neg-04",
+      "owner": "dbc.10",
+      "expression": "-${previous.n.lo}",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-neg"],
+      "failure": "overflow"
+    },
+    {
+      "id": "arith-01",
+      "owner": "dbc.10",
+      "expression": "1 - \"a\"",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "position": 2
+    },
+    {
+      "id": "arith-02",
+      "owner": "dbc.10",
+      "expression": "true * 2",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "arith-03",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ni} - 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "arith-04",
+      "owner": "dbc.10",
+      "expression": "1 % null",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "arith-05",
+      "owner": "dbc.10",
+      "expression": "-\"a\"",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "arith-06",
+      "owner": "dbc.10",
+      "expression": "-${previous.n.ni}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "arith-07",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ci} / 2",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "concat-01",
+      "owner": "dbc.10",
+      "expression": "\"a\" + \"b\"",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat"],
+      "value": "ab"
+    },
+    {
+      "id": "concat-02",
+      "owner": "dbc.10",
+      "expression": "\"n=\" + 5",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat", "to-text"],
+      "value": "n=5"
+    },
+    {
+      "id": "concat-03",
+      "owner": "dbc.10",
+      "expression": "5 + \"n\"",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat", "to-text"],
+      "value": "5n"
+    },
+    {
+      "id": "concat-04",
+      "owner": "dbc.10",
+      "expression": "\"x\" + 2.5",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat", "to-text"],
+      "value": "x2.5"
+    },
+    {
+      "id": "concat-05",
+      "owner": "dbc.10",
+      "expression": "\"b=\" + true",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat", "to-text"],
+      "value": "b=true"
+    },
+    {
+      "id": "concat-06",
+      "owner": "dbc.10",
+      "expression": "\"t=\" + ${previous.n.d}",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat", "to-text"],
+      "value": "t=2026-03-05T14:07:09.0000000+00:00"
+    },
+    {
+      "id": "concat-07",
+      "owner": "dbc.10",
+      "expression": "1 + 2 + \"x\"",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat", "to-text", "int-add"],
+      "value": "3x"
+    },
+    {
+      "id": "concat-08",
+      "owner": "dbc.10",
+      "expression": "\"a\" + ${previous.n.ns}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "String?"
+    },
+    {
+      "id": "concat-09",
+      "owner": "dbc.10",
+      "expression": "\"a\" + null",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "concat-10",
+      "owner": "dbc.10",
+      "expression": "\"a\" + ${previous.n.j}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "concat-11",
+      "owner": "dbc.10",
+      "expression": "\"a\" + ${previous.n.ci}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "concat-12",
+      "owner": "dbc.10",
+      "expression": "true + 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "concat-13",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ci} + 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "compare-01",
+      "owner": "dbc.10",
+      "expression": "1 < 2",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["lt-int"],
+      "value": true
+    },
+    {
+      "id": "compare-02",
+      "owner": "dbc.10",
+      "expression": "2 <= 2",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["le-int"],
+      "value": true
+    },
+    {
+      "id": "compare-03",
+      "owner": "dbc.10",
+      "expression": "3 > 4",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["gt-int"],
+      "value": false
+    },
+    {
+      "id": "compare-04",
+      "owner": "dbc.10",
+      "expression": "4 >= 4",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["ge-int"],
+      "value": true
+    },
+    {
+      "id": "compare-05",
+      "owner": "dbc.10",
+      "expression": "1 < 1.5",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["lt-number", "widen"],
+      "value": true
+    },
+    {
+      "id": "compare-06",
+      "owner": "dbc.10",
+      "expression": "2.5 >= 2",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["ge-number", "widen"],
+      "value": true
+    },
+    {
+      "id": "compare-07",
+      "owner": "dbc.10",
+      "expression": "2.5 <= 2.5",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["le-number"],
+      "value": true
+    },
+    {
+      "id": "compare-08",
+      "owner": "dbc.10",
+      "expression": "2.5 > 2.5",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["gt-number"],
+      "value": false
+    },
+    {
+      "id": "compare-09",
+      "owner": "dbc.10",
+      "expression": "\"a\" < \"b\"",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["lt-string"],
+      "value": true
+    },
+    {
+      "id": "compare-10",
+      "owner": "dbc.10",
+      "expression": "\"b\" >= \"a\"",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["ge-string"],
+      "value": true
+    },
+    {
+      "id": "compare-11",
+      "owner": "dbc.10",
+      "expression": "\"a\" <= \"a\"",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["le-string"],
+      "value": true
+    },
+    {
+      "id": "compare-12",
+      "owner": "dbc.10",
+      "expression": "\"B\" > \"a\"",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["gt-string"],
+      "value": false
+    },
+    {
+      "id": "compare-13",
+      "owner": "dbc.10",
+      "expression": "${previous.n.d} < ${now}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["lt-datetime"],
+      "value": false
+    },
+    {
+      "id": "compare-14",
+      "owner": "dbc.10",
+      "expression": "${previous.n.d} <= ${now}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["le-datetime"],
+      "value": true
+    },
+    {
+      "id": "compare-15",
+      "owner": "dbc.10",
+      "expression": "${now} > ${previous.n.d}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["gt-datetime"],
+      "value": false
+    },
+    {
+      "id": "compare-16",
+      "owner": "dbc.10",
+      "expression": "${now} >= ${previous.n.d}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["ge-datetime"],
+      "value": true
+    },
+    {
+      "id": "compare-17",
+      "owner": "dbc.10",
+      "expression": "true < false",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "compare-18",
+      "owner": "dbc.10",
+      "expression": "1 < \"a\"",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "compare-19",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ni} < 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "compare-20",
+      "owner": "dbc.10",
+      "expression": "null < 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "compare-21",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ci} < ${previous.n.ci}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "compare-22",
+      "owner": "dbc.10",
+      "expression": "${previous.n.d} < 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "compare-23",
+      "owner": "dbc.10",
+      "expression": "9007199254740993 > 9007199254740992",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["gt-int"],
+      "value": true
+    },
+    {
+      "id": "equal-01",
+      "owner": "dbc.10",
+      "expression": "1 == 1",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": true
+    },
+    {
+      "id": "equal-02",
+      "owner": "dbc.10",
+      "expression": "1 != 1",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["not-equal"],
+      "value": false
+    },
+    {
+      "id": "equal-03",
+      "owner": "dbc.10",
+      "expression": "1 == 1.0",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal", "widen"],
+      "value": true
+    },
+    {
+      "id": "equal-04",
+      "owner": "dbc.10",
+      "expression": "2.5 != 2",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["not-equal", "widen"],
+      "value": true
+    },
+    {
+      "id": "equal-05",
+      "owner": "dbc.10",
+      "expression": "\"a\" == \"a\"",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": true
+    },
+    {
+      "id": "equal-06",
+      "owner": "dbc.10",
+      "expression": "true != false",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["not-equal"],
+      "value": true
+    },
+    {
+      "id": "equal-07",
+      "owner": "dbc.10",
+      "expression": "${previous.n.d} == ${now}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": true
+    },
+    {
+      "id": "equal-08",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ki} == 5",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": true
+    },
+    {
+      "id": "equal-09",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ni} == null",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": true
+    },
+    {
+      "id": "equal-10",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ni} != null",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["not-equal"],
+      "value": false
+    },
+    {
+      "id": "equal-11",
+      "owner": "dbc.10",
+      "expression": "null == ${previous.n.ks}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": false
+    },
+    {
+      "id": "equal-12",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ni} == ${previous.n.kx}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal", "widen"],
+      "value": false
+    },
+    {
+      "id": "equal-13",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ki} == ${previous.n.x}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal", "widen"],
+      "value": false
+    },
+    {
+      "id": "equal-14",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ns} == \"z\"",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": false
+    },
+    {
+      "id": "equal-15",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ks} == \"z\"",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": true
+    },
+    {
+      "id": "equal-16",
+      "owner": "dbc.10",
+      "expression": "${previous.n.b} == ${previous.n.nb}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": false
+    },
+    {
+      "id": "equal-17",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ci} == ${previous.n.ci}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": true
+    },
+    {
+      "id": "equal-18",
+      "owner": "dbc.10",
+      "expression": "1 == \"1\"",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "position": 2
+    },
+    {
+      "id": "equal-19",
+      "owner": "dbc.10",
+      "expression": "${previous.n.j} == 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "equal-20",
+      "owner": "dbc.10",
+      "expression": "${previous.n.jn} == ${previous.n.jn}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "equal-21",
+      "owner": "dbc.10",
+      "expression": "5 == null",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "equal-22",
+      "owner": "dbc.10",
+      "expression": "null == null",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "equal-23",
+      "owner": "dbc.10",
+      "expression": "true == 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "equal-24",
+      "owner": "dbc.10",
+      "expression": "${previous.n.cn} == ${previous.n.ci}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "equal-25",
+      "owner": "dbc.10",
+      "expression": "${previous.n.cni} == ${previous.n.cni}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "equal-26",
+      "owner": "dbc.10",
+      "expression": "9007199254740993 == 9007199254740992",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["equal"],
+      "value": false
+    },
+    {
+      "id": "logic-01",
+      "owner": "dbc.10",
+      "expression": "true && false",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["and"],
+      "value": false
+    },
+    {
+      "id": "logic-02",
+      "owner": "dbc.10",
+      "expression": "true || false",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["or"],
+      "value": true
+    },
+    {
+      "id": "logic-03",
+      "owner": "dbc.10",
+      "expression": "!true",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["not"],
+      "value": false
+    },
+    {
+      "id": "logic-04",
+      "owner": "dbc.10",
+      "expression": "!${previous.n.b}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["not"],
+      "value": false
+    },
+    {
+      "id": "logic-05",
+      "owner": "dbc.10",
+      "expression": "${previous.n.b} && ${trig.flag}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["and"],
+      "value": true
+    },
+    {
+      "id": "logic-06",
+      "owner": "dbc.10",
+      "expression": "false && 1 / ${previous.n.zero} > 0",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["and", "gt-number", "number-div", "widen", "widen", "widen"],
+      "value": false
+    },
+    {
+      "id": "logic-07",
+      "owner": "dbc.10",
+      "expression": "true || 1 / ${previous.n.zero} > 0",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["or", "gt-number", "number-div", "widen", "widen", "widen"],
+      "value": true
+    },
+    {
+      "id": "logic-08",
+      "owner": "dbc.10",
+      "expression": "1 && true",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "logic-09",
+      "owner": "dbc.10",
+      "expression": "!1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "logic-10",
+      "owner": "dbc.10",
+      "expression": "!${previous.n.s}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "logic-11",
+      "owner": "dbc.10",
+      "expression": "${previous.n.nb} && true",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "logic-12",
+      "owner": "dbc.10",
+      "expression": "true || null",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "logic-13",
+      "owner": "dbc.10",
+      "expression": "\"a\" || false",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "conditional-01",
+      "owner": "dbc.10",
+      "expression": "true ? 1 : 2",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["conditional"],
+      "value": 1
+    },
+    {
+      "id": "conditional-02",
+      "owner": "dbc.10",
+      "expression": "false ? 1 : 2.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["conditional", "widen"],
+      "value": 2.5
+    },
+    {
+      "id": "conditional-03",
+      "owner": "dbc.10",
+      "expression": "true ? 1 : 2.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["conditional", "widen"],
+      "value": 1.0
+    },
+    {
+      "id": "conditional-04",
+      "owner": "dbc.10",
+      "expression": "true ? 1 : null",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["conditional"],
+      "value": 1
+    },
+    {
+      "id": "conditional-05",
+      "owner": "dbc.10",
+      "expression": "false ? 1 : null",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["conditional"],
+      "value": null
+    },
+    {
+      "id": "conditional-06",
+      "owner": "dbc.10",
+      "expression": "false ? \"a\" : ${previous.n.ns}",
+      "scope": "workflow",
+      "term": "String?",
+      "tree": ["conditional"],
+      "value": null
+    },
+    {
+      "id": "conditional-07",
+      "owner": "dbc.10",
+      "expression": "true ? ${previous.n.i} : ${previous.n.ni}",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["conditional"],
+      "value": 7
+    },
+    {
+      "id": "conditional-08",
+      "owner": "dbc.10",
+      "expression": "true ? ${previous.n.ki} : 2.5",
+      "scope": "workflow",
+      "term": "Number?",
+      "tree": ["conditional", "widen"],
+      "value": 5.0
+    },
+    {
+      "id": "conditional-09",
+      "owner": "dbc.10",
+      "expression": "true ? ${previous.n.ci} : ${previous.n.ci}",
+      "scope": "workflow",
+      "term": "Collection<Int>",
+      "tree": ["conditional"],
+      "value": [1, 2]
+    },
+    {
+      "id": "conditional-10",
+      "owner": "dbc.10",
+      "expression": "true ? ${previous.n.ci} : ${previous.n.cn}",
+      "scope": "workflow",
+      "term": "Collection<Number>",
+      "tree": ["conditional", "convert"],
+      "value": [1.0, 2.0]
+    },
+    {
+      "id": "conditional-11",
+      "owner": "dbc.10",
+      "expression": "false ? ${previous.n.cni} : ${previous.n.cn}",
+      "scope": "workflow",
+      "term": "Collection<Number?>",
+      "tree": ["conditional", "convert", "convert"],
+      "value": [1.5]
+    },
+    {
+      "id": "conditional-12",
+      "owner": "dbc.10",
+      "expression": "true ? ${previous.n.b} : false",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["conditional"],
+      "value": true
+    },
+    {
+      "id": "conditional-13",
+      "owner": "dbc.10",
+      "expression": "${previous.n.b} ? 1 : ${previous.n.b} ? 2 : 3",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["conditional", "conditional"],
+      "value": 1
+    },
+    {
+      "id": "conditional-14",
+      "owner": "dbc.10",
+      "expression": "false ? 1 : 1 / ${previous.n.zero} > 0 ? 2 : 3",
+      "scope": "workflow",
+      "term": "Int",
+      "failure": "division-by-zero"
+    },
+    {
+      "id": "conditional-15",
+      "owner": "dbc.10",
+      "expression": "true ? 1 : \"a\"",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "conditional-16",
+      "owner": "dbc.10",
+      "expression": "true ? 1 : ${previous.n.j}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "conditional-17",
+      "owner": "dbc.10",
+      "expression": "1 ? 1 : 2",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "conditional-18",
+      "owner": "dbc.10",
+      "expression": "${previous.n.nb} ? 1 : 2",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "conditional-19",
+      "owner": "dbc.10",
+      "expression": "true ? null : null",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "conditional-20",
+      "owner": "dbc.10",
+      "expression": "true ? ${previous.n.j} : ${previous.n.jn}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "conditional-21",
+      "owner": "dbc.10",
+      "expression": "true ? ${previous.n.cs} : ${previous.n.ci}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "min-01",
+      "owner": "dbc.10",
+      "expression": "min(3, 1, 2)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["min-int"],
+      "value": 1
+    },
+    {
+      "id": "min-02",
+      "owner": "dbc.10",
+      "expression": "min(3, 1.5)",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["min-number", "widen"],
+      "value": 1.5
+    },
+    {
+      "id": "min-03",
+      "owner": "dbc.10",
+      "expression": "min(1)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["min-int"],
+      "value": 1
+    },
+    {
+      "id": "max-01",
+      "owner": "dbc.10",
+      "expression": "max(1, 2)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["max-int"],
+      "value": 2
+    },
+    {
+      "id": "max-02",
+      "owner": "dbc.10",
+      "expression": "max(2.5, 1)",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["max-number", "widen"],
+      "value": 2.5
+    },
+    {
+      "id": "max-03",
+      "owner": "dbc.10",
+      "expression": "max(1, 2, 3.5)",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["max-number", "widen", "widen"],
+      "value": 3.5
+    },
+    {
+      "id": "min-04",
+      "owner": "dbc.10",
+      "expression": "min()",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "min"
+    },
+    {
+      "id": "min-05",
+      "owner": "dbc.10",
+      "expression": "min(\"a\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "min-06",
+      "owner": "dbc.10",
+      "expression": "min(1, ${previous.n.ni})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "max-04",
+      "owner": "dbc.10",
+      "expression": "max(true, false)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "abs-01",
+      "owner": "dbc.10",
+      "expression": "abs(-3)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["abs-int", "int-neg"],
+      "value": 3
+    },
+    {
+      "id": "abs-02",
+      "owner": "dbc.10",
+      "expression": "abs(-2.5)",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["abs-number", "number-neg"],
+      "value": 2.5
+    },
+    {
+      "id": "abs-03",
+      "owner": "dbc.10",
+      "expression": "abs(${previous.n.lo})",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["abs-int"],
+      "failure": "overflow"
+    },
+    {
+      "id": "abs-04",
+      "owner": "dbc.10",
+      "expression": "abs(\"a\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "abs-05",
+      "owner": "dbc.10",
+      "expression": "abs(1, 2)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "round-01",
+      "owner": "dbc.10",
+      "expression": "round(2.5)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["round-number"],
+      "value": 3
+    },
+    {
+      "id": "round-02",
+      "owner": "dbc.10",
+      "expression": "round(-2.5)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["round-number", "number-neg"],
+      "value": -3
+    },
+    {
+      "id": "round-03",
+      "owner": "dbc.10",
+      "expression": "round(2)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["round-int"],
+      "value": 2
+    },
+    {
+      "id": "round-04",
+      "owner": "dbc.10",
+      "expression": "round(${previous.n.huge})",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["round-number"],
+      "failure": "overflow"
+    },
+    {
+      "id": "round-05",
+      "owner": "dbc.10",
+      "expression": "round(1, 2)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "round"
+    },
+    {
+      "id": "round-06",
+      "owner": "dbc.10",
+      "expression": "round(\"a\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "round-07",
+      "owner": "dbc.10",
+      "expression": "round(${previous.n.nx})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "floor-01",
+      "owner": "dbc.10",
+      "expression": "floor(2.7)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["floor-number"],
+      "value": 2
+    },
+    {
+      "id": "floor-02",
+      "owner": "dbc.10",
+      "expression": "floor(-2.1)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["floor-number", "number-neg"],
+      "value": -3
+    },
+    {
+      "id": "floor-03",
+      "owner": "dbc.10",
+      "expression": "floor(4)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["floor-int"],
+      "value": 4
+    },
+    {
+      "id": "floor-04",
+      "owner": "dbc.10",
+      "expression": "floor(${previous.n.huge})",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["floor-number"],
+      "failure": "overflow"
+    },
+    {
+      "id": "ceil-01",
+      "owner": "dbc.10",
+      "expression": "ceil(2.1)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["ceil-number"],
+      "value": 3
+    },
+    {
+      "id": "ceil-02",
+      "owner": "dbc.10",
+      "expression": "ceil(5)",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["ceil-int"],
+      "value": 5
+    },
+    {
+      "id": "ceil-03",
+      "owner": "dbc.10",
+      "expression": "ceil(${previous.n.huge})",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["ceil-number"],
+      "failure": "overflow"
+    },
+    {
+      "id": "len-01",
+      "owner": "dbc.10",
+      "expression": "len(\"abc\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["len"],
+      "value": 3
+    },
+    {
+      "id": "len-02",
+      "owner": "dbc.10",
+      "expression": "len(5)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "len-03",
+      "owner": "dbc.10",
+      "expression": "len(${previous.n.ns})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "contains-01",
+      "owner": "dbc.10",
+      "expression": "contains(\"abc\", \"b\")",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["contains"],
+      "value": true
+    },
+    {
+      "id": "contains-02",
+      "owner": "dbc.10",
+      "expression": "contains(\"abc\", \"x\")",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["contains"],
+      "value": false
+    },
+    {
+      "id": "contains-03",
+      "owner": "dbc.10",
+      "expression": "startsWith(\"abc\", \"a\")",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["starts-with"],
+      "value": true
+    },
+    {
+      "id": "contains-04",
+      "owner": "dbc.10",
+      "expression": "endsWith(\"abc\", \"c\")",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["ends-with"],
+      "value": true
+    },
+    {
+      "id": "contains-05",
+      "owner": "dbc.10",
+      "expression": "contains(\"a\", 1)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "contains-06",
+      "owner": "dbc.10",
+      "expression": "startsWith(\"a\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "tonumber-01",
+      "owner": "dbc.10",
+      "expression": "toNumber(5)",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["to-number-int"],
+      "value": 5.0
+    },
+    {
+      "id": "tonumber-02",
+      "owner": "dbc.10",
+      "expression": "toNumber(\"2.5\")",
+      "scope": "workflow",
+      "term": "Number?",
+      "tree": ["to-number-string"],
+      "value": 2.5
+    },
+    {
+      "id": "tonumber-03",
+      "owner": "dbc.10",
+      "expression": "toNumber(\"x\")",
+      "scope": "workflow",
+      "term": "Number?",
+      "tree": ["to-number-string"],
+      "value": null
+    },
+    {
+      "id": "tonumber-04",
+      "owner": "dbc.10",
+      "expression": "toNumber(\"1e999\")",
+      "scope": "workflow",
+      "term": "Number?",
+      "tree": ["to-number-string"],
+      "value": null
+    },
+    {
+      "id": "tonumber-05",
+      "owner": "dbc.10",
+      "expression": "toNumber(true)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "tonumber-06",
+      "owner": "dbc.10",
+      "expression": "toNumber(2.5)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "tostring-01",
+      "owner": "dbc.10",
+      "expression": "toString(5)",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-string-int"],
+      "value": "5"
+    },
+    {
+      "id": "tostring-02",
+      "owner": "dbc.10",
+      "expression": "toString(2.5)",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-string-number"],
+      "value": "2.5"
+    },
+    {
+      "id": "tostring-03",
+      "owner": "dbc.10",
+      "expression": "toString(true)",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-string-boolean"],
+      "value": "true"
+    },
+    {
+      "id": "tostring-04",
+      "owner": "dbc.10",
+      "expression": "toString(\"a\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-string-string"],
+      "value": "a"
+    },
+    {
+      "id": "tostring-05",
+      "owner": "dbc.10",
+      "expression": "toString(${previous.n.d})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-string-datetime"],
+      "value": "2026-03-05T14:07:09.0000000+00:00"
+    },
+    {
+      "id": "tostring-06",
+      "owner": "dbc.10",
+      "expression": "toString(${previous.n.ns})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "tostring-07",
+      "owner": "dbc.10",
+      "expression": "toString(${previous.n.j})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "tostring-08",
+      "owner": "dbc.10",
+      "expression": "toString(null)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "function-01",
+      "owner": "dbc.10",
+      "expression": "foo(1)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "unknown function"
+    },
+    {
+      "id": "read-01",
+      "owner": "dbc.10",
+      "expression": "${previous.n.i}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 7
+    },
+    {
+      "id": "read-02",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ki}",
+      "scope": "workflow",
+      "term": "Int?",
+      "value": 5
+    },
+    {
+      "id": "read-03",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ns}",
+      "scope": "workflow",
+      "term": "String?",
+      "value": null
+    },
+    {
+      "id": "read-04",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ci}",
+      "scope": "workflow",
+      "term": "Collection<Int>",
+      "value": [1, 2]
+    },
+    {
+      "id": "read-05",
+      "owner": "dbc.10",
+      "expression": "${previous.n.cni}",
+      "scope": "workflow",
+      "term": "Collection<Int?>",
+      "value": [1, null]
+    },
+    {
+      "id": "read-06",
+      "owner": "dbc.10",
+      "expression": "${previous.n.d}",
+      "scope": "workflow",
+      "term": "DateTime",
+      "value": "2026-03-05T14:07:09+00:00"
+    },
+    {
+      "id": "read-07",
+      "owner": "dbc.10",
+      "expression": "${parameter.p}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 3
+    },
+    {
+      "id": "read-08",
+      "owner": "dbc.10",
+      "expression": "${parameter.q}",
+      "scope": "workflow",
+      "term": "Number?",
+      "value": 4.5
+    },
+    {
+      "id": "read-09",
+      "owner": "dbc.10",
+      "expression": "${now}",
+      "scope": "workflow",
+      "term": "DateTime",
+      "value": "2026-03-05T14:07:09+00:00"
+    },
+    {
+      "id": "read-10",
+      "owner": "dbc.10",
+      "expression": "${now.iso}",
+      "scope": "workflow",
+      "term": "String",
+      "value": "2026-03-05T14:07:09.0000000+00:00"
+    },
+    {
+      "id": "read-11",
+      "owner": "dbc.10",
+      "expression": "${now.localiso}",
+      "scope": "workflow",
+      "term": "String",
+      "value": "2026-03-05T16:07:09.0000000+02:00"
+    },
+    {
+      "id": "read-12",
+      "owner": "dbc.10",
+      "expression": "${now.year}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 2026
+    },
+    {
+      "id": "read-13",
+      "owner": "dbc.10",
+      "expression": "${now.month}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 3
+    },
+    {
+      "id": "read-14",
+      "owner": "dbc.10",
+      "expression": "${now.day}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 5
+    },
+    {
+      "id": "read-15",
+      "owner": "dbc.10",
+      "expression": "${now.hour}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 14
+    },
+    {
+      "id": "read-16",
+      "owner": "dbc.10",
+      "expression": "${now.minute}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 7
+    },
+    {
+      "id": "read-17",
+      "owner": "dbc.10",
+      "expression": "${now.second}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 9
+    },
+    {
+      "id": "read-18",
+      "owner": "dbc.10",
+      "expression": "${now.dayofweek}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 4
+    },
+    {
+      "id": "read-19",
+      "owner": "dbc.10",
+      "expression": "${now.epoch}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 1772719629
+    },
+    {
+      "id": "read-20",
+      "owner": "dbc.10",
+      "expression": "${now.localhour}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 16
+    },
+    {
+      "id": "read-21",
+      "owner": "dbc.10",
+      "expression": "${now.localday}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 5
+    },
+    {
+      "id": "read-22",
+      "owner": "dbc.10",
+      "expression": "${trig.count}",
+      "scope": "workflow",
+      "term": "Int",
+      "value": 4
+    },
+    {
+      "id": "read-23",
+      "owner": "dbc.10",
+      "expression": "${trig.label}",
+      "scope": "workflow",
+      "term": "String?",
+      "value": "x"
+    },
+    {
+      "id": "read-24",
+      "owner": "dbc.10",
+      "expression": "${trig.flag}",
+      "scope": "workflow",
+      "term": "Boolean",
+      "value": true
+    },
+    {
+      "id": "read-25",
+      "owner": "dbc.10",
+      "expression": "${dev.kitchen.temp}",
+      "scope": "workflow",
+      "term": "Number",
+      "value": 21.5
+    },
+    {
+      "id": "read-26",
+      "owner": "dbc.10",
+      "expression": "${helper.level}",
+      "scope": "workflow",
+      "term": "Number",
+      "value": 0.5
+    },
+    {
+      "id": "read-27",
+      "owner": "dbc.10",
+      "expression": "${trig.count} + ${now.hour}",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-add"],
+      "value": 18
+    },
+    {
+      "id": "json-01",
+      "owner": "dbc.10",
+      "expression": "${previous.n.j}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "json-02",
+      "owner": "dbc.10",
+      "expression": "${previous.n.jn}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "json-03",
+      "owner": "dbc.10",
+      "expression": "${trig.payload}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "unknown-01",
+      "owner": "dbc.10",
+      "expression": "${trig.missing}",
+      "scope": "workflow",
+      "refusal": "expression-unknown-namespace"
+    },
+    {
+      "id": "unknown-02",
+      "owner": "dbc.10",
+      "expression": "${nowhere.x}",
+      "scope": "workflow",
+      "refusal": "expression-unknown-namespace"
+    },
+    {
+      "id": "unknown-03",
+      "owner": "dbc.10",
+      "expression": "${helper.nothing}",
+      "scope": "workflow",
+      "refusal": "expression-unknown-namespace"
+    },
+    {
+      "id": "unknown-04",
+      "owner": "dbc.10",
+      "expression": "${helper.level}",
+      "scope": "bare",
+      "refusal": "expression-unknown-namespace",
+      "messageContains": "does not exist"
+    },
+    {
+      "id": "unknown-05",
+      "owner": "dbc.10",
+      "expression": "${Now}",
+      "scope": "workflow",
+      "refusal": "expression-unknown-namespace"
+    },
+    {
+      "id": "scope-01",
+      "owner": "dbc.10",
+      "expression": "${previous.zzz.i}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "zzz"
+    },
+    {
+      "id": "scope-02",
+      "owner": "dbc.10",
+      "expression": "${previous.n.zzz}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "zzz"
+    },
+    {
+      "id": "scope-03",
+      "owner": "dbc.10",
+      "expression": "${parameter.zzz}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "declares no such parameter"
+    },
+    {
+      "id": "scope-04",
+      "owner": "dbc.10",
+      "expression": "${now.bogus}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "now has no such field"
+    },
+    {
+      "id": "scope-05",
+      "owner": "dbc.10",
+      "expression": "${item}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "item"
+    },
+    {
+      "id": "scope-06",
+      "owner": "dbc.10",
+      "expression": "${value}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "value"
+    },
+    {
+      "id": "scope-07",
+      "owner": "dbc.10",
+      "expression": "${dev.kitchen}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "needs a key of 2 segments"
+    },
+    {
+      "id": "scope-08",
+      "owner": "dbc.10",
+      "expression": "${previous.zzz.i} + ${parameter.zzz}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "refusalCount": 2
+    },
+    {
+      "id": "scope-09",
+      "owner": "dbc.10",
+      "expression": "${previous.n.zzz} + \"a\"",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "refusalCount": 1
+    },
+    {
+      "id": "field-01",
+      "owner": "dbc.10",
+      "expression": "${previous.n.i.x}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "Int has no member 'x'"
+    },
+    {
+      "id": "field-02",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ci[0]}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "index into a collection"
+    },
+    {
+      "id": "field-03",
+      "owner": "dbc.10",
+      "expression": "${previous.n.ci[0]} + 1",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "index into a collection",
+      "refusalCount": 1
+    },
+    {
+      "id": "field-04",
+      "owner": "dbc.10",
+      "expression": "${previous.n.cs.x}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "member 'x'"
+    },
+    {
+      "id": "field-05",
+      "owner": "dbc.10",
+      "expression": "${previous.n.j.a}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "opaque"
+    },
+    {
+      "id": "field-06",
+      "owner": "dbc.10",
+      "expression": "${previous.n.j[0]}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "opaque"
+    },
+    {
+      "id": "field-07",
+      "owner": "dbc.10",
+      "expression": "${previous.n.jn.a}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "opaque"
+    },
+    {
+      "id": "field-08",
+      "owner": "dbc.10",
+      "expression": "${trig.payload.a}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "opaque"
+    },
+    {
+      "id": "field-09",
+      "owner": "dbc.10",
+      "expression": "${dev.kitchen.temp.x}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "Number has no member 'x'"
+    },
+    {
+      "id": "field-10",
+      "owner": "dbc.10",
+      "expression": "${now.hour.x}",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid"
+    },
+    {
+      "id": "scope-10",
+      "owner": "dbc.10",
+      "expression": "${helper.level[0]}",
+      "scope": "workflow",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "whole path"
+    },
+    {
+      "id": "outside-01",
+      "owner": "dbc.10",
+      "expression": "1 + 2",
+      "scope": "outside",
+      "term": "Int",
+      "tree": ["int-add"],
+      "value": 3
+    },
+    {
+      "id": "outside-02",
+      "owner": "dbc.10",
+      "expression": "${trig.count} + 1",
+      "scope": "outside",
+      "term": "Int",
+      "tree": ["int-add"],
+      "value": 5
+    },
+    {
+      "id": "outside-03",
+      "owner": "dbc.10",
+      "expression": "${now.hour}",
+      "scope": "outside",
+      "term": "Int",
+      "value": 14
+    },
+    {
+      "id": "outside-04",
+      "owner": "dbc.10",
+      "expression": "${helper.level} * 2",
+      "scope": "outside",
+      "term": "Number",
+      "tree": ["number-mul", "widen"],
+      "value": 1.0
+    },
+    {
+      "id": "outside-05",
+      "owner": "dbc.10",
+      "expression": "${dev.kitchen.temp}",
+      "scope": "outside",
+      "term": "Number",
+      "value": 21.5
+    },
+    {
+      "id": "outside-06",
+      "owner": "dbc.10",
+      "expression": "${previous.n.i}",
+      "scope": "outside",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "no node outputs"
+    },
+    {
+      "id": "outside-07",
+      "owner": "dbc.10",
+      "expression": "${parameter.p}",
+      "scope": "outside",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "no parameters"
+    },
+    {
+      "id": "declared-01",
+      "owner": "dbc.10s",
+      "expression": "${item}",
+      "scope": "declaring-item",
+      "term": "Int",
+      "value": 7
+    },
+    {
+      "id": "declared-02",
+      "owner": "dbc.10s",
+      "expression": "${item} + 1",
+      "scope": "declaring-item",
+      "term": "Int",
+      "tree": ["int-add"],
+      "value": 8
+    },
+    {
+      "id": "declared-03",
+      "owner": "dbc.10s",
+      "expression": "${value}",
+      "scope": "declaring-value",
+      "term": "String",
+      "value": "abc"
+    },
+    {
+      "id": "declared-04",
+      "owner": "dbc.10s",
+      "expression": "${value}",
+      "scope": "declaring-item",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "declares no scope variable 'value'"
+    },
+    {
+      "id": "declared-05",
+      "owner": "dbc.10s",
+      "expression": "${item}",
+      "scope": "declaring-value",
+      "refusal": "expression-out-of-scope",
+      "messageContains": "declares no scope variable 'item'"
+    },
+    {
+      "id": "declared-06",
+      "owner": "dbc.10s",
+      "expression": "${item.x}",
+      "scope": "declaring-item",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "Int has no member 'x'"
+    },
+    {
+      "id": "outside-08",
+      "owner": "dbc.10",
+      "expression": "${item}",
+      "scope": "outside",
+      "refusal": "expression-out-of-scope"
+    },
+    {
+      "id": "outside-09",
+      "owner": "dbc.10",
+      "expression": "${trig.payload}",
+      "scope": "outside",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "coalesce-01",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? 5",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["coalesce"],
+      "value": 5
+    },
+    {
+      "id": "coalesce-02",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ki} ?? 9",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["coalesce"],
+      "value": 5
+    },
+    {
+      "id": "coalesce-03",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? 2.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["coalesce", "widen"],
+      "value": 2.5
+    },
+    {
+      "id": "coalesce-04",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ki} ?? 2.5",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["coalesce", "widen"],
+      "value": 5.0
+    },
+    {
+      "id": "coalesce-05",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? ${previous.n.ni}",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["coalesce"],
+      "value": null
+    },
+    {
+      "id": "coalesce-06",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? ${previous.n.ki}",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["coalesce"],
+      "value": 5
+    },
+    {
+      "id": "coalesce-07",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ns} ?? \"d\"",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["coalesce"],
+      "value": "d"
+    },
+    {
+      "id": "coalesce-08",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ks} ?? \"d\"",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["coalesce"],
+      "value": "z"
+    },
+    {
+      "id": "coalesce-09",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? null",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["coalesce"],
+      "value": null
+    },
+    {
+      "id": "coalesce-10",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ki} ?? 1 / ${previous.n.zero}",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["coalesce", "widen", "number-div", "widen", "widen"],
+      "value": 5.0
+    },
+    {
+      "id": "coalesce-11",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? 1 / ${previous.n.zero}",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["coalesce", "widen", "number-div", "widen", "widen"],
+      "failure": "division-by-zero"
+    },
+    {
+      "id": "coalesce-12",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? ${previous.n.ni} ?? 3",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["coalesce", "coalesce"],
+      "value": 3
+    },
+    {
+      "id": "coalesce-13",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? 1 + 2",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["coalesce", "int-add"],
+      "value": 3
+    },
+    {
+      "id": "coalesce-14",
+      "owner": "dbc.9",
+      "expression": "${previous.n.nb} ?? true && false",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["coalesce", "and"],
+      "value": false
+    },
+    {
+      "id": "coalesce-15",
+      "owner": "dbc.9",
+      "expression": "${previous.n.nb} ?? false || true",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["coalesce", "or"],
+      "value": true
+    },
+    {
+      "id": "coalesce-16",
+      "owner": "dbc.9",
+      "expression": "false ? 1 : ${previous.n.ni} ?? 4",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["conditional", "coalesce"],
+      "value": 4
+    },
+    {
+      "id": "coalesce-17",
+      "owner": "dbc.9",
+      "expression": "true ? ${previous.n.ni} ?? 4 : 7",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["conditional", "coalesce"],
+      "value": 4
+    },
+    {
+      "id": "coalesce-18",
+      "owner": "dbc.9",
+      "expression": "(\"v=\" + (${previous.n.ns} ?? \"none\"))",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat", "coalesce"],
+      "value": "v=none"
+    },
+    {
+      "id": "coalesce-19",
+      "owner": "dbc.9",
+      "expression": "5 ?? 6",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "??"
+    },
+    {
+      "id": "coalesce-20",
+      "owner": "dbc.9",
+      "expression": "${previous.n.i} ?? 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "coalesce-21",
+      "owner": "dbc.9",
+      "expression": "null ?? 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "coalesce-22",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ?? \"a\"",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "coalesce-23",
+      "owner": "dbc.9",
+      "expression": "${previous.n.jn} ?? ${previous.n.jn}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "coalesce-24",
+      "owner": "dbc.9",
+      "expression": "${previous.n.jn} ?? 1",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "coalesce-25",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ci} ?? ${previous.n.ci}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "coalesce-26",
+      "owner": "dbc.9",
+      "expression": "${previous.n.ni} ??",
+      "scope": "workflow",
+      "refusal": "expression-syntax"
+    },
+    {
+      "id": "tojson-01",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.i})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "7"
+    },
+    {
+      "id": "tojson-02",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.x})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "2.5"
+    },
+    {
+      "id": "tojson-03",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.s})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "\"abc\""
+    },
+    {
+      "id": "tojson-04",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.b})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "true"
+    },
+    {
+      "id": "tojson-05",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.d})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "\"2026-03-05T14:07:09+00:00\""
+    },
+    {
+      "id": "tojson-06",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.ci})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "[1,2]"
+    },
+    {
+      "id": "tojson-07",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.cni})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "[1,null]"
+    },
+    {
+      "id": "tojson-08",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.cs})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "[\"a\"]"
+    },
+    {
+      "id": "tojson-09",
+      "owner": "dbc.9",
+      "expression": "toJsonText(1 + 2)",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text", "int-add"],
+      "value": "3"
+    },
+    {
+      "id": "tojson-10",
+      "owner": "dbc.9",
+      "expression": "\"v=\" + toJsonText(${previous.n.i})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["string-concat", "to-json-text"],
+      "value": "v=7"
+    },
+    {
+      "id": "tojson-11",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.ki} ?? 0)",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text", "coalesce"],
+      "value": "5"
+    },
+    {
+      "id": "tojson-12",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.j})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "tojson-13",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.ki})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "null"
+    },
+    {
+      "id": "tojson-14",
+      "owner": "dbc.9",
+      "expression": "toJsonText(null)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "tojson-15",
+      "owner": "dbc.9",
+      "expression": "toJsonText()",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "tojson-16",
+      "owner": "dbc.9",
+      "expression": "toJsonText(1, 2)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "tojson-17",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.jn})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "parsejson-01",
+      "owner": "dbc.9",
+      "expression": "parseJson(\"{}\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "parsejson-02",
+      "owner": "dbc.9",
+      "expression": "parseJson(1)",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "parsejson-03",
+      "owner": "dbc.9",
+      "expression": "parseJson(${previous.n.ns})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "parsejson-04",
+      "owner": "dbc.9",
+      "expression": "parseJson()",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "parsejson-05",
+      "owner": "dbc.9",
+      "expression": "len(parseJson(\"1\"))",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "parsejson-06",
+      "owner": "dbc.9",
+      "expression": "parseJson(\"1\") == null",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "tojson-18",
+      "owner": "dbc.9",
+      "expression": "toJsonText(\"zażółć \\\"q\\\" <a>&'+\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "\"zażółć \\\"q\\\" <a>&'+\""
+    },
+    {
+      "id": "tojson-19",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.su})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "\"zażółć \\\"q\\\" <a>&'+\""
+    },
+    {
+      "id": "tojson-20",
+      "owner": "dbc.9",
+      "expression": "toJsonText(${previous.n.csu})",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "[\"zażółć \\\"q\\\" <a>&'+\"]"
+    },
+    {
+      "id": "tojson-21",
+      "owner": "dbc.9",
+      "expression": "toJsonText(\"😀\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["to-json-text"],
+      "value": "\"\\uD83D\\uDE00\""
+    },
+    {
+      "id": "jsonpath-01",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.count\", \"Int\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["json-path"],
+      "value": 3
+    },
+    {
+      "id": "jsonpath-02",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.ratio\", \"Number\")",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["json-path"],
+      "value": 2.5
+    },
+    {
+      "id": "jsonpath-03",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.count\", \"Number\")",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["json-path"],
+      "value": 3.0
+    },
+    {
+      "id": "jsonpath-04",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.name\", \"String\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["json-path"],
+      "value": "abc"
+    },
+    {
+      "id": "jsonpath-05",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.ok\", \"Boolean\")",
+      "scope": "workflow",
+      "term": "Boolean",
+      "tree": ["json-path"],
+      "value": true
+    },
+    {
+      "id": "jsonpath-06",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.at\", \"DateTime\")",
+      "scope": "workflow",
+      "term": "DateTime",
+      "tree": ["json-path"],
+      "value": "2026-03-05T14:07:09+00:00"
+    },
+    {
+      "id": "jsonpath-07",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.ids[*]\", \"Collection<Int>\")",
+      "scope": "workflow",
+      "term": "Collection<Int>",
+      "tree": ["json-path"],
+      "value": [1, 2, 3]
+    },
+    {
+      "id": "jsonpath-08",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.tags[*]\", \"Collection<String>\")",
+      "scope": "workflow",
+      "term": "Collection<String>",
+      "tree": ["json-path"],
+      "value": ["a", "b"]
+    },
+    {
+      "id": "jsonpath-09",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.missing\", \"Int?\")",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["json-path"],
+      "value": null
+    },
+    {
+      "id": "jsonpath-10",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.none\", \"Int?\")",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["json-path"],
+      "value": null
+    },
+    {
+      "id": "jsonpath-11",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.missing\", \"Int\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["json-path"],
+      "failure": "value-absent"
+    },
+    {
+      "id": "jsonpath-12",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.name\", \"Int\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["json-path"],
+      "failure": "narrowing"
+    },
+    {
+      "id": "jsonpath-13",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.count\", \"String\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["json-path"],
+      "failure": "narrowing"
+    },
+    {
+      "id": "jsonpath-14",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.none\", \"Int\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["json-path"],
+      "failure": "narrowing"
+    },
+    {
+      "id": "jsonpath-15",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.ids\", \"Collection<Int>\")",
+      "scope": "workflow",
+      "term": "Collection<Int>",
+      "tree": ["json-path"],
+      "failure": "narrowing"
+    },
+    {
+      "id": "jsonpath-16",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.missing[*]\", \"Collection<Int>\")",
+      "scope": "workflow",
+      "term": "Collection<Int>",
+      "tree": ["json-path"],
+      "value": []
+    },
+    {
+      "id": "jsonpath-17",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jn}, \"$\", \"String?\")",
+      "scope": "workflow",
+      "term": "String?",
+      "tree": ["json-path"],
+      "value": null
+    },
+    {
+      "id": "jsonpath-18",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jn}, \"$\", \"String\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["json-path"],
+      "failure": "value-absent"
+    },
+    {
+      "id": "jsonpath-19",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jn}, \"$[*]\", \"Collection<String>\")",
+      "scope": "workflow",
+      "term": "Collection<String>",
+      "tree": ["json-path"],
+      "value": []
+    },
+    {
+      "id": "jsonpath-20",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.obj\", \"String\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["json-path-text"],
+      "value": "{\"k\":1}"
+    },
+    {
+      "id": "jsonpath-21",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.count\", \"String\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["json-path-text"],
+      "value": "3"
+    },
+    {
+      "id": "jsonpath-22",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.name\", \"String\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["json-path-text"],
+      "value": "\"abc\""
+    },
+    {
+      "id": "jsonpath-23",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.tags[*]\", \"Collection<String>\")",
+      "scope": "workflow",
+      "term": "Collection<String>",
+      "tree": ["json-path-text"],
+      "value": ["\"a\"", "\"b\""]
+    },
+    {
+      "id": "jsonpath-24",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.none\", \"String?\")",
+      "scope": "workflow",
+      "term": "String?",
+      "tree": ["json-path-text"],
+      "value": null
+    },
+    {
+      "id": "jsonpath-25",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.missing\", \"String\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["json-path-text"],
+      "failure": "value-absent"
+    },
+    {
+      "id": "jsonpath-26",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.count\", \"Int\") + 1",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["int-add", "json-path"],
+      "value": 4
+    },
+    {
+      "id": "jsonpath-27",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.count\", \"Int\") + jsonPath(${previous.n.jd}, \"$.ratio\", \"Number\")",
+      "scope": "workflow",
+      "term": "Number",
+      "tree": ["number-add", "widen", "json-path", "json-path"],
+      "value": 5.5
+    },
+    {
+      "id": "jsonpath-28",
+      "owner": "dbc.33",
+      "expression": "jsonPath(true ? ${previous.n.j} : ${previous.n.jn}, \"$.a\", \"Int\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["json-path", "conditional"],
+      "value": 1
+    },
+    {
+      "id": "jsonpath-29",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jn} ?? ${previous.n.j}, \"$.a\", \"Int\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["json-path", "coalesce"],
+      "value": 1
+    },
+    {
+      "id": "jsonpath-30",
+      "owner": "dbc.33",
+      "expression": "jsonPath(parseJson(\"{\\\"a\\\":[1,2]}\"), \"$.a[1]\", \"Int\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["json-path", "parse-json"],
+      "value": 2
+    },
+    {
+      "id": "jsonpath-31",
+      "owner": "dbc.33",
+      "expression": "jsonPath(parseJson(\"null\"), \"$\", \"Int?\")",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["json-path", "parse-json"],
+      "value": null
+    },
+    {
+      "id": "jsonpath-32",
+      "owner": "dbc.33",
+      "expression": "jsonPath(parseJson(\"[1\"), \"$\", \"Int?\")",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["json-path", "parse-json"],
+      "failure": "json-parse"
+    },
+    {
+      "id": "jsonpath-33",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${trig.payload}, \"$.k\", \"Int\")",
+      "scope": "workflow",
+      "term": "Int",
+      "tree": ["json-path"],
+      "value": 1
+    },
+    {
+      "id": "jsonpath-34",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${trig.payload}, \"$.k\", \"Int\")",
+      "scope": "outside",
+      "term": "Int",
+      "tree": ["json-path"],
+      "value": 1
+    },
+    {
+      "id": "jsonpath-35",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$[\\\"name\\\"]\", \"String\")",
+      "scope": "workflow",
+      "term": "String",
+      "tree": ["json-path"],
+      "value": "abc"
+    },
+    {
+      "id": "jsonpath-36",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a[\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "json-projection-invalid",
+      "messageContains": "RFC 9535"
+    },
+    {
+      "id": "jsonpath-37",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"a\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "json-projection-invalid",
+      "messageContains": "RFC 9535"
+    },
+    {
+      "id": "jsonpath-38",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$[?foo(@)]\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "json-projection-invalid",
+      "messageContains": "uses a filter selector"
+    },
+    {
+      "id": "jsonpath-39",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a[*]\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "json-projection-invalid",
+      "messageContains": "singular"
+    },
+    {
+      "id": "jsonpath-40",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$..a\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "json-projection-invalid",
+      "messageContains": "uses a descendant segment"
+    },
+    {
+      "id": "jsonpath-41",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a\", \"Json\")",
+      "scope": "workflow",
+      "refusal": "port-type-json-position"
+    },
+    {
+      "id": "jsonpath-42",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a\", \"Collection<Json>\")",
+      "scope": "workflow",
+      "refusal": "port-type-json-position"
+    },
+    {
+      "id": "jsonpath-43",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a\", \"int\")",
+      "scope": "workflow",
+      "refusal": "port-type-alias"
+    },
+    {
+      "id": "jsonpath-44",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a\", \"Int<\")",
+      "scope": "workflow",
+      "refusal": "port-type-malformed"
+    },
+    {
+      "id": "jsonpath-45",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a\", \"\")",
+      "scope": "workflow",
+      "refusal": "port-type-malformed"
+    },
+    {
+      "id": "jsonpath-46",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a\", \"Shipment\")",
+      "scope": "workflow",
+      "refusal": "port-type-unregistered"
+    },
+    {
+      "id": "jsonpath-47",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.a\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "json-projection-invalid",
+      "messageContains": "jsonText"
+    },
+    {
+      "id": "jsonpath-48",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.a[*]\", \"Collection<Int>\")",
+      "scope": "workflow",
+      "refusal": "json-projection-invalid",
+      "messageContains": "jsonText"
+    },
+    {
+      "id": "jsonpath-49",
+      "owner": "dbc.33",
+      "expression": "jsonPathText(${previous.n.jd}, \"$.a[*]\", \"String\")",
+      "scope": "workflow",
+      "refusal": "json-projection-invalid",
+      "messageContains": "singular"
+    },
+    {
+      "id": "jsonpath-50",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.s}, \"$\", \"String\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "jsonPath"
+    },
+    {
+      "id": "jsonpath-51",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.i}, \"$\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "jsonPath"
+    },
+    {
+      "id": "jsonpath-53",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "jsonPath"
+    },
+    {
+      "id": "jsonpath-54",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$\", \"Int\", \"x\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "jsonPath"
+    },
+    {
+      "id": "jsonpath-55",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, ${previous.n.s}, \"String\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "literals"
+    },
+    {
+      "id": "jsonpath-56",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.a\", ${previous.n.s})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "literals"
+    },
+    {
+      "id": "jsonpath-57",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.\" + \"a\", \"String\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "literals"
+    },
+    {
+      "id": "jsonpath-58",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, 1, \"String\")",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "jsonPath"
+    },
+    {
+      "id": "jsonpath-59",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd.count}, \"$\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "opaque"
+    },
+    {
+      "id": "jsonpath-60",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd[0]}, \"$\", \"Int\")",
+      "scope": "workflow",
+      "refusal": "expression-field-access-invalid",
+      "messageContains": "opaque"
+    },
+    {
+      "id": "jsonpath-61",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.count\", \"Int\") == ${previous.n.jd}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "jsonpath-62",
+      "owner": "dbc.33",
+      "expression": "toJsonText(${previous.n.jd})",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "jsonpath-63",
+      "owner": "dbc.33",
+      "expression": "${previous.n.jd} == ${previous.n.jd}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "jsonpath-64",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.count\", \"Int\") + ${previous.n.jd}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch",
+      "messageContains": "Json"
+    },
+    {
+      "id": "jsonpath-65",
+      "owner": "dbc.33",
+      "expression": "true ? jsonPath(${previous.n.jd}, \"$.count\", \"Int\") : ${previous.n.jd}",
+      "scope": "workflow",
+      "refusal": "expression-type-mismatch"
+    },
+    {
+      "id": "jsonpath-67",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.ja}, \"$.a\", \"Int?\")",
+      "scope": "workflow",
+      "term": "Int?",
+      "tree": ["json-path"],
+      "failure": "value-absent"
+    },
+    {
+      "id": "jsonpath-68",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jd}, \"$.missing[*]\", \"Collection<Int>?\")",
+      "scope": "workflow",
+      "term": "Collection<Int>?",
+      "tree": ["json-path"],
+      "value": []
+    },
+    {
+      "id": "jsonpath-66",
+      "owner": "dbc.33",
+      "expression": "jsonPath(${previous.n.jn}, \"$\", \"Json?\")",
+      "scope": "workflow",
+      "refusal": "port-type-json-position"
+    },
+    {"id": "map-01", "owner": "4md.5", "expression": "${previous.n.mi}", "scope": "workflow", "term": "Map<String,Int>", "value": {"a": 1, "b": 2}},
+    {"id": "map-02", "owner": "4md.5", "expression": "${previous.n.mi} == ${previous.n.mi2}", "scope": "workflow", "term": "Boolean", "tree": ["equal"], "value": true},
+    {"id": "map-03", "owner": "4md.5", "expression": "${previous.n.mi} == ${previous.n.mk}", "scope": "workflow", "term": "Boolean", "tree": ["equal"], "value": false},
+    {"id": "map-04", "owner": "4md.5", "expression": "${previous.n.mk} == ${previous.n.mk}", "scope": "workflow", "term": "Boolean", "tree": ["equal"], "value": true},
+    {"id": "map-05", "owner": "4md.5", "expression": "${previous.n.mn} == ${previous.n.mi}", "scope": "workflow", "refusal": "expression-type-mismatch"},
+    {"id": "map-06", "owner": "4md.5", "expression": "${previous.n.mni} == ${previous.n.mni}", "scope": "workflow", "refusal": "expression-type-mismatch"},
+    {"id": "map-07", "owner": "4md.5", "expression": "toJsonText(${previous.n.mi})", "scope": "workflow", "term": "String", "tree": ["to-json-text"], "value": "{\"a\":1,\"b\":2}"},
+    {"id": "map-08", "owner": "4md.5", "expression": "toJsonText(${previous.n.mc})", "scope": "workflow", "term": "String", "tree": ["to-json-text"], "value": "{\"a\":[1,2]}"},
+    {"id": "map-09", "owner": "4md.5", "expression": "toJsonText(${previous.n.mni})", "scope": "workflow", "term": "String", "tree": ["to-json-text"], "value": "{\"a\":1,\"b\":null}"},
+    {"id": "map-10", "owner": "4md.5", "expression": "toJsonText(${previous.n.me})", "scope": "workflow", "term": "String", "tree": ["to-json-text"], "value": "{}"},
+    {"id": "map-11", "owner": "4md.5", "expression": "toJsonText(${previous.n.cm})", "scope": "workflow", "term": "String", "tree": ["to-json-text"], "value": "[{\"a\":1}]"},
+    {"id": "map-12", "owner": "4md.5", "expression": "${previous.n.mi.a}", "scope": "workflow", "refusal": "expression-field-access-invalid", "messageContains": "read whole"},
+    {"id": "map-13", "owner": "4md.5", "expression": "${previous.n.mi[0]}", "scope": "workflow", "refusal": "expression-field-access-invalid", "messageContains": "read whole"},
+    {"id": "map-14", "owner": "4md.5", "expression": "true ? ${previous.n.mi} : ${previous.n.mn}", "scope": "workflow", "term": "Map<String,Number>", "tree": ["conditional", "convert"], "value": {"a": 1.0, "b": 2.0}},
+    {"id": "map-15", "owner": "4md.5", "expression": "${previous.n.mi} ?? ${previous.n.mi}", "scope": "workflow", "refusal": "expression-type-mismatch"},
+    {"id": "map-16", "owner": "4md.5", "expression": "${previous.n.mnull}", "scope": "workflow", "term": "Map<String,Int>?", "value": null},
+    {"id": "map-17", "owner": "4md.5", "expression": "${previous.n.mnull} ?? ${previous.n.mi}", "scope": "workflow", "term": "Map<String,Int>", "tree": ["coalesce"], "value": {"a": 1, "b": 2}},
+    {"id": "map-18", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.obj\", \"Map<String,Int>\")", "scope": "workflow", "term": "Map<String,Int>", "tree": ["json-path"], "value": {"k": 1}},
+    {"id": "map-19", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.obj\", \"Map<String,Int?>?\")", "scope": "workflow", "term": "Map<String,Int?>?", "tree": ["json-path"], "value": {"k": 1}},
+    {"id": "map-20", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.obj\", \"Map<String,String>\")", "scope": "workflow", "term": "Map<String,String>", "tree": ["json-path"], "failure": "narrowing"},
+    {"id": "map-21", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.name\", \"Map<String,String>\")", "scope": "workflow", "term": "Map<String,String>", "tree": ["json-path"], "failure": "narrowing"},
+    {"id": "map-22", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.missing\", \"Map<String,Int>?\")", "scope": "workflow", "term": "Map<String,Int>?", "tree": ["json-path"], "value": null},
+    {"id": "map-23", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.none\", \"Map<String,Int>?\")", "scope": "workflow", "term": "Map<String,Int>?", "tree": ["json-path"], "value": null},
+    {"id": "map-24", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.missing\", \"Map<String,Int>\")", "scope": "workflow", "term": "Map<String,Int>", "tree": ["json-path"], "failure": "value-absent"},
+    {"id": "map-25", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.none\", \"Map<String,Int>\")", "scope": "workflow", "term": "Map<String,Int>", "tree": ["json-path"], "failure": "narrowing"},
+    {"id": "map-26", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.obj\", \"Map<String,Int>\") == jsonPath(${previous.n.jd}, \"$.obj\", \"Map<String,Int>\")", "scope": "workflow", "term": "Boolean", "tree": ["equal", "json-path", "json-path"], "value": true},
+    {"id": "map-27", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.ids[*]\", \"Map<String,Int>\")", "scope": "workflow", "refusal": "json-projection-invalid"},
+    {"id": "map-28", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.obj\", \"Map<String,Collection<Int>>\")", "scope": "workflow", "refusal": "json-projection-invalid"},
+    {"id": "map-29", "owner": "4md.6", "expression": "jsonPath(${previous.n.jd}, \"$.obj\", \"Map<String,Json>\")", "scope": "workflow", "refusal": "port-type-json-position"},
+    {"id": "map-30", "owner": "4md.6", "expression": "jsonPathText(${previous.n.jd}, \"$.obj\", \"Map<String,String>\")", "scope": "workflow", "refusal": "json-projection-invalid"}
+  ]
+}

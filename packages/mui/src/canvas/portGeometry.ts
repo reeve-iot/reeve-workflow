@@ -1,0 +1,3 @@
+export const PORT_RADIUS = 6
+export const PORT_STROKE_WIDTH = 2
+export const NODE_RIGHT_OVERHANG = PORT_RADIUS + PORT_STROKE_WIDTH / 2

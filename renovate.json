@@ -1,0 +1,92 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":semanticCommits",
+    ":separateMultipleMajorReleases"
+  ],
+  "timezone": "Europe/Warsaw",
+  "dependencyDashboard": false,
+  "enabledManagers": [
+    "npm",
+    "nuget",
+    "github-actions"
+  ],
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/vendor/**",
+    "**/.git/**",
+    "docs/**"
+  ],
+  "packageRules": [
+    {
+      "description": "One pull request per run for the npm dependencies.",
+      "matchManagers": [
+        "npm"
+      ],
+      "groupName": "npm dependencies"
+    },
+    {
+      "description": "One pull request per run for the .NET stack instead of one per package.",
+      "matchManagers": [
+        "nuget"
+      ],
+      "groupName": ".NET dependencies"
+    },
+    {
+      "description": "GitHub Actions versions land in one pull request.",
+      "matchManagers": [
+        "github-actions"
+      ],
+      "groupName": "GitHub Actions"
+    },
+    {
+      "description": "Playwright packages move together.",
+      "matchPackageNames": [
+        "@playwright/test",
+        "playwright",
+        "playwright-core"
+      ],
+      "groupName": "playwright"
+    },
+    {
+      "description": "This repository's own packages and the Reeve libraries move as a deliberate sweep, not on the bot schedule.",
+      "matchPackageNames": [
+        "/^@reeve-iot\\//",
+        "/^ReeveWorkflow\\./",
+        "/^Reeve\\./"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Major versions of the .NET release train are bumped by hand together with the target framework.",
+      "matchPackageNames": [
+        "Microsoft.Extensions.*",
+        "Microsoft.AspNetCore.*",
+        "Microsoft.NET.*",
+        "!Microsoft.NET.Test.Sdk",
+        "Microsoft.EntityFrameworkCore*",
+        "Npgsql*",
+        "CmdScale.EntityFrameworkCore.TimescaleDB*",
+        "System.*"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "The .NET SDK major in the workflows moves by hand together with the target framework.",
+      "matchDatasources": [
+        "dotnet-version"
+      ],
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "enabled": false
+    }
+  ],
+  "prConcurrentLimit": 3,
+  "prHourlyLimit": 2
+}

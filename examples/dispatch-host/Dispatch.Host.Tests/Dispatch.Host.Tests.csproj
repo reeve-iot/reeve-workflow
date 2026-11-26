@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>Dispatch.Host.Tests</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="Testcontainers.PostgreSql" />
+    <PackageReference Include="Testcontainers.Redis" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Dispatch.Host\Dispatch.Host.csproj" />
+    <ProjectReference Include="..\..\..\dotnet\src\ReeveWorkflow.History\ReeveWorkflow.History.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\..\..\dotnet\tests\ReeveWorkflow.Core.Tests\Compilation\CompilationScopes.cs" Link="CompilationScopes.cs" />
+    <Compile Include="..\..\..\dotnet\tests\ReeveWorkflow.Editor.Tests\EditorDoorPairs.cs" Link="EditorDoorPairs.cs" />
+    <Compile Include="..\..\..\dotnet\tests\ReeveWorkflow.Editor.Tests\EditorDoorSequences.cs" Link="EditorDoorSequences.cs" />
+    <Compile Include="..\..\..\dotnet\tests\ReeveWorkflow.Core.Tests\Hosting\SuspensionParkIdentityContract.cs" Link="SuspensionParkIdentityContract.cs" />
+    <Compile Include="..\..\..\dotnet\tests\ReeveWorkflow.EntityFrameworkCore.Tests\LoopWaitGraphs.cs" Link="LoopWaitGraphs.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AssemblyAttribute Include="System.Reflection.AssemblyMetadataAttribute">
+      <_Parameter1>DispatchHostEntryPoint</_Parameter1>
+      <_Parameter2>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)../Dispatch.Host/bin/$(Configuration)/$(TargetFramework)/Dispatch.Host.dll'))</_Parameter2>
+    </AssemblyAttribute>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,57 @@
+{
+  "name": "@reeve-iot/workflow-mui",
+  "version": "1.1.0",
+  "description": "Material UI presentation layer for @reeve-iot/workflow-core: canvas, block nodes, palette and config panels.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reeve-iot/reeve-workflow.git",
+    "directory": "packages/mui"
+  },
+  "homepage": "https://github.com/reeve-iot/reeve-workflow/tree/main/packages/mui#readme",
+  "bugs": {
+    "url": "https://github.com/reeve-iot/reeve-workflow/issues"
+  },
+  "keywords": [
+    "workflow",
+    "graph",
+    "editor",
+    "mui",
+    "material-ui",
+    "react"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@reeve-iot/workflow-core": "1.1.0"
+  },
+  "peerDependencies": {
+    "@emotion/react": "^11.0.0",
+    "@emotion/styled": "^11.0.0",
+    "@mui/icons-material": "^9.0.0",
+    "@mui/material": "^9.0.0",
+    "react": "^18.0.0 || ^19.0.0",
+    "react-dom": "^18.0.0 || ^19.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

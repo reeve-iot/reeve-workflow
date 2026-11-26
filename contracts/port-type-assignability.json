@@ -1,0 +1,1600 @@
+{
+  "$note": [
+    "The matrix keys (`names`, `assignable`, `normalize`) are kept by hand and graded by the compiler alone: the editor has no assignability.",
+    "`assignable[i][j]` is '1' when names[i] may feed names[j]; `normalize[i]` is the canonical spelling of",
+    "names[i]. AssignabilityAgreementTests.cs asserts WorkflowTypeVocabulary.Builtin gives the same matrix,",
+    "and Canonicalize the same names up to ASCII case, which is how the compiler compares a name.",
+    "`terms` is written by hand from rules A1 to A7 (docs/reference/port-types.md, Widening and assignability), never generated: the compiler's PortTermAssignability reads it. `from` is null for the literal null's term; `rule` names the rule that decides the vector at its outermost level (A1 and A6 only answer yes, A3 and A7 only no). The vectors naming Any or Float pin that neither is a wildcard, a row or a Json source: neither is a port type, so no rule answers yes for them.",
+    "`conversion`, on each vector that answers yes, is what the input binder does to the value: `Identity`, `IntToNumber`, `ToJson`, `NullLift` or `NullLift(c)` after `c`, `Elementwise(c)` with `c` per element. It follows from the CLR types: `valueType` says whether a term's CLR type is a value type. The compiler reads it."
+  ],
+  "names": [
+    "String",
+    "Collection<String>",
+    "Collection<Collection<String>>",
+    "string",
+    "Collection<string>",
+    "Collection<Collection<string>>",
+    "STRING",
+    "Collection<STRING>",
+    "Collection<Collection<STRING>>",
+    "Number",
+    "Collection<Number>",
+    "Collection<Collection<Number>>",
+    "number",
+    "Collection<number>",
+    "Collection<Collection<number>>",
+    "NUMBER",
+    "Collection<NUMBER>",
+    "Collection<Collection<NUMBER>>",
+    "Int",
+    "Collection<Int>",
+    "Collection<Collection<Int>>",
+    "int",
+    "Collection<int>",
+    "Collection<Collection<int>>",
+    "INT",
+    "Collection<INT>",
+    "Collection<Collection<INT>>",
+    "Boolean",
+    "Collection<Boolean>",
+    "Collection<Collection<Boolean>>",
+    "boolean",
+    "Collection<boolean>",
+    "Collection<Collection<boolean>>",
+    "bool",
+    "Collection<bool>",
+    "Collection<Collection<bool>>",
+    "BOOLEAN",
+    "Collection<BOOLEAN>",
+    "Collection<Collection<BOOLEAN>>",
+    "DateTime",
+    "Collection<DateTime>",
+    "Collection<Collection<DateTime>>",
+    "datetime",
+    "Collection<datetime>",
+    "Collection<Collection<datetime>>",
+    "DATETIME",
+    "Collection<DATETIME>",
+    "Collection<Collection<DATETIME>>",
+    "Json",
+    "Collection<Json>",
+    "Collection<Collection<Json>>",
+    "json",
+    "Collection<json>",
+    "Collection<Collection<json>>",
+    "JSON",
+    "Collection<JSON>",
+    "Collection<Collection<JSON>>",
+    "Shipment",
+    "Collection<Shipment>",
+    "Collection<Collection<Shipment>>"
+  ],
+  "assignable": [
+    "100100100000000000000000000000000000000000000000100100100000",
+    "010010010000000000000000000000000000000000000000110110110000",
+    "001001001000000000000000000000000000000000000000111111111000",
+    "100100100000000000000000000000000000000000000000100100100000",
+    "010010010000000000000000000000000000000000000000110110110000",
+    "001001001000000000000000000000000000000000000000111111111000",
+    "100100100000000000000000000000000000000000000000100100100000",
+    "010010010000000000000000000000000000000000000000110110110000",
+    "001001001000000000000000000000000000000000000000111111111000",
+    "000000000100100100000000000000000000000000000000100100100000",
+    "000000000010010010000000000000000000000000000000110110110000",
+    "000000000001001001000000000000000000000000000000111111111000",
+    "000000000100100100000000000000000000000000000000100100100000",
+    "000000000010010010000000000000000000000000000000110110110000",
+    "000000000001001001000000000000000000000000000000111111111000",
+    "000000000100100100000000000000000000000000000000100100100000",
+    "000000000010010010000000000000000000000000000000110110110000",
+    "000000000001001001000000000000000000000000000000111111111000",
+    "000000000100100100100100100000000000000000000000100100100000",
+    "000000000010010010010010010000000000000000000000110110110000",
+    "000000000001001001001001001000000000000000000000111111111000",
+    "000000000100100100100100100000000000000000000000100100100000",
+    "000000000010010010010010010000000000000000000000110110110000",
+    "000000000001001001001001001000000000000000000000111111111000",
+    "000000000100100100100100100000000000000000000000100100100000",
+    "000000000010010010010010010000000000000000000000110110110000",
+    "000000000001001001001001001000000000000000000000111111111000",
+    "000000000000000000000000000100100100100000000000100100100000",
+    "000000000000000000000000000010010010010000000000110110110000",
+    "000000000000000000000000000001001001001000000000111111111000",
+    "000000000000000000000000000100100100100000000000100100100000",
+    "000000000000000000000000000010010010010000000000110110110000",
+    "000000000000000000000000000001001001001000000000111111111000",
+    "000000000000000000000000000100100100100000000000100100100000",
+    "000000000000000000000000000010010010010000000000110110110000",
+    "000000000000000000000000000001001001001000000000111111111000",
+    "000000000000000000000000000100100100100000000000100100100000",
+    "000000000000000000000000000010010010010000000000110110110000",
+    "000000000000000000000000000001001001001000000000111111111000",
+    "000000000000000000000000000000000000000100100100100100100000",
+    "000000000000000000000000000000000000000010010010110110110000",
+    "000000000000000000000000000000000000000001001001111111111000",
+    "000000000000000000000000000000000000000100100100100100100000",
+    "000000000000000000000000000000000000000010010010110110110000",
+    "000000000000000000000000000000000000000001001001111111111000",
+    "000000000000000000000000000000000000000100100100100100100000",
+    "000000000000000000000000000000000000000010010010110110110000",
+    "000000000000000000000000000000000000000001001001111111111000",
+    "000000000000000000000000000000000000000000000000100100100000",
+    "000000000000000000000000000000000000000000000000110110110000",
+    "000000000000000000000000000000000000000000000000111111111000",
+    "000000000000000000000000000000000000000000000000100100100000",
+    "000000000000000000000000000000000000000000000000110110110000",
+    "000000000000000000000000000000000000000000000000111111111000",
+    "000000000000000000000000000000000000000000000000100100100000",
+    "000000000000000000000000000000000000000000000000110110110000",
+    "000000000000000000000000000000000000000000000000111111111000",
+    "000000000000000000000000000000000000000000000000000000000100",
+    "000000000000000000000000000000000000000000000000000000000010",
+    "000000000000000000000000000000000000000000000000000000000001"
+  ],
+  "normalize": [
+    "String",
+    "Collection<String>",
+    "Collection<Collection<String>>",
+    "String",
+    "Collection<String>",
+    "Collection<Collection<String>>",
+    "String",
+    "Collection<String>",
+    "Collection<Collection<String>>",
+    "Number",
+    "Collection<Number>",
+    "Collection<Collection<Number>>",
+    "Number",
+    "Collection<Number>",
+    "Collection<Collection<Number>>",
+    "Number",
+    "Collection<Number>",
+    "Collection<Collection<Number>>",
+    "Int",
+    "Collection<Int>",
+    "Collection<Collection<Int>>",
+    "Int",
+    "Collection<Int>",
+    "Collection<Collection<Int>>",
+    "Int",
+    "Collection<Int>",
+    "Collection<Collection<Int>>",
+    "Boolean",
+    "Collection<Boolean>",
+    "Collection<Collection<Boolean>>",
+    "Boolean",
+    "Collection<Boolean>",
+    "Collection<Collection<Boolean>>",
+    "Boolean",
+    "Collection<Boolean>",
+    "Collection<Collection<Boolean>>",
+    "Boolean",
+    "Collection<Boolean>",
+    "Collection<Collection<Boolean>>",
+    "DateTime",
+    "Collection<DateTime>",
+    "Collection<Collection<DateTime>>",
+    "DateTime",
+    "Collection<DateTime>",
+    "Collection<Collection<DateTime>>",
+    "DateTime",
+    "Collection<DateTime>",
+    "Collection<Collection<DateTime>>",
+    "Json",
+    "Collection<Json>",
+    "Collection<Collection<Json>>",
+    "Json",
+    "Collection<Json>",
+    "Collection<Collection<Json>>",
+    "Json",
+    "Collection<Json>",
+    "Collection<Collection<Json>>",
+    "Shipment",
+    "Collection<Shipment>",
+    "Collection<Collection<Shipment>>"
+  ],
+  "terms": {
+    "vocabulary": {
+      "atoms": {
+        "Boolean": {
+          "json": true,
+          "valueType": true
+        },
+        "Int": {
+          "json": true,
+          "valueType": true
+        },
+        "Number": {
+          "json": true,
+          "valueType": true
+        },
+        "String": {
+          "json": true,
+          "valueType": false
+        },
+        "DateTime": {
+          "json": true,
+          "valueType": true
+        },
+        "Json": {
+          "json": true,
+          "valueType": true
+        },
+        "Shipment": {
+          "json": true,
+          "valueType": false
+        },
+        "ReeferShipment": {
+          "json": true,
+          "valueType": false
+        },
+        "TankerShipment": {
+          "json": true,
+          "valueType": false
+        },
+        "Tiny": {
+          "json": true,
+          "valueType": false
+        },
+        "Small": {
+          "json": true,
+          "valueType": false
+        },
+        "Big": {
+          "json": true,
+          "valueType": false
+        },
+        "Handle": {
+          "json": false,
+          "valueType": false
+        },
+        "Point": {
+          "json": true,
+          "valueType": true
+        }
+      },
+      "constructors": {
+        "Gauge": {
+          "json": true,
+          "valueType": false
+        },
+        "Latch": {
+          "json": false,
+          "valueType": false
+        }
+      },
+      "rows": [
+        [
+          "Int",
+          "Number"
+        ],
+        [
+          "ReeferShipment",
+          "Shipment"
+        ],
+        [
+          "TankerShipment",
+          "Shipment"
+        ],
+        [
+          "Tiny",
+          "Small"
+        ],
+        [
+          "Small",
+          "Big"
+        ],
+        [
+          "Handle",
+          "Shipment"
+        ],
+        [
+          "Handle",
+          "Gauge<Boolean>"
+        ]
+      ]
+    },
+    "vectors": [
+      {
+        "rule": "A1",
+        "from": "Int",
+        "to": "Int",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "Handle",
+        "to": "Handle",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "Json",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "Json?",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "Int?",
+        "to": "Int?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "Collection<Int?>",
+        "to": "Collection<Int?>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "Gauge<Boolean>",
+        "to": "Gauge<Boolean>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "Gauge<Boolean>?",
+        "to": "Gauge<Boolean>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "int",
+        "to": "INT",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "gauge<int>",
+        "to": "Gauge<Int>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": null,
+        "to": "Int?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": null,
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": null,
+        "to": "Collection<Int>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": null,
+        "to": "Gauge<Int>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": "Int",
+        "to": "Int?",
+        "assignable": true,
+        "conversion": "NullLift"
+      },
+      {
+        "rule": "A2",
+        "from": "String",
+        "to": "String?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": "Int",
+        "to": "Number?",
+        "assignable": true,
+        "conversion": "NullLift(IntToNumber)"
+      },
+      {
+        "rule": "A2",
+        "from": "Int?",
+        "to": "Number?",
+        "assignable": true,
+        "conversion": "IntToNumber"
+      },
+      {
+        "rule": "A2",
+        "from": "Number?",
+        "to": "Int?",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Collection<Int>",
+        "to": "Collection<Int>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": "Collection<Int>?",
+        "to": "Collection<Number>?",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Int?>",
+        "to": "Collection<Number?>",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A2",
+        "from": "Collection<Int?>",
+        "to": "Collection<Number?>?",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Int>",
+        "to": "Collection<Int?>",
+        "assignable": true,
+        "conversion": "Elementwise(NullLift)"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Int>",
+        "to": "Collection<Number?>",
+        "assignable": true,
+        "conversion": "Elementwise(NullLift(IntToNumber))"
+      },
+      {
+        "rule": "A2",
+        "from": "Handle",
+        "to": "Gauge<Boolean>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": "Int",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "NullLift(ToJson)"
+      },
+      {
+        "rule": "A2",
+        "from": "Json",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "NullLift"
+      },
+      {
+        "rule": "A2",
+        "from": "Gauge<Int>",
+        "to": "Gauge<Int>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": "Gauge<Int>",
+        "to": "Gauge<Number>?",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "String",
+        "to": "Int?",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": null,
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": null,
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": null,
+        "to": "Collection<Int?>",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Int?",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Collection<Int>?",
+        "to": "Collection<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Int?>",
+        "to": "Collection<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Json?",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Int?",
+        "to": "Number",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Gauge<Int>?",
+        "to": "Gauge<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Int?",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Collection<Int>?",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Boolean",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Int",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Number",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "String",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "DateTime",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Int>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Collection<String>>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Int?>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Gauge<Int>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Shipment",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Gauge<Collection<Int>>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Handle",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Handle>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Latch<Int>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Latch<Int>>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Handle?>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Collection<Handle>>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Json",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Json",
+        "to": "String",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Collection<Int>?",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A2",
+        "from": "Handle",
+        "to": "Json?",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Int>",
+        "to": "Collection<Number>",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Number>",
+        "to": "Collection<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<ReeferShipment>",
+        "to": "Collection<Shipment>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Collection<Int>>",
+        "to": "Collection<Collection<Number>>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(IntToNumber))"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Int>",
+        "to": "Collection<String>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Collection<Int>",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Int",
+        "to": "Collection<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Collection<Int>>",
+        "to": "Collection<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Handle>",
+        "to": "Collection<Shipment>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Int>",
+        "to": "Gauge<Number>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<ReeferShipment>",
+        "to": "Gauge<Shipment>",
+        "assignable": false
+      },
+      {
+        "rule": "A1",
+        "from": "Collection<Gauge<Int>>",
+        "to": "Collection<Gauge<Int>>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Gauge<Int>>",
+        "to": "Collection<Gauge<Number>>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Int>",
+        "to": "Latch<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A1",
+        "from": "Latch<Int>",
+        "to": "Latch<Int>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Collection<Int>>",
+        "to": "Gauge<Collection<Number>>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Tiny>",
+        "to": "Collection<Big>",
+        "assignable": false
+      },
+      {
+        "rule": "A6",
+        "from": "Int",
+        "to": "Number",
+        "assignable": true,
+        "conversion": "IntToNumber"
+      },
+      {
+        "rule": "A6",
+        "from": "ReeferShipment",
+        "to": "Shipment",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A6",
+        "from": "TankerShipment",
+        "to": "Shipment",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A6",
+        "from": "Tiny",
+        "to": "Small",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A6",
+        "from": "Small",
+        "to": "Big",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A6",
+        "from": "Handle",
+        "to": "Gauge<Boolean>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A6",
+        "from": "Handle",
+        "to": "Shipment",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A7",
+        "from": "Handle",
+        "to": "Gauge<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "ReeferShipment",
+        "to": "TankerShipment",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Shipment",
+        "to": "ReeferShipment",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Number",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A6",
+        "from": "int",
+        "to": "NUMBER",
+        "assignable": true,
+        "conversion": "IntToNumber"
+      },
+      {
+        "rule": "A7",
+        "from": "Tiny",
+        "to": "Big",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Int",
+        "to": "String",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Boolean",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Int",
+        "to": "Gauge<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Int>",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Collection<Int>",
+        "to": "Gauge<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "String",
+        "to": "Shipment",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Int?>",
+        "to": "Gauge<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Int>",
+        "to": "Gauge<Int?>",
+        "assignable": false
+      },
+      {
+        "rule": "A1",
+        "from": "Gauge<Int?>",
+        "to": "Gauge<Int?>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Gauge<Int>>",
+        "to": "Collection<Gauge<Int>?>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Collection<Int>?>",
+        "to": "Collection<Collection<Number>?>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(IntToNumber))"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Collection<Int>?>",
+        "to": "Collection<Collection<Number>>",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": null,
+        "to": "Collection<Int?>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Json>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A2",
+        "from": "Json",
+        "to": "Collection<Json>?",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Handle?",
+        "to": "Shipment?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": "Tiny?",
+        "to": "Big?",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Collection<Handle>?",
+        "to": "Json?",
+        "assignable": false
+      },
+      {
+        "rule": "A1",
+        "from": "Latch<Int>?",
+        "to": "Latch<Int>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": "Latch<Int>",
+        "to": "Json?",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Gauge<Int>?>",
+        "to": "Gauge<Gauge<Int>>",
+        "assignable": false
+      },
+      {
+        "rule": "A1",
+        "from": "Gauge<Collection<Int>?>",
+        "to": "Gauge<Collection<Int>?>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Boolean>",
+        "to": "Gauge<Boolean?>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Boolean?>",
+        "to": "Gauge<Boolean>",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Gauge<Boolean>?",
+        "to": "Gauge<Number>?",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Gauge<Boolean>>",
+        "to": "Collection<Gauge<Boolean?>>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Collection<Gauge<Int>>>",
+        "to": "Collection<Collection<Gauge<Number>>>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "gauge<Boolean>",
+        "to": "LATCH<Boolean>",
+        "assignable": false
+      },
+      {
+        "rule": "A1",
+        "from": "gauge<BOOLEAN>",
+        "to": "Gauge<boolean>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": "Handle?",
+        "to": "Gauge<Boolean>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Boolean>",
+        "to": "Handle",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Gauge<Boolean>?",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A7",
+        "from": "Float",
+        "to": "Number",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Number",
+        "to": "Float",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Int",
+        "to": "Float",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Float",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "float",
+        "to": "NUMBER",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Any",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Int",
+        "to": "Any",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "any",
+        "to": "String",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Collection<Int>",
+        "to": "Any",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Any",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Float",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Any>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Any",
+        "to": "Int?",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Int",
+        "to": "Float?",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Int",
+        "to": "Any?",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Any>",
+        "to": "Collection<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Int>",
+        "to": "Collection<Any>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Float>",
+        "to": "Collection<Number>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Int>",
+        "to": "Collection<Float>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Collection<Any>>",
+        "to": "Collection<Collection<Number>>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Gauge<Any>",
+        "to": "Gauge<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Point",
+        "to": "Point?",
+        "assignable": true,
+        "conversion": "NullLift"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Point>",
+        "to": "Collection<Point?>",
+        "assignable": true,
+        "conversion": "Elementwise(NullLift)"
+      },
+      {
+        "rule": "A4",
+        "from": "Point",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A2",
+        "from": "Point",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "NullLift(ToJson)"
+      },
+      {
+        "rule": "A2",
+        "from": "Point?",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A2",
+        "from": "Collection<Int>",
+        "to": "Collection<Number>?",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A1",
+        "from": "Map<String,Int>",
+        "to": "Map<String,Int>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A1",
+        "from": "Map<string,Int>",
+        "to": "Map<String,int>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Int>",
+        "to": "Map<String,Number>",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Int>",
+        "to": "Map<String,Int?>",
+        "assignable": true,
+        "conversion": "Elementwise(NullLift)"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Int>",
+        "to": "Map<String,Number?>",
+        "assignable": true,
+        "conversion": "Elementwise(NullLift(IntToNumber))"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Int?>",
+        "to": "Map<String,Number?>",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,ReeferShipment>",
+        "to": "Map<String,Shipment>",
+        "assignable": true,
+        "conversion": "Elementwise(Identity)"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Collection<Int>>",
+        "to": "Map<String,Collection<Number>>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(IntToNumber))"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Map<String,Int>>",
+        "to": "Map<String,Map<String,Number>>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(IntToNumber))"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Map<String,Int>>",
+        "to": "Collection<Map<String,Number>>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(IntToNumber))"
+      },
+      {
+        "rule": "A2",
+        "from": "Map<String,Int>",
+        "to": "Map<String,Number>?",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A2",
+        "from": "Map<String,Int>?",
+        "to": "Map<String,Number>?",
+        "assignable": true,
+        "conversion": "Elementwise(IntToNumber)"
+      },
+      {
+        "rule": "A2",
+        "from": "Map<String,Int>",
+        "to": "Map<String,Int>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A2",
+        "from": null,
+        "to": "Map<String,Int>?",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A3",
+        "from": "Map<String,Int>?",
+        "to": "Map<String,Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Number>",
+        "to": "Map<String,Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Int?>",
+        "to": "Map<String,Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Int>",
+        "to": "Map<String,String>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Shipment>",
+        "to": "Map<String,ReeferShipment>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Map<String,Int>",
+        "to": "Collection<Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Collection<Int>",
+        "to": "Map<String,Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Int",
+        "to": "Map<String,Int>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Map<String,Int>",
+        "to": "Int",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Map<String,Int>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Map<String,Int?>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Map<String,Collection<Int>>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Collection<Map<String,Int>>",
+        "to": "Json",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A4",
+        "from": "Map<String,Handle>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Map<String,Handle?>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Map<String,Collection<Handle>>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A4",
+        "from": "Map<String,Latch<Int>>",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Map<String,Int>?",
+        "to": "Json",
+        "assignable": false
+      },
+      {
+        "rule": "A2",
+        "from": "Map<String,Int>",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "NullLift(ToJson)"
+      },
+      {
+        "rule": "A2",
+        "from": "Map<String,Int>?",
+        "to": "Json?",
+        "assignable": true,
+        "conversion": "ToJson"
+      },
+      {
+        "rule": "A2",
+        "from": "Map<String,Handle>?",
+        "to": "Json?",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Collection<ReeferShipment>>",
+        "to": "Map<String,Collection<Shipment>>",
+        "assignable": true,
+        "conversion": "Elementwise(Identity)"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Handle>",
+        "to": "Map<String,Gauge<Boolean>>",
+        "assignable": true,
+        "conversion": "Elementwise(Identity)"
+      },
+      {
+        "rule": "A5",
+        "from": "Collection<Map<String,ReeferShipment>>",
+        "to": "Collection<Map<String,Shipment>>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(Identity))"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,String>",
+        "to": "Map<String,String?>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Map<String,Int>>",
+        "to": "Map<String,Map<String,Int>?>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Map<String,Int?>>",
+        "to": "Map<String,Map<String,Number?>>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(IntToNumber))"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Map<String,Int>?>",
+        "to": "Map<String,Map<String,Number>?>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(IntToNumber))"
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Map<String,Int>>",
+        "to": "Map<String,Map<String,Int?>>",
+        "assignable": true,
+        "conversion": "Elementwise(Elementwise(NullLift))"
+      },
+      {
+        "rule": "A1",
+        "from": "Map<String,Gauge<Boolean>>",
+        "to": "Map<String,Gauge<Boolean>>",
+        "assignable": true,
+        "conversion": "Identity"
+      },
+      {
+        "rule": "A7",
+        "from": "Map<String,Gauge<Int>>",
+        "to": "Map<String,Gauge<Number>>",
+        "assignable": false
+      },
+      {
+        "rule": "A5",
+        "from": "Map<String,Int>",
+        "to": "Map<String,Map<String,Int>>",
+        "assignable": false
+      },
+      {
+        "rule": "A3",
+        "from": "Map<String,Map<String,Int>?>",
+        "to": "Map<String,Map<String,Int>>",
+        "assignable": false
+      },
+      {
+        "rule": "A7",
+        "from": "Point",
+        "to": "Shipment",
+        "assignable": false
+      }
+    ]
+  }
+}

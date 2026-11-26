@@ -1,0 +1,42 @@
+{
+  "$note": [
+    "Written by hand, never generated. Each row is a code the library raises outside the compiler's rules (rule-parity.json lists those).",
+    "RefusalCodesContractTests holds the rows to the public string constants of the class `raisedBy` names, in both directions: every constant is a row and every row is a constant.",
+    "`WorkflowAuditEventKinds` is checked one way only (each row must be a constant): it also holds kinds this file does not list.",
+    "A new class of codes adds its class and rows here; a code a host raises is the host's and is not listed."
+  ],
+  "version": 1,
+  "rows": [
+    { "code": "did-not-compile", "kind": "run failure reason", "raisedBy": "WorkflowFailureReasons" },
+    { "code": "compilation-unanswered", "kind": "run failure reason", "raisedBy": "WorkflowFailureReasons" },
+    { "code": "start-arguments-invalid", "kind": "run failure reason", "raisedBy": "WorkflowFailureReasons" },
+    { "code": "node-validation-refused", "kind": "run failure reason", "raisedBy": "WorkflowFailureReasons" },
+    { "code": "cancelled-by-upgrade", "kind": "run failure reason", "raisedBy": "WorkflowFailureReasons" },
+    { "code": "start-admission-faulted", "kind": "start refusal", "raisedBy": "WorkflowStartRefusalCodes" },
+    { "code": "start-argument-missing", "kind": "admission finding", "raisedBy": "WorkflowStartArgumentCodes" },
+    { "code": "start-argument-unknown", "kind": "admission finding", "raisedBy": "WorkflowStartArgumentCodes" },
+    { "code": "start-argument-type-mismatch", "kind": "admission finding", "raisedBy": "WorkflowStartArgumentCodes" },
+    { "code": "host-validator-faulted", "kind": "editor finding", "raisedBy": "WorkflowEditorFindingCodes" },
+    { "code": "host-metadata-invalid", "kind": "save refusal", "raisedBy": "WorkflowSaveRefusalCodes" },
+    { "code": "secret-value-unmatched", "kind": "save refusal", "raisedBy": "WorkflowSaveRefusalCodes" },
+    { "code": "secret-codec-missing", "kind": "save refusal", "raisedBy": "WorkflowSaveRefusalCodes" },
+    { "code": "secret-refused", "kind": "save refusal", "raisedBy": "WorkflowSaveRefusalCodes" },
+    { "code": "secret-key-invalid", "kind": "save refusal", "raisedBy": "WorkflowSaveRefusalCodes" },
+    { "code": "origin-not-accepted", "kind": "save refusal", "raisedBy": "WorkflowSaveRefusalCodes" },
+    { "code": "revision-mismatch", "kind": "edit conflict", "raisedBy": "WorkflowEditConflictCodes" },
+    { "code": "block-output-type-mismatch", "kind": "_error.code", "raisedBy": "WorkflowErrorCodes" },
+    { "code": "block-failed", "kind": "_error.code", "raisedBy": "WorkflowErrorCodes" },
+    { "code": "config_value_not_allowed", "kind": "_error.code", "raisedBy": "WorkflowErrorCodes" },
+    { "code": "expression-runtime-error", "kind": "_error.code", "raisedBy": "WorkflowErrorCodes" },
+    { "code": "json-projection-failed", "kind": "_error.code", "raisedBy": "WorkflowErrorCodes" },
+    { "code": "required-input-value-absent", "kind": "_error.code", "raisedBy": "WorkflowErrorCodes" },
+    { "code": "suspend-config-invalid", "kind": "_error.code", "raisedBy": "WorkflowErrorCodes" },
+    { "code": "secret-unresolved", "kind": "_error.code", "raisedBy": "WorkflowErrorCodes" },
+    { "code": "pinned_version_unreadable", "kind": "abandonment reason", "raisedBy": "WorkflowAbandonmentReasons" },
+    { "code": "pinned_version_unavailable", "kind": "abandonment reason", "raisedBy": "WorkflowAbandonmentReasons" },
+    { "code": "pinned_version_uncompilable", "kind": "abandonment reason", "raisedBy": "WorkflowAbandonmentReasons" },
+    { "code": "resume_value_invalid", "kind": "abandonment reason", "raisedBy": "WorkflowAbandonmentReasons" },
+    { "code": "journal_entry_missing", "kind": "abandonment reason", "raisedBy": "WorkflowAbandonmentReasons" },
+    { "code": "run_state_ended", "kind": "abandonment reason", "raisedBy": "WorkflowAbandonmentReasons" }
+  ]
+}

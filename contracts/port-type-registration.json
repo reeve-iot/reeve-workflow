@@ -1,0 +1,2428 @@
+{
+  "$note": [
+    "Port type registration rules, graded by the backend's PortTypeWideningTable",
+    "(dotnet/tests/ReeveWorkflow.Core.Tests/Compilation/PortTypeRegistrationCorpusTests.cs): 'backend' is the verdict of each row.",
+    "The editor's createPortTypeRegistry (packages/core/src/portTypes/registrationCorpus.test.ts) reads the records the backend accepts,",
+    "the 'term' rows and the capabilities section. It grades no other rule of a record: it refuses only a name that does not parse, a key",
+    "two entries claim and an allowed argument that is not a term. The registration holds no port relations (TypeFrom).",
+    "",
+    "alias: the backend runs Builtin.WithAlias(alias, target); the editor reads the builtins with the alias",
+    "added to the target's definition, or a new definition named target with that alias.",
+    "assignable: IsAssignable on Builtin; the editor has no assignability.",
+    "backendRefusal: what a refused registration's error says, a pattern on the backend's message; for a term row, the 'code: message' the registry's refusalOf answers too.",
+    "widening: the backend runs Builtin.With(from, widensTo); the editor reads the builtins plus a definition named",
+    "from with that widensTo, or adds it to the builtin's own. declare: Builtin.Declaring(type); the editor, a definition",
+    "named type. A collection widens through its element, so neither half registers a row from or onto one. An alias",
+    "onto a collection name is one both halves hold at any depth, as Builtin.WithAlias's target and this editor's",
+    "collection-shaped definition, whose atom is declared at no other depth.",
+    "",
+    "constructor: a host constructor record {head, allowedArguments} registered on the builtins plus this row's declaredAtoms (atoms) and",
+    "after (constructor records registered first, in order). The backend runs WorkflowTypeConstructorRecord through PortTypeWideningTable.WithConstructor;",
+    "the editor passes it to createPortTypeRegistry. A refusal is named by code: port-type-registration-invalid for the record, port-type-name-clash for a name taken.",
+    "term: whether a closed document term is registered under termVocabulary (its declared atoms and constructor records): accepts when every head and",
+    "atom is registered and every constructor argument is one of the head's allowed arguments (an exact term, nullable or not), refuses with",
+    "port-type-unregistered otherwise. The backend asks PortTypeWideningTable.RefusalOf, the editor registry.refusalOf; a refusal is read as 'code: message'.",
+    "",
+    "alias, widening and declare rows may carry constructors (records registered first): the type or alias is then the thing refused. A constructor row may declare",
+    "declaredWidenings [{from, widensTo}] and declaredAliases [{alias, target}] before it registers; a widening target counts as registered.",
+    "Any and Float are not port types: the declare, alias and widening rows naming either are refused by the backend's table API with port-type-alias, and a value of either feeds nothing.",
+    "",
+    "row: the backend registers WorkflowTypeRecords (the declared atoms and aliases, then 'from' with widensTo) in a WorkflowTypeRegistry and expects a WorkflowTypeRegistrationException;",
+    "the editor reads an accepted row's definitions and constructors through createPortTypeRegistry. A row's target is a registered plain name or a closed term of a registered constructor, spelled canonically;",
+    "a collection term is never a target, and one atom has one row into any one constructor head. A row whose target later leaves the registry is dormant, which only the registry tests grade.",
+    "A row target, like a constructor's allowed argument, must be owned by the library, the host or the record's own owner; the reference rows grade that on the backend.",
+    "A record named Any or Float, an alias spelled either and a row naming either are refused here with port-type-registration-invalid, the code a refused record gets.",
+    "",
+    "capabilities (written by hand, never generated): the backend builds a WorkflowTypeRegistry from vocabulary",
+    "(a CLR type, JsonTypeInfo and Sample that make each claim true) and grades all of it; the editor builds a createPortTypeRegistry and grades capabilities, the vectors' implements and refused through implementsCapability.",
+    "capabilities: the closed vocabulary as GET port-types publishes it, in this order. constraints: the names a type parameter may be constrained by (Iterable is not one: the associated-type form is not offered). hostClaimable: what a host record may claim.",
+    "vectors: a closed term and every capability it implements, in vocabulary order; item is the Item of Iterable<Item> and is absent when the term is not Iterable.",
+    "A nullable term implements JsonSerializable when its non-null term does, and nothing else. Collection<T> is Iterable<Item=T>, Equatable iff T is, JsonSerializable iff T is.",
+    "For every vector the backend also asserts that the term is assignable to Json (to Json? when the term is nullable) exactly when it implements JsonSerializable: rule A4 (docs/reference/port-types.md, Widening and assignability) reads the same claims.",
+    "refused: terms that name something the vocabulary does not register (an unknown name, an argument outside a constructor's allowed arguments, Any, Float): membership is not answered for them;",
+    "implementsCapability refuses each with port-type-unregistered in both halves, so a caller grades registration (refusalOf) first.",
+    "",
+    "claim: a host record {subject: atom or constructor, head, clr, claims} registered on its own. clr names the CLR type the backend gives the record (string, guid, memoryStream or object); a claim of JsonSerializable",
+    "gets the JsonTypeInfo of that type, and jsonTypeInfoOf: \"string\" gives the record the string's instead; the editor has no CLR type. A claim of Iterable or Numeric, or of a name that is no capability, is refused with capability-claim-invalid naming the record;",
+    "a claim the CLR type does not bear out is refused too. Both are the backend's: the editor reads an accepted claim.",
+    "",
+    "literal: a host record {subject: atom or constructor, head, clr, literal: {gradedAs, format?}} registered on its own, graded by Validate on the backend; the editor reads an accepted form.",
+    "A form is graded as one of String, Boolean, Int, Number or Json, and a format (Uuid or DateTime) goes only with String; a member outside the closed set, or a format on another form, is port-type-registration-invalid.",
+    "The backend has no name for a member outside its enums and writes its number (99 in these rows). How a literal is graded is contracts/literal-coercion.json.",
+    "A claim row may carry jsonTypeInfoOf: \"string\", the string's JsonTypeInfo on a record whatever it claims; a JsonTypeInfo that describes another type than the record's CLR type is port-type-registration-invalid, claimed or not.",
+    "The backend gives a literal row the string's JsonTypeInfo unless the row says jsonTypeInfo: false, and refuses a literal form without one; the editor has no JsonTypeInfo.",
+    "",
+    "reference (references between records): records [{owner, atom | constructorName, allowedArguments?, widensTo?}] registered one at a time in order, each under its owner, in one WorkflowTypeRegistry.",
+    "Every record but the last must be accepted; the last is the one the row grades, by 'code (record): message'. The editor has no owner, so it reads an accepted row by registering the same definitions together."
+  ],
+  "termVocabulary": {
+    "atoms": [
+      "Shipment"
+    ],
+    "constructors": [
+      {
+        "name": "Gauge",
+        "allowedArguments": [
+          "Boolean",
+          "Number",
+          "String"
+        ]
+      },
+      {
+        "name": "Probe",
+        "allowedArguments": [
+          "Boolean?",
+          "Collection<Int>",
+          "Shipment"
+        ]
+      },
+      {
+        "name": "Cell",
+        "allowedArguments": [
+          "Gauge<Boolean>"
+        ]
+      },
+      {
+        "name": "Crate",
+        "allowedArguments": [
+          "Pallet"
+        ]
+      }
+    ]
+  },
+  "capabilities": {
+    "capabilities": [
+      {
+        "name": "Iterable",
+        "associated": [
+          "Item"
+        ]
+      },
+      {
+        "name": "Numeric"
+      },
+      {
+        "name": "Comparable"
+      },
+      {
+        "name": "Equatable"
+      },
+      {
+        "name": "JsonSerializable"
+      }
+    ],
+    "constraints": [
+      "Numeric",
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    "hostClaimable": [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    "vocabulary": {
+      "atoms": {
+        "Crate": {
+          "implements": [
+            "Equatable",
+            "JsonSerializable"
+          ]
+        },
+        "Pallet": {
+          "implements": [
+            "Comparable"
+          ]
+        },
+        "Plain": {
+          "implements": []
+        },
+        "Handle": {
+          "implements": []
+        }
+      },
+      "constructors": {
+        "Gauge": {
+          "allowedArguments": [
+            "Int",
+            "Boolean",
+            "Collection<Int>"
+          ],
+          "implements": [
+            "Equatable",
+            "JsonSerializable"
+          ]
+        },
+        "Latch": {
+          "allowedArguments": [
+            "Int"
+          ],
+          "implements": [
+            "Equatable"
+          ]
+        }
+      }
+    },
+    "vectors": [
+      {
+        "term": "Boolean",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Int",
+        "implements": [
+          "Numeric",
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Number",
+        "implements": [
+          "Numeric",
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "String",
+        "implements": [
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "DateTime",
+        "implements": [
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Json",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "int",
+        "implements": [
+          "Numeric",
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "NUMBER",
+        "implements": [
+          "Numeric",
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "bool",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "string",
+        "implements": [
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "datetime",
+        "implements": [
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "json",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Int?",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "String?",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Json?",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Collection<Int>",
+        "implements": [
+          "Iterable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "item": "Int"
+      },
+      {
+        "term": "Collection<int>",
+        "implements": [
+          "Iterable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "item": "Int"
+      },
+      {
+        "term": "Collection<Json>",
+        "implements": [
+          "Iterable",
+          "JsonSerializable"
+        ],
+        "item": "Json"
+      },
+      {
+        "term": "Collection<Int?>",
+        "implements": [
+          "Iterable",
+          "JsonSerializable"
+        ],
+        "item": "Int?"
+      },
+      {
+        "term": "Collection<Int>?",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Collection<Collection<String>>",
+        "implements": [
+          "Iterable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "item": "Collection<String>"
+      },
+      {
+        "term": "Collection<Collection<Json>>",
+        "implements": [
+          "Iterable",
+          "JsonSerializable"
+        ],
+        "item": "Collection<Json>"
+      },
+      {
+        "term": "Collection<Collection<Json>?>",
+        "implements": [
+          "Iterable",
+          "JsonSerializable"
+        ],
+        "item": "Collection<Json>?"
+      },
+      {
+        "term": "Crate",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "crate",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Crate?",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Pallet",
+        "implements": [
+          "Comparable"
+        ]
+      },
+      {
+        "term": "Pallet?",
+        "implements": []
+      },
+      {
+        "term": "Plain",
+        "implements": []
+      },
+      {
+        "term": "Plain?",
+        "implements": []
+      },
+      {
+        "term": "Handle",
+        "implements": []
+      },
+      {
+        "term": "Collection<Crate>",
+        "implements": [
+          "Iterable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "item": "Crate"
+      },
+      {
+        "term": "Collection<Crate?>",
+        "implements": [
+          "Iterable",
+          "JsonSerializable"
+        ],
+        "item": "Crate?"
+      },
+      {
+        "term": "Collection<Pallet>",
+        "implements": [
+          "Iterable"
+        ],
+        "item": "Pallet"
+      },
+      {
+        "term": "Collection<Plain>",
+        "implements": [
+          "Iterable"
+        ],
+        "item": "Plain"
+      },
+      {
+        "term": "Gauge<Int>",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "gauge<Boolean>",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Gauge<Collection<Int>>",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Gauge<Int>?",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Latch<Int>",
+        "implements": [
+          "Equatable"
+        ]
+      },
+      {
+        "term": "Latch<Int>?",
+        "implements": []
+      },
+      {
+        "term": "Collection<Gauge<Int>>",
+        "implements": [
+          "Iterable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "item": "Gauge<Int>"
+      },
+      {
+        "term": "Map<String,Int>",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Map<String,Int>?",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Map<String,Int?>",
+        "implements": [
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Map<String,Collection<Int>>",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Map<String,Crate>",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Map<String,Pallet>",
+        "implements": []
+      },
+      {
+        "term": "Map<String,Plain>",
+        "implements": []
+      },
+      {
+        "term": "Map<String,Gauge<Int>>",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Map<String,Latch<Int>>",
+        "implements": [
+          "Equatable"
+        ]
+      },
+      {
+        "term": "Map<String,Map<String,Int>>",
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ]
+      },
+      {
+        "term": "Collection<Map<String,Int>>",
+        "implements": [
+          "Iterable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "item": "Map<String,Int>"
+      },
+      {
+        "term": "Collection<Latch<Int>>",
+        "implements": [
+          "Iterable",
+          "Equatable"
+        ],
+        "item": "Latch<Int>"
+      }
+    ],
+    "refused": [
+      "Mystery",
+      "Mystery?",
+      "Unknown",
+      "Collection<Mystery>",
+      "Collection<Mystery>?",
+      "Gauge<String>",
+      "Gauge<Int?>",
+      "Gauge<Collection<Boolean>>",
+      "Latch<Boolean>",
+      "Collection<Gauge<String>>",
+      "Any",
+      "Collection<Any>",
+      "Float",
+      "Map<String,Mystery>",
+      "Map<String,Mystery>?",
+      "Collection<Map<String,Mystery>>"
+    ]
+  },
+  "cases": [
+    {
+      "name": "an alias onto Any",
+      "kind": "alias",
+      "alias": "object",
+      "backendRefusal": "port-type-alias: Port type alias 'object' cannot resolve to 'Any': Any is a reserved name*",
+      "target": "Any",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias onto a builtin",
+      "kind": "alias",
+      "alias": "bit",
+      "target": "Boolean",
+      "backend": "accepts"
+    },
+    {
+      "name": "an alias onto a host type",
+      "kind": "alias",
+      "alias": "Parcel",
+      "target": "Shipment",
+      "backend": "accepts"
+    },
+    {
+      "name": "an alias spelled like the reserved prefix",
+      "kind": "alias",
+      "alias": "collectionThing",
+      "backendRefusal": "*names starting with 'collection' are reserved*",
+      "target": "Shipment",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias onto a collection",
+      "kind": "alias",
+      "alias": "Many",
+      "backendRefusal": "*'Collection<Int>' cannot be declared: 'Int' is already declared*",
+      "target": "Collection<Int>",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias that does not parse: CollectionAny",
+      "kind": "alias",
+      "alias": "CollectionAny",
+      "backendRefusal": "*reserved*",
+      "target": "Boolean",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias that does not parse: Collectionbool",
+      "kind": "alias",
+      "alias": "Collectionbool",
+      "backendRefusal": "*reserved*",
+      "target": "Boolean",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias that does not parse: CollectionCollection<Int>",
+      "kind": "alias",
+      "alias": "CollectionCollection<Int>",
+      "backendRefusal": "*reserved*",
+      "target": "Boolean",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias that does not parse: Collection<<<bool>>>",
+      "kind": "alias",
+      "alias": "Collection<<<bool>>>",
+      "backendRefusal": "*a type name was expected*",
+      "target": "Boolean",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias that does not parse: <Foo>",
+      "kind": "alias",
+      "alias": "<Foo>",
+      "backendRefusal": "*a type name was expected*",
+      "target": "Boolean",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias onto a collection of a host type",
+      "kind": "alias",
+      "alias": "Batch",
+      "target": "Collection<Item>",
+      "backend": "accepts"
+    },
+    {
+      "name": "an alias onto a collection two deep",
+      "kind": "alias",
+      "alias": "Strings",
+      "target": "Collection<Collection<Item>>",
+      "backend": "accepts"
+    },
+    {
+      "name": "a widening between plain host names",
+      "kind": "widening",
+      "from": "BondedDepot",
+      "widensTo": [
+        "Depot"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a widening onto a builtin",
+      "kind": "widening",
+      "from": "Weight",
+      "widensTo": [
+        "Number"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a widening from a collection",
+      "kind": "widening",
+      "from": "Collection<Origin>",
+      "widensTo": [
+        "Waypoint"
+      ],
+      "backendRefusal": "Port type 'Collection<Origin>' cannot widen: a widening is stated between plain names, and a collection widens through its element.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto a collection",
+      "kind": "widening",
+      "from": "Origin",
+      "widensTo": [
+        "Collection<Waypoint>"
+      ],
+      "backendRefusal": "Port type 'Origin' cannot widen to 'Collection<Waypoint>': a widening is stated between plain names, and a collection widens through its element.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening between two collections",
+      "kind": "widening",
+      "from": "Collection<Origin>",
+      "widensTo": [
+        "Collection<Waypoint>"
+      ],
+      "backendRefusal": "Port type 'Collection<Origin>' cannot widen: a widening is stated between plain names, and a collection widens through its element.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto a collection of Any",
+      "kind": "widening",
+      "from": "Batch",
+      "widensTo": [
+        "Collection<Any>"
+      ],
+      "backendRefusal": "Port type 'Batch' cannot widen to 'Collection<Any>': a widening is stated between plain names, and a collection widens through its element.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto a collection two deep",
+      "kind": "widening",
+      "from": "Route",
+      "widensTo": [
+        "Collection<Collection<Stop>>"
+      ],
+      "backendRefusal": "Port type 'Route' cannot widen to 'Collection<Collection<Stop>>': a widening is stated between plain names, and a collection widens through its element.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening from a collection two deep",
+      "kind": "widening",
+      "from": "Collection<Collection<Origin>>",
+      "widensTo": [
+        "Waypoint"
+      ],
+      "backendRefusal": "Port type 'Collection<Collection<Origin>>' cannot widen: a widening is stated between plain names, and a collection widens through its element.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a collection among plain widening targets",
+      "kind": "widening",
+      "from": "Origin",
+      "widensTo": [
+        "Waypoint",
+        "Collection<Waypoint>"
+      ],
+      "backendRefusal": "Port type 'Origin' cannot widen to 'Collection<Waypoint>': a widening is stated between plain names, and a collection widens through its element.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a declared host name",
+      "kind": "declare",
+      "type": "Route",
+      "backend": "accepts"
+    },
+    {
+      "name": "a declared collection",
+      "kind": "declare",
+      "type": "Collection<Route>",
+      "backendRefusal": "Port type 'Collection<Route>' cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a declared collection two deep",
+      "kind": "declare",
+      "type": "Collection<Collection<Route>>",
+      "backendRefusal": "Port type 'Collection<Collection<Route>>' cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "Collection<Int> feeds Number: false",
+      "kind": "assignable",
+      "from": "Collection<Int>",
+      "to": "Number",
+      "backend": false
+    },
+    {
+      "name": "Collection<Int> feeds Collection<Number>: true",
+      "kind": "assignable",
+      "from": "Collection<Int>",
+      "to": "Collection<Number>",
+      "backend": true
+    },
+    {
+      "name": "Int feeds Collection<Number>: false",
+      "kind": "assignable",
+      "from": "Int",
+      "to": "Collection<Number>",
+      "backend": false
+    },
+    {
+      "name": "Collection<Collection<Int>> feeds Collection<Number>: false",
+      "kind": "assignable",
+      "from": "Collection<Collection<Int>>",
+      "to": "Collection<Number>",
+      "backend": false
+    },
+    {
+      "name": "Collection<Collection<Int>> feeds Collection<Collection<Float>>: false",
+      "kind": "assignable",
+      "from": "Collection<Collection<Int>>",
+      "to": "Collection<Collection<Float>>",
+      "backend": false
+    },
+    {
+      "name": "bool feeds Boolean: true",
+      "kind": "assignable",
+      "from": "bool",
+      "to": "Boolean",
+      "backend": true
+    },
+    {
+      "name": "Collection<bool> feeds Collection<Boolean>: true",
+      "kind": "assignable",
+      "from": "Collection<bool>",
+      "to": "Collection<Boolean>",
+      "backend": true
+    },
+    {
+      "name": "Collection<Any> feeds Collection<Number>: false",
+      "kind": "assignable",
+      "from": "Collection<Any>",
+      "to": "Collection<Number>",
+      "backend": false
+    },
+    {
+      "name": "Collection<Number> feeds Collection<Any>: false",
+      "kind": "assignable",
+      "from": "Collection<Number>",
+      "to": "Collection<Any>",
+      "backend": false
+    },
+    {
+      "name": "Collection<Any> feeds Number: false",
+      "kind": "assignable",
+      "from": "Collection<Any>",
+      "to": "Number",
+      "backend": false
+    },
+    {
+      "name": "Any feeds Collection<Int>: false",
+      "kind": "assignable",
+      "from": "Any",
+      "to": "Collection<Int>",
+      "backend": false
+    },
+    {
+      "name": "Number feeds String: false",
+      "kind": "assignable",
+      "from": "Number",
+      "to": "String",
+      "backend": false
+    },
+    {
+      "name": "a declared a nullable name",
+      "kind": "declare",
+      "type": "Int?",
+      "backendRefusal": "*cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a declared a constructor name",
+      "kind": "declare",
+      "type": "Gauge<Int>",
+      "backendRefusal": "*cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a declared a collection of a nullable name",
+      "kind": "declare",
+      "type": "Collection<Int?>",
+      "backendRefusal": "*cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias that is a nullable name",
+      "kind": "alias",
+      "alias": "Maybe?",
+      "target": "Int",
+      "backendRefusal": "*only a plain name can be an alias*",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias onto a nullable name",
+      "kind": "alias",
+      "alias": "Wrapped",
+      "target": "Int?",
+      "backendRefusal": "*cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias onto a constructor name",
+      "kind": "alias",
+      "alias": "Wrapped",
+      "target": "Gauge<Int>",
+      "backendRefusal": "*cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto a nullable name",
+      "kind": "widening",
+      "from": "Int",
+      "widensTo": [
+        "Int?"
+      ],
+      "backendRefusal": "*cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto a constructor name",
+      "kind": "widening",
+      "from": "Int",
+      "widensTo": [
+        "Gauge<Int>"
+      ],
+      "backendRefusal": "*cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto a collection of a nullable name",
+      "kind": "widening",
+      "from": "Int",
+      "widensTo": [
+        "Collection<Int?>"
+      ],
+      "backendRefusal": "*a widening is stated between plain names*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening from a nullable name",
+      "kind": "widening",
+      "from": "Int?",
+      "widensTo": [
+        "Number"
+      ],
+      "backendRefusal": "*cannot be declared: only a plain name can be declared*",
+      "backend": "refuses"
+    },
+    {
+      "name": "Int feeds Int?: true",
+      "kind": "assignable",
+      "from": "Int",
+      "to": "Int?",
+      "backend": true
+    },
+    {
+      "name": "Int? feeds Int?: true",
+      "kind": "assignable",
+      "from": "Int?",
+      "to": "Int?",
+      "backend": true
+    },
+    {
+      "name": "Gauge<Int> feeds Gauge<Number>: false",
+      "kind": "assignable",
+      "from": "Gauge<Int>",
+      "to": "Gauge<Number>",
+      "backend": false
+    },
+    {
+      "name": "a constructor over scalar arguments",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "Boolean",
+        "Number",
+        "String"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a constructor admitting a nullable and a nested argument",
+      "kind": "constructor",
+      "head": "Probe",
+      "allowedArguments": [
+        "Boolean?",
+        "Collection<Int>"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a constructor whose argument is another constructor's term",
+      "kind": "constructor",
+      "head": "Cell",
+      "allowedArguments": [
+        "Gauge<Boolean>"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a constructor named like no one else",
+      "kind": "constructor",
+      "head": "Ratio",
+      "allowedArguments": [
+        "Int"
+      ],
+      "declaredAtoms": [
+        "Rate"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a constructor named Collection",
+      "kind": "constructor",
+      "head": "Collection",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Collection' cannot be registered: Collection is the library's built-in constructor*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor spelled like the reserved prefix",
+      "kind": "constructor",
+      "head": "collectionThing",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'collectionThing' cannot be registered: names starting with 'collection' are reserved*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named Any",
+      "kind": "constructor",
+      "head": "Any",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Any' cannot be registered: Any is a reserved name*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named Float in another case",
+      "kind": "constructor",
+      "head": "float",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'float' cannot be registered: Float is a reserved name*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named Expression",
+      "kind": "constructor",
+      "head": "Expression",
+      "allowedArguments": [
+        "Boolean"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Expression' cannot be registered: Expression is the library's*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named Map",
+      "kind": "constructor",
+      "head": "Map",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Map' cannot be registered: Map is the library's built-in constructor*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named Map in another case",
+      "kind": "constructor",
+      "head": "map",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'map' cannot be registered: Map is the library's built-in constructor*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor name with white space",
+      "kind": "constructor",
+      "head": "Two Words",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Two Words' cannot be registered: it is not a name*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor with a blank name",
+      "kind": "constructor",
+      "head": "",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor '' cannot be registered: it is not a name*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor with no allowed argument",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: it lists no allowed argument*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing a type parameter",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "$T"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument '$T' is not a closed term*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing a malformed term",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "Int??"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument 'Int??' is not a closed term*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing a blank term",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        ""
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument '' is not a closed term*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor admitting a map argument",
+      "kind": "constructor",
+      "head": "Bin",
+      "allowedArguments": ["Map<String,Int>", "Collection<Map<String,String>>"],
+      "backend": "accepts"
+    },
+    {
+      "name": "a constructor allowing a map of Json",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": ["Map<String,Json>"],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument 'Map<String,Json>' holds Json*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing Json",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "Boolean",
+        "Json"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument 'Json' holds Json*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing a nested Json",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "Collection<Json?>"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument 'Collection<Json?>' holds Json*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named like a builtin",
+      "kind": "constructor",
+      "head": "Json",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type constructor 'Json' cannot be registered: a port type of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named like an alias",
+      "kind": "constructor",
+      "head": "bool",
+      "allowedArguments": [
+        "Int"
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type constructor 'bool' cannot be registered: a port type of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named like a host atom",
+      "kind": "constructor",
+      "head": "Rate",
+      "allowedArguments": [
+        "Int"
+      ],
+      "declaredAtoms": [
+        "Rate"
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type constructor 'Rate' cannot be registered: a port type of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named like another constructor",
+      "kind": "constructor",
+      "head": "GAUGE",
+      "allowedArguments": [
+        "Int"
+      ],
+      "after": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean"
+          ]
+        }
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type constructor 'GAUGE' cannot be registered: a constructor of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Int",
+      "kind": "term",
+      "term": "Int",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Shipment",
+      "kind": "term",
+      "term": "Shipment",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Collection<Int>",
+      "kind": "term",
+      "term": "Collection<Int>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Gauge<Boolean>",
+      "kind": "term",
+      "term": "Gauge<Boolean>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Gauge<Number>",
+      "kind": "term",
+      "term": "Gauge<Number>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Gauge<String>",
+      "kind": "term",
+      "term": "Gauge<String>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Gauge<Boolean>?",
+      "kind": "term",
+      "term": "Gauge<Boolean>?",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term gauge<Boolean>",
+      "kind": "term",
+      "term": "gauge<Boolean>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Collection<Gauge<Boolean>>",
+      "kind": "term",
+      "term": "Collection<Gauge<Boolean>>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Collection<Gauge<Boolean>?>",
+      "kind": "term",
+      "term": "Collection<Gauge<Boolean>?>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Collection<Gauge<Boolean>>?",
+      "kind": "term",
+      "term": "Collection<Gauge<Boolean>>?",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Map<String,Boolean>",
+      "kind": "term",
+      "term": "Map<String,Boolean>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Map<String,Shipment>?",
+      "kind": "term",
+      "term": "Map<String,Shipment>?",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Map<String,Collection<Int>>",
+      "kind": "term",
+      "term": "Map<String,Collection<Int>>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Map<String,Gauge<Boolean>>",
+      "kind": "term",
+      "term": "Map<String,Gauge<Boolean>>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Collection<Map<String,Shipment>>",
+      "kind": "term",
+      "term": "Collection<Map<String,Shipment>>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Map<String,Map<String,Int>>",
+      "kind": "term",
+      "term": "Map<String,Map<String,Int>>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Map<String,Widget>",
+      "kind": "term",
+      "term": "Map<String,Widget>",
+      "backendRefusal": "port-type-unregistered: 'Widget' is not a registered type",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Gauge<Map<String,Boolean>>",
+      "kind": "term",
+      "term": "Gauge<Map<String,Boolean>>",
+      "backendRefusal": "port-type-unregistered: 'Gauge' does not admit the argument 'Map<String,Boolean>'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Map<String,Gauge<Int>>",
+      "kind": "term",
+      "term": "Map<String,Gauge<Int>>",
+      "backendRefusal": "port-type-unregistered: 'Gauge' does not admit the argument 'Int'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Probe<Map<String,Int>>",
+      "kind": "term",
+      "term": "Probe<Map<String,Int>>",
+      "backendRefusal": "port-type-unregistered: 'Probe' does not admit the argument 'Map<String,Int>'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Probe<Boolean?>",
+      "kind": "term",
+      "term": "Probe<Boolean?>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Probe<Collection<Int>>",
+      "kind": "term",
+      "term": "Probe<Collection<Int>>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Probe<Shipment>",
+      "kind": "term",
+      "term": "Probe<Shipment>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Cell<Gauge<Boolean>>",
+      "kind": "term",
+      "term": "Cell<Gauge<Boolean>>",
+      "backend": "accepts"
+    },
+    {
+      "name": "the term Widget<Boolean>",
+      "kind": "term",
+      "term": "Widget<Boolean>",
+      "backendRefusal": "port-type-unregistered: 'Widget' is not a registered type constructor",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Collection<Widget<Boolean>>",
+      "kind": "term",
+      "term": "Collection<Widget<Boolean>>",
+      "backendRefusal": "port-type-unregistered: 'Widget' is not a registered type constructor",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Gauge<Widget<Boolean>>",
+      "kind": "term",
+      "term": "Gauge<Widget<Boolean>>",
+      "backendRefusal": "port-type-unregistered: 'Gauge' does not admit the argument 'Widget<Boolean>'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Nope",
+      "kind": "term",
+      "term": "Nope",
+      "backendRefusal": "port-type-unregistered: 'Nope' is not a registered type",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Collection<Nope>",
+      "kind": "term",
+      "term": "Collection<Nope>",
+      "backendRefusal": "port-type-unregistered: 'Nope' is not a registered type",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Gauge<Int>",
+      "kind": "term",
+      "term": "Gauge<Int>",
+      "backendRefusal": "port-type-unregistered: 'Gauge' does not admit the argument 'Int'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Gauge<Boolean?>",
+      "kind": "term",
+      "term": "Gauge<Boolean?>",
+      "backendRefusal": "port-type-unregistered: 'Gauge' does not admit the argument 'Boolean?'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Gauge<Collection<Boolean>>",
+      "kind": "term",
+      "term": "Gauge<Collection<Boolean>>",
+      "backendRefusal": "port-type-unregistered: 'Gauge' does not admit the argument 'Collection<Boolean>'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Probe<Boolean>",
+      "kind": "term",
+      "term": "Probe<Boolean>",
+      "backendRefusal": "port-type-unregistered: 'Probe' does not admit the argument 'Boolean'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Probe<Int>",
+      "kind": "term",
+      "term": "Probe<Int>",
+      "backendRefusal": "port-type-unregistered: 'Probe' does not admit the argument 'Int'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Probe<Collection<Int?>>",
+      "kind": "term",
+      "term": "Probe<Collection<Int?>>",
+      "backendRefusal": "port-type-unregistered: 'Probe' does not admit the argument 'Collection<Int?>'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Cell<Gauge<Number>>",
+      "kind": "term",
+      "term": "Cell<Gauge<Number>>",
+      "backendRefusal": "port-type-unregistered: 'Cell' does not admit the argument 'Gauge<Number>'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Cell<Boolean>",
+      "kind": "term",
+      "term": "Cell<Boolean>",
+      "backendRefusal": "port-type-unregistered: 'Cell' does not admit the argument 'Boolean'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Collection<Gauge<Int>>",
+      "kind": "term",
+      "term": "Collection<Gauge<Int>>",
+      "backendRefusal": "port-type-unregistered: 'Gauge' does not admit the argument 'Int'",
+      "backend": "refuses"
+    },
+    {
+      "name": "the term Crate<Pallet>",
+      "kind": "term",
+      "term": "Crate<Pallet>",
+      "backendRefusal": "port-type-unregistered: 'Pallet' is not a registered type",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias spelled like a constructor",
+      "kind": "alias",
+      "alias": "Gauge",
+      "target": "Boolean",
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean",
+            "Number"
+          ]
+        }
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type alias 'Gauge' cannot be registered: a constructor of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias onto a constructor's name",
+      "kind": "alias",
+      "alias": "Reading",
+      "target": "Gauge",
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean",
+            "Number"
+          ]
+        }
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type 'Gauge' cannot be registered: a constructor of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening from a constructor's name",
+      "kind": "widening",
+      "from": "Gauge",
+      "widensTo": [
+        "Number"
+      ],
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean",
+            "Number"
+          ]
+        }
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type 'Gauge' cannot be registered: a constructor of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto a constructor's name",
+      "kind": "widening",
+      "from": "Shipment",
+      "widensTo": [
+        "Gauge"
+      ],
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean",
+            "Number"
+          ]
+        }
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type 'Gauge' cannot be registered: a constructor of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a declared host name spelled like a constructor",
+      "kind": "declare",
+      "type": "Gauge",
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean",
+            "Number"
+          ]
+        }
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type 'Gauge' cannot be registered: a constructor of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named like a widening target",
+      "kind": "constructor",
+      "head": "Depot",
+      "allowedArguments": [
+        "Int"
+      ],
+      "declaredWidenings": [
+        {
+          "from": "Shipment",
+          "widensTo": [
+            "Depot"
+          ]
+        }
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type constructor 'Depot' cannot be registered: a port type of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor named like a declared alias",
+      "kind": "constructor",
+      "head": "Parcel",
+      "allowedArguments": [
+        "Int"
+      ],
+      "declaredAliases": [
+        {
+          "alias": "Parcel",
+          "target": "Shipment"
+        }
+      ],
+      "backendRefusal": "*port-type-name-clash: Port type constructor 'Parcel' cannot be registered: a port type of that name is already registered*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing an alias spelling",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "Boolean",
+        "bool"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument 'bool' is not canonical: 'bool' is spelled 'Boolean'*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing a case variant",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "Collection<STRING>"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument 'Collection<STRING>' is not canonical: 'STRING' is spelled 'String'*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing Any",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "Any"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument 'Any' names the reserved name 'Any'*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing a nested Float",
+      "kind": "constructor",
+      "head": "Gauge",
+      "allowedArguments": [
+        "Collection<float>"
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: allowed argument 'Collection<float>' names the reserved name 'Float'*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing a constructor in another case",
+      "kind": "constructor",
+      "head": "Cell",
+      "allowedArguments": [
+        "gauge<Boolean>"
+      ],
+      "after": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean"
+          ]
+        }
+      ],
+      "backendRefusal": "*port-type-registration-invalid: Port type constructor 'Cell' cannot be registered: allowed argument 'gauge<Boolean>' is not canonical: 'gauge' is spelled 'Gauge'*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a constructor allowing a registered canonical constructor",
+      "kind": "constructor",
+      "head": "Cell",
+      "allowedArguments": [
+        "Gauge<Boolean>"
+      ],
+      "after": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean"
+          ]
+        }
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a declared Float",
+      "kind": "declare",
+      "type": "Float",
+      "backendRefusal": "port-type-alias: Port type 'Float' cannot be registered: Float is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a declared float",
+      "kind": "declare",
+      "type": "float",
+      "backendRefusal": "port-type-alias: Port type 'float' cannot be registered: Float is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a declared Any",
+      "kind": "declare",
+      "type": "Any",
+      "backendRefusal": "port-type-alias: Port type 'Any' cannot be registered: Any is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a declared ANY",
+      "kind": "declare",
+      "type": "ANY",
+      "backendRefusal": "port-type-alias: Port type 'Any' cannot be registered: Any is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias onto Float",
+      "kind": "alias",
+      "alias": "Quantity",
+      "target": "Float",
+      "backendRefusal": "port-type-alias: Port type alias 'Quantity' cannot resolve to 'Float': Float is a reserved name*",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias spelled float",
+      "kind": "alias",
+      "alias": "float",
+      "target": "Number",
+      "backendRefusal": "port-type-alias: Port type alias 'float' cannot be registered: Float is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "an alias spelled any",
+      "kind": "alias",
+      "alias": "any",
+      "target": "Number",
+      "backendRefusal": "port-type-alias: Port type alias 'any' cannot be registered: Any is a reserved name*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening from Float",
+      "kind": "widening",
+      "from": "Float",
+      "widensTo": [
+        "Number"
+      ],
+      "backendRefusal": "port-type-alias: Port type 'Float' cannot be registered: Float is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto Float",
+      "kind": "widening",
+      "from": "Int",
+      "widensTo": [
+        "Float"
+      ],
+      "backendRefusal": "port-type-alias: Port type 'Float' cannot be registered: Float is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a widening onto Any",
+      "kind": "widening",
+      "from": "Int",
+      "widensTo": [
+        "Any"
+      ],
+      "backendRefusal": "port-type-alias: Port type 'Any' cannot be registered: Any is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "Float feeds Number: false",
+      "kind": "assignable",
+      "from": "Float",
+      "to": "Number",
+      "backend": false
+    },
+    {
+      "name": "Number feeds Float: false",
+      "kind": "assignable",
+      "from": "Number",
+      "to": "Float",
+      "backend": false
+    },
+    {
+      "name": "Int feeds Collection<Float>: false",
+      "kind": "assignable",
+      "from": "Collection<Int>",
+      "to": "Collection<Float>",
+      "backend": false
+    },
+    {
+      "name": "a row into a registered constructor term",
+      "kind": "row",
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean"
+          ]
+        }
+      ],
+      "from": "Handle",
+      "widensTo": [
+        "Gauge<Boolean>"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a row onto a declared atom",
+      "kind": "row",
+      "declaredAtoms": [
+        "Shipment"
+      ],
+      "from": "ReeferShipment",
+      "widensTo": [
+        "Shipment"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a duplicate registered atom",
+      "kind": "row",
+      "declaredAtoms": [
+        "Quantity"
+      ],
+      "from": "Quantity",
+      "widensTo": [],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-name-clash (Quantity): Port type 'Quantity' cannot be registered: the name 'Quantity' is already registered*"
+    },
+    {
+      "name": "an alias claimed by two registered atoms",
+      "kind": "row",
+      "declaredAtoms": [
+        "Shipment",
+        "Freight"
+      ],
+      "declaredAliases": [
+        {
+          "alias": "Cargo",
+          "target": "Shipment"
+        },
+        {
+          "alias": "Cargo",
+          "target": "Freight"
+        }
+      ],
+      "from": "Handle",
+      "widensTo": [],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-name-clash (Freight): Port type 'Freight' cannot be registered: the name 'Cargo' is already registered*"
+    },
+    {
+      "name": "a row into a constructor term nobody registered",
+      "kind": "row",
+      "from": "Handle",
+      "widensTo": [
+        "Gauge<Boolean>"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-registration-invalid (Handle): Port type 'Handle' cannot be registered: widening row 'Gauge<Boolean>' leads nowhere*"
+    },
+    {
+      "name": "a row into a collection term",
+      "kind": "row",
+      "from": "Batch",
+      "widensTo": [
+        "Collection<String>"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-registration-invalid (Batch): Port type 'Batch' cannot be registered: widening row 'Collection<String>' leads into a collection*"
+    },
+    {
+      "name": "two rows into one collection term",
+      "kind": "row",
+      "from": "Batch",
+      "widensTo": [
+        "Collection<String>",
+        "Collection<String?>"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-registration-invalid (Batch): Port type 'Batch' cannot be registered: widening row 'Collection<String>' leads into a collection*"
+    },
+    {
+      "name": "two rows into one constructor head",
+      "kind": "row",
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean",
+            "Int"
+          ]
+        }
+      ],
+      "from": "Handle",
+      "widensTo": [
+        "Gauge<Boolean>",
+        "Gauge<Int>"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-registration-invalid (Handle): Port type 'Handle' cannot be registered: widening row 'Gauge<Int>' is a second row into the constructor 'Gauge'*"
+    },
+    {
+      "name": "a row target spelled in lower case",
+      "kind": "row",
+      "declaredAtoms": [
+        "Shipment"
+      ],
+      "from": "ReeferShipment",
+      "widensTo": [
+        "shipment"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-registration-invalid (ReeferShipment): Port type 'ReeferShipment' cannot be registered: widening row 'shipment' is not spelled canonically*"
+    },
+    {
+      "name": "a row target spelled by an alias",
+      "kind": "row",
+      "declaredAtoms": [
+        "Shipment"
+      ],
+      "declaredAliases": [
+        {
+          "alias": "Cargo",
+          "target": "Shipment"
+        }
+      ],
+      "from": "ReeferShipment",
+      "widensTo": [
+        "Cargo"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-registration-invalid (ReeferShipment): Port type 'ReeferShipment' cannot be registered: widening row 'Cargo' is not spelled canonically*"
+    },
+    {
+      "name": "a row into a constructor term with a case variant head",
+      "kind": "row",
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean"
+          ]
+        }
+      ],
+      "from": "Handle",
+      "widensTo": [
+        "gauge<Boolean>"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "*port-type-registration-invalid (Handle): Port type 'Handle' cannot be registered: widening row 'gauge<Boolean>' is not spelled canonically*"
+    },
+    {
+      "name": "a record named Float",
+      "kind": "row",
+      "from": "Float",
+      "widensTo": [],
+      "backendRefusal": "*port-type-registration-invalid (Float): Port type 'Float' cannot be registered: Float is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a record named Any",
+      "kind": "row",
+      "from": "Any",
+      "widensTo": [],
+      "backendRefusal": "*port-type-registration-invalid (Any): Port type 'Any' cannot be registered: Any is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a record named Float in lower case",
+      "kind": "row",
+      "from": "float",
+      "widensTo": [],
+      "backendRefusal": "*port-type-registration-invalid (float): Port type 'float' cannot be registered: Float is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a record with an alias spelled float",
+      "kind": "row",
+      "declaredAtoms": [
+        "Shipment"
+      ],
+      "declaredAliases": [
+        {
+          "alias": "float",
+          "target": "Shipment"
+        }
+      ],
+      "from": "ReeferShipment",
+      "widensTo": [],
+      "backendRefusal": "*port-type-registration-invalid (Shipment): Port type 'Shipment' cannot be registered: alias 'float': Float is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a record with an alias spelled ANY",
+      "kind": "row",
+      "declaredAtoms": [
+        "Shipment"
+      ],
+      "declaredAliases": [
+        {
+          "alias": "ANY",
+          "target": "Shipment"
+        }
+      ],
+      "from": "ReeferShipment",
+      "widensTo": [],
+      "backendRefusal": "*port-type-registration-invalid (Shipment): Port type 'Shipment' cannot be registered: alias 'ANY': Any is a reserved name.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a record named Map",
+      "kind": "row",
+      "from": "Map",
+      "widensTo": [],
+      "backendRefusal": "*port-type-registration-invalid (Map): Port type 'Map' cannot be registered: Map is the library's built-in constructor.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a record named Map in lower case",
+      "kind": "row",
+      "from": "map",
+      "widensTo": [],
+      "backendRefusal": "*port-type-registration-invalid (map): Port type 'map' cannot be registered: Map is the library's built-in constructor.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a record with an alias spelled MAP",
+      "kind": "row",
+      "declaredAtoms": [
+        "Shipment"
+      ],
+      "declaredAliases": [
+        {
+          "alias": "MAP",
+          "target": "Shipment"
+        }
+      ],
+      "from": "ReeferShipment",
+      "widensTo": [],
+      "backendRefusal": "*port-type-registration-invalid (Shipment): Port type 'Shipment' cannot be registered: alias 'MAP': Map is the library's built-in constructor.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a row onto a map",
+      "kind": "row",
+      "from": "Handle",
+      "widensTo": [
+        "Map<String,Int>"
+      ],
+      "backendRefusal": "*port-type-registration-invalid (Handle): Port type 'Handle' cannot be registered: widening row 'Map<String,Int>' leads into a map; a map widens through its value, never by a row.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a row onto Float",
+      "kind": "row",
+      "from": "Handle",
+      "widensTo": [
+        "Float"
+      ],
+      "backendRefusal": "*port-type-registration-invalid (Handle): Port type 'Handle' cannot be registered: widening row 'Float' names the reserved name 'Float'.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a row onto any",
+      "kind": "row",
+      "from": "Handle",
+      "widensTo": [
+        "any"
+      ],
+      "backendRefusal": "*port-type-registration-invalid (Handle): Port type 'Handle' cannot be registered: widening row 'any' names the reserved name 'Any'.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a row into a constructor term holding Float",
+      "kind": "row",
+      "constructors": [
+        {
+          "name": "Gauge",
+          "allowedArguments": [
+            "Boolean"
+          ]
+        }
+      ],
+      "from": "Handle",
+      "widensTo": [
+        "Gauge<Float>"
+      ],
+      "backendRefusal": "*port-type-registration-invalid (Handle): Port type 'Handle' cannot be registered: widening row 'Gauge<Float>' names the reserved name 'Float'.*",
+      "backend": "refuses"
+    },
+    {
+      "name": "a host type claiming what its type bears out",
+      "kind": "claim",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "claims": [
+        "Comparable",
+        "Equatable",
+        "JsonSerializable"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a host type claiming Iterable",
+      "kind": "claim",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "claims": [
+        "Iterable"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "capability-claim-invalid: Port type 'Quantity' cannot be registered: Iterable is the library's: only Collection implements it*"
+    },
+    {
+      "name": "a host type claiming Numeric",
+      "kind": "claim",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "claims": [
+        "Numeric"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "capability-claim-invalid: Port type 'Quantity' cannot be registered: Numeric is the library's: only Int and Number implement it*"
+    },
+    {
+      "name": "a host type claiming a name that is no capability",
+      "kind": "claim",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "claims": [
+        "numeric"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "capability-claim-invalid: Port type 'Quantity' cannot be registered: it claims '99', which is not a capability*"
+    },
+    {
+      "name": "a host type claiming Comparable its CLR type does not implement",
+      "kind": "claim",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "memoryStream",
+      "claims": [
+        "Comparable"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "capability-claim-invalid: Port type 'Quantity' cannot be registered: Comparable claimed, but MemoryStream does not implement IComparable<MemoryStream>*"
+    },
+    {
+      "name": "a host atom whose CLR type admits every value",
+      "kind": "claim",
+      "subject": "atom",
+      "head": "Wildcard",
+      "clr": "object",
+      "claims": [],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type 'Wildcard' cannot be registered: CLR type 'Object' admits every value."
+    },
+    {
+      "name": "a host constructor claiming Equatable",
+      "kind": "claim",
+      "subject": "constructor",
+      "head": "Gauge",
+      "clr": "string",
+      "claims": [
+        "Equatable"
+      ],
+      "allowedArguments": [
+        "Int"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a host constructor claiming Numeric",
+      "kind": "claim",
+      "subject": "constructor",
+      "head": "Gauge",
+      "clr": "string",
+      "claims": [
+        "Numeric"
+      ],
+      "allowedArguments": [
+        "Int"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "capability-claim-invalid: Port type constructor 'Gauge' cannot be registered: Numeric is the library's: only Int and Number implement it*"
+    },
+    {
+      "name": "a host type declaring a string literal read as a UUID",
+      "kind": "literal",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "literal": {
+        "gradedAs": "String",
+        "format": "Uuid"
+      },
+      "backend": "accepts"
+    },
+    {
+      "name": "a host type declaring a Json literal",
+      "kind": "literal",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "literal": {
+        "gradedAs": "Json"
+      },
+      "backend": "accepts"
+    },
+    {
+      "name": "a host type declaring a form outside the closed set",
+      "kind": "literal",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "literal": {
+        "gradedAs": "Date"
+      },
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type 'Quantity' cannot be registered: its literal form is graded as 99, which is outside String, Boolean, Int, Number and Json*"
+    },
+    {
+      "name": "a host type declaring a format outside the closed set",
+      "kind": "literal",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "literal": {
+        "gradedAs": "String",
+        "format": "Time"
+      },
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type 'Quantity' cannot be registered: its literal format 99 is outside Uuid and DateTime*"
+    },
+    {
+      "name": "a host type declaring a format on a form that is not a string",
+      "kind": "literal",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "literal": {
+        "gradedAs": "Int",
+        "format": "Uuid"
+      },
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type 'Quantity' cannot be registered: its literal format Uuid applies only to a form graded as String, not Int*"
+    },
+    {
+      "name": "a host constructor declaring a Json literal",
+      "kind": "literal",
+      "subject": "constructor",
+      "head": "Gauge",
+      "clr": "string",
+      "literal": {
+        "gradedAs": "Json"
+      },
+      "allowedArguments": [
+        "Int"
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a host constructor declaring a form outside the closed set",
+      "kind": "literal",
+      "subject": "constructor",
+      "head": "Gauge",
+      "clr": "string",
+      "literal": {
+        "gradedAs": "Date"
+      },
+      "allowedArguments": [
+        "Int"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: its literal form is graded as 99, which is outside String, Boolean, Int, Number and Json*"
+    },
+    {
+      "name": "a host constructor declaring a format on a form that is not a string",
+      "kind": "literal",
+      "subject": "constructor",
+      "head": "Gauge",
+      "clr": "string",
+      "literal": {
+        "gradedAs": "Json",
+        "format": "DateTime"
+      },
+      "allowedArguments": [
+        "Int"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: its literal format DateTime applies only to a form graded as String, not Json*"
+    },
+    {
+      "name": "an unclaimed host type carrying a JsonTypeInfo of another type",
+      "kind": "claim",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "guid",
+      "jsonTypeInfoOf": "string",
+      "claims": [],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type 'Quantity' cannot be registered: its JsonTypeInfo describes String, not Guid."
+    },
+    {
+      "name": "an unclaimed host constructor carrying a JsonTypeInfo of another type",
+      "kind": "claim",
+      "subject": "constructor",
+      "head": "Gauge",
+      "clr": "guid",
+      "jsonTypeInfoOf": "string",
+      "claims": [],
+      "allowedArguments": [
+        "Int"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: its JsonTypeInfo describes String, not Guid."
+    },
+    {
+      "name": "a literal form without a JsonTypeInfo",
+      "kind": "literal",
+      "subject": "atom",
+      "head": "Quantity",
+      "clr": "string",
+      "jsonTypeInfo": false,
+      "literal": {
+        "gradedAs": "String"
+      },
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type 'Quantity' cannot be registered: a literal form needs a JsonTypeInfo to read its literals.*"
+    },
+    {
+      "name": "a constructor literal form without a JsonTypeInfo",
+      "kind": "literal",
+      "subject": "constructor",
+      "head": "Gauge",
+      "clr": "string",
+      "jsonTypeInfo": false,
+      "literal": {
+        "gradedAs": "Json"
+      },
+      "allowedArguments": [
+        "Int"
+      ],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid: Port type constructor 'Gauge' cannot be registered: a literal form needs a JsonTypeInfo to read its literals.*"
+    },
+    {
+      "name": "an allowed argument owned by the record's own plugin, registered earlier",
+      "kind": "reference",
+      "records": [
+        {
+          "owner": "plugin:a",
+          "atom": "Gadget"
+        },
+        {
+          "owner": "plugin:a",
+          "constructorName": "Box",
+          "allowedArguments": [
+            "Gadget",
+            "Int"
+          ]
+        }
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "a row onto a type of the record's own plugin, registered earlier",
+      "kind": "reference",
+      "records": [
+        {
+          "owner": "plugin:a",
+          "atom": "Gadget"
+        },
+        {
+          "owner": "plugin:a",
+          "atom": "Widget",
+          "widensTo": [
+            "Gadget"
+          ]
+        }
+      ],
+      "backend": "accepts"
+    },
+    {
+      "name": "an allowed argument owned by another plugin",
+      "kind": "reference",
+      "records": [
+        {
+          "owner": "plugin:b",
+          "atom": "Gadget"
+        },
+        {
+          "owner": "plugin:a",
+          "constructorName": "Box",
+          "allowedArguments": [
+            "Gadget"
+          ]
+        }
+      ],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid (Box): Port type 'Box' cannot be registered: its allowed argument 'Gadget' is owned by plugin:b; a record references only library types, host types and types of its own owner."
+    },
+    {
+      "name": "an allowed argument term over a type of another plugin",
+      "kind": "reference",
+      "records": [
+        {
+          "owner": "plugin:b",
+          "atom": "Gadget"
+        },
+        {
+          "owner": "plugin:a",
+          "constructorName": "Box",
+          "allowedArguments": [
+            "Collection<Gadget>"
+          ]
+        }
+      ],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid (Box): Port type 'Box' cannot be registered: its allowed argument 'Collection<Gadget>' is owned by plugin:b; a record references only library types, host types and types of its own owner."
+    },
+    {
+      "name": "a widening row owned by another plugin",
+      "kind": "reference",
+      "records": [
+        {
+          "owner": "plugin:b",
+          "atom": "Gadget"
+        },
+        {
+          "owner": "plugin:a",
+          "atom": "Widget",
+          "widensTo": [
+            "Gadget"
+          ]
+        }
+      ],
+      "backend": "refuses",
+      "backendRefusal": "port-type-registration-invalid (Widget): Port type 'Widget' cannot be registered: widening row 'Gadget' is owned by plugin:b; a record references only library types, host types and types of its own owner."
+    }
+  ]
+}

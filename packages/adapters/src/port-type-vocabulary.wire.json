@@ -1,0 +1,654 @@
+{
+  "$note": "Written by PortTypeVocabularyEndpointTests (Editor.Tests); read by portTypeVocabulary.test.ts.",
+  "response": {
+    "generation": 0,
+    "capabilities": [
+      {
+        "name": "Iterable",
+        "associated": [
+          "Item"
+        ]
+      },
+      {
+        "name": "Numeric",
+        "associated": null
+      },
+      {
+        "name": "Comparable",
+        "associated": null
+      },
+      {
+        "name": "Equatable",
+        "associated": null
+      },
+      {
+        "name": "JsonSerializable",
+        "associated": null
+      }
+    ],
+    "types": [
+      {
+        "name": "BondedDepot",
+        "owner": "host",
+        "aliases": [],
+        "widensTo": [
+          "Depot"
+        ],
+        "implements": [],
+        "literal": null
+      },
+      {
+        "name": "Boolean",
+        "owner": "library",
+        "aliases": [
+          "bool",
+          "boolean"
+        ],
+        "widensTo": [],
+        "implements": [
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "literal": {
+          "gradedAs": "Boolean",
+          "format": null
+        }
+      },
+      {
+        "name": "Carrier",
+        "owner": "host",
+        "aliases": [],
+        "widensTo": [],
+        "implements": [],
+        "literal": null
+      },
+      {
+        "name": "DateTime",
+        "owner": "library",
+        "aliases": [
+          "datetime"
+        ],
+        "widensTo": [],
+        "implements": [
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "literal": {
+          "gradedAs": "String",
+          "format": "DateTime"
+        }
+      },
+      {
+        "name": "Depot",
+        "owner": "host",
+        "aliases": [
+          "store"
+        ],
+        "widensTo": [],
+        "implements": [
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "literal": {
+          "gradedAs": "String",
+          "format": "Uuid"
+        }
+      },
+      {
+        "name": "Flag",
+        "owner": "host",
+        "aliases": [],
+        "widensTo": [],
+        "implements": [
+          "Equatable"
+        ],
+        "literal": {
+          "gradedAs": "Boolean",
+          "format": null
+        }
+      },
+      {
+        "name": "Handle",
+        "owner": "host",
+        "aliases": [],
+        "widensTo": [
+          "Gauge<Boolean>"
+        ],
+        "implements": [],
+        "literal": null
+      },
+      {
+        "name": "Int",
+        "owner": "library",
+        "aliases": [
+          "int"
+        ],
+        "widensTo": [
+          "Number"
+        ],
+        "implements": [
+          "Numeric",
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "literal": {
+          "gradedAs": "Int",
+          "format": null
+        }
+      },
+      {
+        "name": "Json",
+        "owner": "library",
+        "aliases": [
+          "json"
+        ],
+        "widensTo": [],
+        "implements": [
+          "JsonSerializable"
+        ],
+        "literal": {
+          "gradedAs": "Json",
+          "format": null
+        }
+      },
+      {
+        "name": "Number",
+        "owner": "library",
+        "aliases": [
+          "number"
+        ],
+        "widensTo": [],
+        "implements": [
+          "Numeric",
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "literal": {
+          "gradedAs": "Number",
+          "format": null
+        }
+      },
+      {
+        "name": "String",
+        "owner": "library",
+        "aliases": [
+          "string"
+        ],
+        "widensTo": [],
+        "implements": [
+          "Comparable",
+          "Equatable",
+          "JsonSerializable"
+        ],
+        "literal": {
+          "gradedAs": "String",
+          "format": null
+        }
+      }
+    ],
+    "constructors": [
+      {
+        "name": "Collection",
+        "owner": "library",
+        "variance": "covariant",
+        "allowedArguments": null,
+        "implements": [
+          "Iterable"
+        ],
+        "literal": null,
+        "arity": 1,
+        "key": null
+      },
+      {
+        "name": "Gauge",
+        "owner": "host",
+        "variance": "invariant",
+        "allowedArguments": [
+          "Boolean",
+          "Number"
+        ],
+        "implements": [
+          "Equatable"
+        ],
+        "literal": {
+          "gradedAs": "Json",
+          "format": null
+        },
+        "arity": 1,
+        "key": null
+      },
+      {
+        "name": "Map",
+        "owner": "library",
+        "variance": "covariant",
+        "allowedArguments": null,
+        "implements": [],
+        "literal": null,
+        "arity": 2,
+        "key": "String"
+      }
+    ],
+    "secretCodec": false
+  },
+  "names": [
+    "ANY",
+    "Any",
+    "BONDEDDEPOT",
+    "BOOL",
+    "BOOLEAN",
+    "BondedDepot",
+    "Boolean",
+    "CARRIER",
+    "Carrier",
+    "Collection<Any>",
+    "Collection<BondedDepot>",
+    "Collection<Boolean>",
+    "Collection<Carrier>",
+    "Collection<Collection<BondedDepot>>",
+    "Collection<Collection<Depot>>",
+    "Collection<Collection<Int>>",
+    "Collection<Collection<Number>>",
+    "Collection<DateTime>",
+    "Collection<Depot>",
+    "Collection<Flag>",
+    "Collection<Float>",
+    "Collection<Gauge<Boolean>>",
+    "Collection<Handle>",
+    "Collection<Int>",
+    "Collection<Int>?",
+    "Collection<Int?>",
+    "Collection<Json>",
+    "Collection<Mystery>",
+    "Collection<Number>",
+    "Collection<String>",
+    "Collection<bool>",
+    "Collection<boolean>",
+    "Collection<datetime>",
+    "Collection<int>",
+    "Collection<json>",
+    "Collection<number>",
+    "Collection<store>",
+    "Collection<string>",
+    "DATETIME",
+    "DEPOT",
+    "DateTime",
+    "Depot",
+    "FLAG",
+    "FLOAT",
+    "Flag",
+    "Float",
+    "Gauge<Boolean>",
+    "Gauge<Boolean>?",
+    "Gauge<Number>",
+    "HANDLE",
+    "Handle",
+    "Handle?",
+    "INT",
+    "Int",
+    "Int?",
+    "JSON",
+    "Json",
+    "MYSTERY",
+    "Mystery",
+    "NUMBER",
+    "Number",
+    "Number?",
+    "STORE",
+    "STRING",
+    "String",
+    "bool",
+    "boolean",
+    "datetime",
+    "int",
+    "json",
+    "number",
+    "store",
+    "string"
+  ],
+  "canonical": [
+    "ANY",
+    "Any",
+    "BondedDepot",
+    "Boolean",
+    "Boolean",
+    "BondedDepot",
+    "Boolean",
+    "Carrier",
+    "Carrier",
+    "Collection<Any>",
+    "Collection<BondedDepot>",
+    "Collection<Boolean>",
+    "Collection<Carrier>",
+    "Collection<Collection<BondedDepot>>",
+    "Collection<Collection<Depot>>",
+    "Collection<Collection<Int>>",
+    "Collection<Collection<Number>>",
+    "Collection<DateTime>",
+    "Collection<Depot>",
+    "Collection<Flag>",
+    "Collection<Float>",
+    "Collection<Gauge<Boolean>>",
+    "Collection<Handle>",
+    "Collection<Int>",
+    "Collection<Int>?",
+    "Collection<Int?>",
+    "Collection<Json>",
+    "Collection<Mystery>",
+    "Collection<Number>",
+    "Collection<String>",
+    "Collection<Boolean>",
+    "Collection<Boolean>",
+    "Collection<DateTime>",
+    "Collection<Int>",
+    "Collection<Json>",
+    "Collection<Number>",
+    "Collection<Depot>",
+    "Collection<String>",
+    "DateTime",
+    "Depot",
+    "DateTime",
+    "Depot",
+    "Flag",
+    "FLOAT",
+    "Flag",
+    "Float",
+    "Gauge<Boolean>",
+    "Gauge<Boolean>?",
+    "Gauge<Number>",
+    "Handle",
+    "Handle",
+    "Handle?",
+    "Int",
+    "Int",
+    "Int?",
+    "Json",
+    "Json",
+    "MYSTERY",
+    "Mystery",
+    "Number",
+    "Number",
+    "Number?",
+    "Depot",
+    "String",
+    "String",
+    "Boolean",
+    "Boolean",
+    "DateTime",
+    "Int",
+    "Json",
+    "Number",
+    "Depot",
+    "String"
+  ],
+  "implements": [
+    null,
+    null,
+    [],
+    [
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [],
+    [
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [],
+    [],
+    null,
+    [
+      "Iterable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable"
+    ],
+    [
+      "Iterable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable"
+    ],
+    null,
+    [
+      "Iterable",
+      "Equatable"
+    ],
+    [
+      "Iterable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "JsonSerializable"
+    ],
+    null,
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Iterable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Equatable"
+    ],
+    null,
+    [
+      "Equatable"
+    ],
+    null,
+    [
+      "Equatable"
+    ],
+    [],
+    [
+      "Equatable"
+    ],
+    [],
+    [],
+    [],
+    [
+      "Numeric",
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Numeric",
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "JsonSerializable"
+    ],
+    [
+      "JsonSerializable"
+    ],
+    [
+      "JsonSerializable"
+    ],
+    null,
+    null,
+    [
+      "Numeric",
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Numeric",
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Numeric",
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "JsonSerializable"
+    ],
+    [
+      "Numeric",
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ],
+    [
+      "Comparable",
+      "Equatable",
+      "JsonSerializable"
+    ]
+  ]
+}

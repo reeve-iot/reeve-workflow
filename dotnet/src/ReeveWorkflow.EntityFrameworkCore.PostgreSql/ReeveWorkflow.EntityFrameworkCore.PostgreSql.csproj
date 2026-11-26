@@ -1,0 +1,36 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <IsPackable>true</IsPackable>
+    <PackageId>ReeveWorkflow.EntityFrameworkCore.PostgreSql</PackageId>
+    <Description>The workflow engine's PostgreSQL schema: the library's own EF Core migrations, the history table that records them, and the TimescaleDB hypertable for the execution-step table. One call, AddPostgreSqlSchema(), after AddWorkflows; the host writes no migrations of its own. TimescaleDB is required.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="CmdScale.EntityFrameworkCore.TimescaleDB" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+    <PackageReference Include="CmdScale.EntityFrameworkCore.TimescaleDB.Design" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReeveWorkflow.EntityFrameworkCore\ReeveWorkflow.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\ReeveWorkflow.DependencyInjection\ReeveWorkflow.DependencyInjection.csproj" />
+  </ItemGroup>
+
+  <Target Name="ExcludeRuntimeConfigFromPackage" BeforeTargets="GenerateNuspec">
+    <ItemGroup>
+      <_BuildOutputInPackage Remove="@(_BuildOutputInPackage)"
+        Condition="$([System.String]::Copy('%(Filename)%(Extension)').EndsWith('.runtimeconfig.json'))" />
+    </ItemGroup>
+  </Target>
+
+</Project>

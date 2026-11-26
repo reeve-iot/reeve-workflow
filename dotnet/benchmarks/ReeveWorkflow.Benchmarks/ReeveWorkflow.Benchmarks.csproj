@@ -1,0 +1,22 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <OutputType>Exe</OutputType>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../../src/ReeveWorkflow.Abstractions/ReeveWorkflow.Abstractions.csproj" />
+    <ProjectReference Include="../../src/ReeveWorkflow.Core/ReeveWorkflow.Core.csproj" />
+    <ProjectReference Include="../../src/ReeveWorkflow.Blocks/ReeveWorkflow.Blocks.csproj" />
+    <ProjectReference Include="../../src/ReeveWorkflow.DependencyInjection/ReeveWorkflow.DependencyInjection.csproj" />
+  </ItemGroup>
+
+</Project>

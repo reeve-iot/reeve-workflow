@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <RootNamespace>Dispatch.Host</RootNamespace>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\dotnet\src\ReeveWorkflow.AspNetCore\ReeveWorkflow.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\..\dotnet\src\ReeveWorkflow.Blocks\ReeveWorkflow.Blocks.csproj" />
+    <ProjectReference Include="..\..\..\dotnet\src\ReeveWorkflow.Editor\ReeveWorkflow.Editor.csproj" />
+    <ProjectReference Include="..\..\..\dotnet\src\ReeveWorkflow.EntityFrameworkCore\ReeveWorkflow.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\..\dotnet\src\ReeveWorkflow.EntityFrameworkCore.PostgreSql\ReeveWorkflow.EntityFrameworkCore.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\..\dotnet\src\ReeveWorkflow.Npgsql\ReeveWorkflow.Npgsql.csproj" />
+    <ProjectReference Include="..\..\..\dotnet\src\ReeveWorkflow.Redis\ReeveWorkflow.Redis.csproj" />
+  </ItemGroup>
+
+</Project>

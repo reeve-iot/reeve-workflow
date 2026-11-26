@@ -1,0 +1,49 @@
+{
+  "name": "@reeve-iot/workflow-client",
+  "version": "1.1.0",
+  "description": "Typed HTTP client for the ReeveWorkflow endpoint surface. Generated from the surface the server publishes, so a signature change is a build error.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./surface.json": "./surface.json",
+    "./surface.editor.json": "./surface.editor.json",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "surface.json",
+    "surface.editor.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reeve-iot/reeve-workflow.git",
+    "directory": "packages/client"
+  },
+  "homepage": "https://github.com/reeve-iot/reeve-workflow/tree/main/packages/client#readme",
+  "bugs": {
+    "url": "https://github.com/reeve-iot/reeve-workflow/issues"
+  },
+  "keywords": [
+    "workflow",
+    "client",
+    "http",
+    "typed",
+    "codegen"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

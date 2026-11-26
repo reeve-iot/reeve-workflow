@@ -1,0 +1,1752 @@
+{
+  "$note": [
+    "The stored-document grammar contract holds one row per path and value class, per parameter-list",
+    "and workflow-row field, and per rule. Each row carries a `state`:",
+    "`clicked`, `prevented`, `opened` and `hostSlot` name a test (`test`) in the playground suite whose title carries",
+    "`@row:<id>`; `hostSlot` also names the slot (`slot`) the value is authored through. `deferred` marks a form the editor cannot author yet;",
+    "it carries a `why` saying what is not supported yet. `exempt` is only for `structure`, `compilation-fault` and",
+    "`definition-undrawable`. `gap` is not covered yet, and the release job refuses a contract holding one.",
+    "",
+    "A row id is its path with each space written as a dash, then the value class: `node.id#absent`. The",
+    "paths and their kinds are regenerated from StoredVersionComparison.Fields and from packages/core's",
+    "kind table; the value classes the kind table does not derive are named here: a blank",
+    "or dotted name, an empty id, a `sources` or `outputPorts` entry the block does not declare, a `type`",
+    "that is neither `direct` nor `literal`, `defaultOutputJson` that is not the text of a JSON object,",
+    "and a port list written as `\"\"` or `null`.",
+    "",
+    "A configuration's values carry `value-`, because the field itself is an object, nullable and optional.",
+    "",
+    "The objects array holds every object kind for the unlisted key the reader refuses there.",
+    "",
+    "The workflow row holds the fields a create and an update take (Editor/WorkflowEditorContracts.cs:13-47),",
+    "including the two stored parameter lists, whose blank and null spellings the reader refuses."
+  ],
+  "paths": [
+    {
+      "path": "canvas.nodes",
+      "values": [
+        {
+          "value": "array",
+          "state": "clicked",
+          "test": "a dropped block, a wire and Publish reach the server and the stored document"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "one spelling of empty: no null for a list",
+          "test": "Open file refuses canvas.nodes null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "one spelling of empty: nodes is written, as []",
+          "test": "Open file refuses canvas.nodes absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "node.id",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "a dropped block, a wire and Publish reach the server and the stored document"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "a node id is required",
+          "test": "Open file refuses node.id absent is refused"
+        },
+        {
+          "value": "empty",
+          "state": "opened",
+          "why": "an id is non-empty",
+          "test": "Open file refuses node.id empty is refused"
+        },
+        {
+          "value": "dotted",
+          "state": "opened",
+          "test": "Open file reports dotted names and import/validate refuses them"
+        }
+      ]
+    },
+    {
+      "path": "node.blockTypeId",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "a dropped block, a wire and Publish reach the server and the stored document"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "test": "Open file reports a node with no blockTypeId and Publish refuses it"
+        }
+      ]
+    },
+    {
+      "path": "node.position",
+      "values": [
+        {
+          "value": "object",
+          "state": "clicked",
+          "test": "a dropped node keeps its canvas position and configuration"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "a position is required",
+          "test": "Open file refuses node.position absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "position.x",
+      "values": [
+        {
+          "value": "number",
+          "state": "clicked",
+          "test": "a dropped node keeps its canvas position and configuration"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "a position names x",
+          "test": "Open file refuses position.x absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "position.y",
+      "values": [
+        {
+          "value": "number",
+          "state": "clicked",
+          "test": "a dropped node keeps its canvas position and configuration"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "a position names y",
+          "test": "Open file refuses position.y absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "node.configuration",
+      "values": [
+        {
+          "value": "object",
+          "state": "clicked",
+          "test": "a dropped node keeps its canvas position and configuration",
+          "why": "the configuration itself is a JSON object, the only shape the field takes"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "no configuration is the key absent, never null",
+          "test": "Open file refuses node.configuration null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "one spelling of empty: configuration is present beside {}",
+          "test": "Open file refuses node.configuration absent is refused"
+        },
+        {
+          "value": "value-boolean",
+          "state": "clicked",
+          "test": "configuration scalar fields and empty timeout round-trip"
+        },
+        {
+          "value": "value-number",
+          "state": "clicked",
+          "test": "a dropped block, a wire and Publish reach the server and the stored document"
+        },
+        {
+          "value": "value-string",
+          "state": "clicked",
+          "test": "configuration scalar fields and empty timeout round-trip"
+        },
+        {
+          "value": "value-array",
+          "state": "deferred",
+          "why": "the compiler types a non-empty array Collection<L> over the join L of its elements, and an empty array or one with no join has no type, so the editor cannot author one yet"
+        },
+        {
+          "value": "value-object",
+          "state": "clicked",
+          "why": "an object is a literal of a Map<String,V> input, which the key/value rows write; the compiler grades it per member",
+          "test": "HttpRequest headers built in key/value rows are saved and published as the object the rows hold"
+        },
+        {
+          "value": "value-null",
+          "state": "opened",
+          "why": "clearing a configuration value is removing it",
+          "test": "Open file refuses configuration null value is refused"
+        },
+        {
+          "value": "value-absent",
+          "state": "clicked",
+          "test": "configuration scalar fields and empty timeout round-trip",
+          "why": "emptying a leaf's timeoutSeconds clears the key on every node"
+        },
+        {
+          "value": "value-blank-port-list",
+          "state": "opened",
+          "why": "InputPorts/OutputPorts hold the list text, \"[]\" for none, never \"\" or null",
+          "test": "Open file refuses configuration blank port list is refused"
+        },
+        {
+          "value": "value-port-list-without-dynamic-ports",
+          "state": "opened",
+          "why": "a port list on a block without dynamic ports is refused by the compile",
+          "test": "Open file refuses a port list on a block without dynamic ports at both doors"
+        }
+      ]
+    },
+    {
+      "path": "node.subCanvases",
+      "values": [
+        {
+          "value": "object",
+          "state": "clicked",
+          "test": "a nested canvas can be entered, filled and saved"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "no sub-canvases is the key absent, never null",
+          "test": "Open file refuses node.subCanvases null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "a dropped node keeps its canvas position and configuration"
+        }
+      ]
+    },
+    {
+      "path": "node.passthrough",
+      "values": [
+        {
+          "value": "array",
+          "state": "clicked",
+          "test": "a custom passthrough value can be added and unticked"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "no passthrough is the key absent, never null",
+          "test": "Open file refuses node.passthrough null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "a dropped node keeps its canvas position and configuration"
+        },
+        {
+          "value": "blank",
+          "state": "opened",
+          "why": "a passthrough name is non-empty",
+          "test": "Open file refuses node.passthrough blank name is refused"
+        },
+        {
+          "value": "dotted",
+          "state": "prevented",
+          "test": "a custom passthrough value can be added and unticked",
+          "why": "the name field writes no dot; the reader refuses a stored one"
+        }
+      ]
+    },
+    {
+      "path": "node.outputPorts",
+      "values": [
+        {
+          "value": "array",
+          "state": "clicked",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "no declared outputs is the key absent, never null",
+          "test": "Open file refuses node.outputPorts null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "an untouched TryCatch stores no declared outputs"
+        },
+        {
+          "value": "unlisted-port",
+          "state": "opened",
+          "why": "a declared output on a block that declares none is refused by the compile",
+          "test": "Open file refuses declared outputs on a block that supports none at both doors"
+        }
+      ]
+    },
+    {
+      "path": "declared output.name",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "a declared output names itself",
+          "test": "Open file refuses declared output name absent is refused"
+        },
+        {
+          "value": "blank",
+          "state": "prevented",
+          "why": "the name field writes no blank; the reader refuses a stored one",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "dotted",
+          "state": "prevented",
+          "why": "the name field writes no dot; the reader refuses a stored one",
+          "test": "declared outputs are stored and invalid names are refused"
+        }
+      ]
+    },
+    {
+      "path": "declared output.displayName",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "an empty declared output label is absent from the stored document"
+        }
+      ]
+    },
+    {
+      "path": "declared output.type",
+      "values": [
+        {
+          "value": "atom",
+          "state": "clicked",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "collection",
+          "state": "clicked",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "nested-collection",
+          "state": "clicked",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "alias",
+          "state": "opened",
+          "why": "a type spelled by an alias is refused by the compile (port-type-alias) at import; the corpus block is one the playground host does not register, so Publish is not asked",
+          "test": "Open file imports alias corpus cases and refuses them"
+        },
+        {
+          "value": "unregistered",
+          "state": "opened",
+          "why": "a name the host's vocabulary does not register is refused by the compile (port-type-unregistered)",
+          "test": "Open file imports vocabulary corpus cases and Publish refuses them"
+        },
+        {
+          "value": "blank",
+          "state": "clicked",
+          "test": "an empty declared output label is absent from the stored document",
+          "why": "a newly added output has no type until the author picks one; the compile refuses it as port-type-malformed"
+        },
+        {
+          "value": "collection-of-any",
+          "state": "opened",
+          "why": "Collection<Any> holds the reserved name Any; the compile refuses it (port-type-alias) at import",
+          "test": "Open file imports Collection<Any> corpus cases and refuses them"
+        },
+        {
+          "value": "null",
+          "state": "prevented",
+          "test": "declared outputs are stored and invalid names are refused",
+          "why": "A port type that is blank, null or absent is already refused as port-type-malformed."
+        },
+        {
+          "value": "absent",
+          "state": "prevented",
+          "test": "declared outputs are stored and invalid names are refused",
+          "why": "A port type that is blank, null or absent is already refused as port-type-malformed."
+        }
+      ]
+    },
+    {
+      "path": "declared output.sources",
+      "values": [
+        {
+          "value": "object",
+          "state": "clicked",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "no sources is the key absent, never null",
+          "test": "Open file refuses declared output sources null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "emptying every declared output source drops the sources key"
+        },
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "why": "a sources key the block does not declare is refused by the compile",
+          "test": "Open file refuses a declared output sourced from a branch the block lacks at both doors"
+        }
+      ]
+    },
+    {
+      "path": "node.errorPolicy",
+      "values": [
+        {
+          "value": "object",
+          "state": "clicked",
+          "test": "declared outputs are stored and invalid names are refused"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "no policy is the key absent, never null",
+          "test": "Open file refuses node.errorPolicy null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "resetting the policy omits errorPolicy after Save"
+        }
+      ]
+    },
+    {
+      "path": "error policy.policy",
+      "values": [
+        {
+          "value": "FailWorkflow",
+          "state": "clicked",
+          "test": "a failing StringToInt follows FailWorkflow"
+        },
+        {
+          "value": "ContinueWithDefault",
+          "state": "clicked",
+          "test": "a failing StringToInt follows ContinueWithDefault"
+        },
+        {
+          "value": "EmitError",
+          "state": "clicked",
+          "test": "a failing StringToInt follows EmitError"
+        },
+        {
+          "value": "Skip",
+          "state": "clicked",
+          "test": "a failing StringToInt follows Skip"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "every write sets a policy",
+          "test": "Open file refuses error policy.policy absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "error policy.defaultOutputJson",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "a failing StringToInt follows ContinueWithDefault"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "no default output is the key absent, never null",
+          "test": "Open file refuses error policy.defaultOutputJson null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "an empty default output removes the key from a ContinueWithDefault policy"
+        },
+        {
+          "value": "not-an-object",
+          "state": "prevented",
+          "why": "the field writes object text only; the reader refuses the rest",
+          "test": "a failing StringToInt follows ContinueWithDefault"
+        }
+      ]
+    },
+    {
+      "path": "error policy.routeToErrorPort",
+      "values": [
+        {
+          "value": "boolean",
+          "state": "opened",
+          "why": "the key is refused whatever its value",
+          "test": "Open file refuses error policy routeToErrorPort is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "a failing StringToInt follows FailWorkflow"
+        }
+      ]
+    },
+    {
+      "path": "canvas.edges",
+      "values": [
+        {
+          "value": "array",
+          "state": "clicked",
+          "test": "a dropped block, a wire and Publish reach the server and the stored document"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "one spelling of empty: edges is written, as []",
+          "test": "Open file refuses canvas.edges null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "one spelling of empty: edges is written, as []",
+          "test": "Open file refuses canvas.edges absent is refused"
+        },
+        {
+          "value": "duplicate-pair",
+          "state": "prevented",
+          "why": "addEdge selects the wire already joining the pair instead of adding a second (packages/core/src/editor/store.ts).",
+          "test": "a second wire between the same two blocks is not added"
+        }
+      ]
+    },
+    {
+      "path": "connection.id",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "an edge id is required",
+          "test": "Open file refuses connection.id absent is refused"
+        },
+        {
+          "value": "duplicate",
+          "state": "opened",
+          "why": "two edges with one id are refused by the reader",
+          "test": "Open file refuses duplicate edge id is refused"
+        },
+        {
+          "value": "empty",
+          "state": "opened",
+          "why": "an id is non-empty",
+          "test": "Open file refuses connection.id empty is refused"
+        }
+      ]
+    },
+    {
+      "path": "connection.sourceNodeId",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "a dropped block, a wire and Publish reach the server and the stored document"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "a wire names both its ends",
+          "test": "Open file refuses connection.sourceNodeId absent is refused"
+        },
+        {
+          "value": "empty",
+          "state": "opened",
+          "why": "an id is non-empty",
+          "test": "Open file refuses connection.sourceNodeId empty is refused"
+        }
+      ]
+    },
+    {
+      "path": "connection.targetNodeId",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "a dropped block, a wire and Publish reach the server and the stored document"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "a wire names both its ends",
+          "test": "Open file refuses connection.targetNodeId absent is refused"
+        },
+        {
+          "value": "empty",
+          "state": "opened",
+          "why": "an id is non-empty",
+          "test": "Open file refuses connection.targetNodeId empty is refused"
+        }
+      ]
+    },
+    {
+      "path": "connection.mappings",
+      "values": [
+        {
+          "value": "object",
+          "state": "clicked",
+          "test": "a dropped block, a wire and Publish reach the server and the stored document"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "one spelling of empty: mappings is written, as {}",
+          "test": "Open file refuses connection.mappings null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "one spelling of empty: mappings is written, as {}",
+          "test": "Open file refuses connection.mappings absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "mapping.type",
+      "values": [
+        {
+          "value": "direct",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "literal",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "a mapping names its type",
+          "test": "Open file refuses mapping.type null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "a mapping names its type",
+          "test": "Open file refuses mapping.type absent is refused"
+        },
+        {
+          "value": "other",
+          "state": "opened",
+          "why": "type is direct or literal; the run folds case today",
+          "test": "Open file refuses mapping.type other is refused"
+        }
+      ]
+    },
+    {
+      "path": "mapping.sourceOutputName",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "a source output is a name or the key is absent",
+          "test": "Open file refuses mapping.sourceOutputName null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "blank",
+          "state": "opened",
+          "why": "a source output is a name or the key is absent",
+          "test": "Open file refuses mapping.sourceOutputName blank is refused"
+        }
+      ]
+    },
+    {
+      "path": "mapping.literalValue",
+      "values": [
+        {
+          "value": "boolean",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "number",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "array",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "object",
+          "state": "clicked",
+          "why": "an object is a literal of a Map<String,V> input, graded per member by the compiler; no stored key is new",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "a cleared literal is the key absent",
+          "test": "Open file refuses mapping.literalValue null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        },
+        {
+          "value": "empty-or-untyped-array",
+          "state": "deferred",
+          "why": "an empty array or one whose elements have no join has no type, so the editor cannot author one yet"
+        }
+      ]
+    },
+    {
+      "path": "mapping.projection",
+      "values": [
+        {
+          "value": "object",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        },
+        {
+          "value": "absent",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        }
+      ]
+    },
+    {
+      "path": "projection.path",
+      "values": [
+        {
+          "value": "string",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        }
+      ]
+    },
+    {
+      "path": "projection.mode",
+      "values": [
+        {
+          "value": "jsonText",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        },
+        {
+          "value": "absent",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        }
+      ]
+    },
+    {
+      "path": "projection.type",
+      "values": [
+        {
+          "value": "atom",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        },
+        {
+          "value": "collection",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        },
+        {
+          "value": "nested-collection",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        },
+        {
+          "value": "alias",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        },
+        {
+          "value": "unregistered",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        },
+        {
+          "value": "collection-of-any",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        },
+        {
+          "value": "absent",
+          "state": "hostSlot",
+          "test": "the host projection control stores a projection on a wire from a Json output",
+          "slot": "MappingCustomization.renderProjectionControl"
+        }
+      ]
+    },
+    {
+      "path": "canvas.outputMappings",
+      "values": [
+        {
+          "value": "array",
+          "state": "opened",
+          "why": "the key is refused whatever the list holds",
+          "test": "Open file refuses canvas.outputMappings array is refused"
+        },
+        {
+          "value": "null",
+          "state": "opened",
+          "why": "a null list is refused as well",
+          "test": "Open file refuses canvas.outputMappings null is refused"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "why": "the reader refuses the key, and absence is the form it keeps",
+          "test": "typed literals and a direct mapping are stored on the exit wire"
+        }
+      ]
+    },
+    {
+      "path": "output mapping.sourceNodeId",
+      "values": [
+        {
+          "value": "string",
+          "state": "opened",
+          "why": "the outputMappings key is refused whole, its entries unread",
+          "test": "Open file refuses output mapping.sourceNodeId string is refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "the outputMappings key is refused whole, its entries unread",
+          "test": "Open file refuses output mapping.sourceNodeId absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "output mapping.sourceOutput",
+      "values": [
+        {
+          "value": "string",
+          "state": "opened",
+          "why": "the outputMappings key is refused whole, its entries unread",
+          "test": "Open file refuses output mapping.sourceOutput string is refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "the outputMappings key is refused whole, its entries unread",
+          "test": "Open file refuses output mapping.sourceOutput absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "output mapping.workflowOutput",
+      "values": [
+        {
+          "value": "string",
+          "state": "opened",
+          "why": "the outputMappings key is refused whole, its entries unread",
+          "test": "Open file refuses output mapping.workflowOutput string is refused"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "why": "the outputMappings key is refused whole, its entries unread",
+          "test": "Open file refuses output mapping.workflowOutput absent is refused"
+        }
+      ]
+    },
+    {
+      "path": "parameter.name",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "blank",
+          "state": "prevented",
+          "why": "the parameter Name field writes no blank, the one name the reader already holds non-empty",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "dotted",
+          "state": "prevented",
+          "why": "the name field writes no dot; the reader refuses a stored one",
+          "test": "workflow parameters are authored in Settings and read back"
+        }
+      ]
+    },
+    {
+      "path": "parameter.type",
+      "values": [
+        {
+          "value": "atom",
+          "state": "clicked",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "collection",
+          "state": "clicked",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "nested-collection",
+          "state": "clicked",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "alias",
+          "state": "prevented",
+          "why": "no control writes an alias (the type field is a select); a file that spells one is refused by the compile (port-type-alias) at import, and the editor reads the type into the host's vocabulary before Publish",
+          "test": "Open file imports alias corpus cases and refuses them"
+        },
+        {
+          "value": "unregistered",
+          "state": "opened",
+          "why": "a name the host's vocabulary does not register is refused by the compile (port-type-unregistered)",
+          "test": "Open file imports vocabulary corpus cases and Publish refuses them"
+        },
+        {
+          "value": "collection-of-any",
+          "state": "opened",
+          "why": "Collection<Any> holds the reserved name Any; the compile refuses it (port-type-alias) at import",
+          "test": "Open file imports Collection<Any> corpus cases and refuses them"
+        },
+        {
+          "value": "null",
+          "state": "prevented",
+          "test": "workflow parameters are authored in Settings and read back",
+          "why": "A port type that is blank, null or absent is already refused as port-type-malformed."
+        },
+        {
+          "value": "absent",
+          "state": "prevented",
+          "test": "workflow parameters are authored in Settings and read back",
+          "why": "A port type that is blank, null or absent is already refused as port-type-malformed."
+        }
+      ]
+    },
+    {
+      "path": "parameter.isRequired",
+      "values": [
+        {
+          "value": "boolean",
+          "state": "clicked",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "opening and saving parameter fields keeps the reader's empty spelling"
+        }
+      ]
+    },
+    {
+      "path": "port entry.name",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "declared ports accept names, labels, required and composed types"
+        },
+        {
+          "value": "blank",
+          "state": "opened",
+          "test": "declared ports accept names, labels, required and composed types"
+        },
+        {
+          "value": "dotted",
+          "state": "prevented",
+          "test": "declared ports accept names, labels, required and composed types",
+          "why": "the name field writes no dot; the reader refuses a stored one"
+        }
+      ]
+    },
+    {
+      "path": "port entry.type",
+      "values": [
+        {
+          "value": "atom",
+          "state": "clicked",
+          "test": "declared ports accept names, labels, required and composed types"
+        },
+        {
+          "value": "collection",
+          "state": "clicked",
+          "test": "declared ports accept names, labels, required and composed types"
+        },
+        {
+          "value": "nested-collection",
+          "state": "clicked",
+          "test": "declared ports accept names, labels, required and composed types"
+        },
+        {
+          "value": "alias",
+          "state": "opened",
+          "why": "a type spelled by an alias is refused by the compile (port-type-alias) at import and at Publish",
+          "test": "Open file imports alias corpus cases and refuses them"
+        },
+        {
+          "value": "unregistered",
+          "state": "opened",
+          "why": "a name the host's vocabulary does not register is refused by the compile (port-type-unregistered)",
+          "test": "Open file imports vocabulary corpus cases and Publish refuses them"
+        },
+        {
+          "value": "collection-of-any",
+          "state": "opened",
+          "why": "Collection<Any> holds the reserved name Any; the compile refuses it (port-type-alias) at import",
+          "test": "Open file imports Collection<Any> corpus cases and refuses them"
+        },
+        {
+          "value": "null",
+          "state": "prevented",
+          "test": "declared ports accept names, labels, required and composed types",
+          "why": "A port type that is blank, null or absent is already refused as port-type-malformed."
+        },
+        {
+          "value": "absent",
+          "state": "prevented",
+          "test": "declared ports accept names, labels, required and composed types",
+          "why": "A port type that is blank, null or absent is already refused as port-type-malformed."
+        }
+      ]
+    },
+    {
+      "path": "port entry.isRequired",
+      "values": [
+        {
+          "value": "boolean",
+          "state": "clicked",
+          "test": "declared ports accept names, labels, required and composed types"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "opening and saving a dynamic port normalises absent isRequired"
+        }
+      ]
+    },
+    {
+      "path": "parameter.displayName",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "absent",
+          "state": "opened",
+          "test": "Open file accepts an absent parameter display name"
+        }
+      ]
+    },
+    {
+      "path": "port entry.displayName",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "declared ports accept names, labels, required and composed types"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "declared ports accept names, labels, required and composed types"
+        }
+      ]
+    },
+    {
+      "path": "node.typeArguments",
+      "values": [
+        {
+          "value": "object",
+          "state": "clicked",
+          "test": "with T picked as Int, literal operands typed key by key publish with no finding and are stored as numbers"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "a Numeric parameter offers only numeric terms, and Clear returns the port to T (unbound)"
+        }
+      ]
+    }
+  ],
+  "objects": [
+    {
+      "path": "canvas",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "node",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "position",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "declared output",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "error policy",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "connection",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "mapping",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "projection",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "output mapping",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "parameter",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    },
+    {
+      "path": "port entry",
+      "values": [
+        {
+          "value": "unlisted-key",
+          "state": "opened",
+          "test": "Open file refuses an unlisted key at this object"
+        }
+      ]
+    }
+  ],
+  "workflowRow": [
+    {
+      "path": "workflow row.ExecutionTimeoutSeconds",
+      "values": [
+        {
+          "value": "number",
+          "state": "clicked",
+          "test": "workflow execution and concurrency settings persist through Save"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        },
+        {
+          "value": "zero-or-negative",
+          "state": "opened",
+          "why": "refused at create, update and import",
+          "test": "Open file refuses workflow row settings the run would read as something else"
+        }
+      ]
+    },
+    {
+      "path": "workflow row.RetryPolicyJson",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "workflow execution and concurrency settings persist through Save"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        },
+        {
+          "value": "malformed",
+          "state": "opened",
+          "why": "refused at create, update and import",
+          "test": "Open file refuses workflow row settings the run would read as something else"
+        },
+        {
+          "value": "backoff-strategy-other",
+          "state": "opened",
+          "why": "refused at create, update and import",
+          "test": "Open file refuses workflow row settings the run would read as something else"
+        },
+        {
+          "value": "max-attempts-below-1",
+          "state": "prevented",
+          "why": "the control writes 1 or more; the reader refuses a written below-1",
+          "test": "workflow execution and concurrency settings persist through Save"
+        },
+        {
+          "value": "initial-delay-below-1",
+          "state": "prevented",
+          "why": "the control writes above 0; the reader refuses a written 0 or below",
+          "test": "workflow execution and concurrency settings persist through Save"
+        }
+      ]
+    },
+    {
+      "path": "workflow row.CheckpointPolicyJson",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "workflow execution and concurrency settings persist through Save"
+        },
+        {
+          "value": "malformed",
+          "state": "prevented",
+          "test": "checkpoint controls reject malformed policy forms and preserve the last good value",
+          "why": "The checkpoint controls write only modes and positive heartbeat intervals accepted by WorkflowCheckpointPolicy.Read; the import DTO carries no checkpoint policy."
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        }
+      ]
+    },
+    {
+      "path": "workflow row.Mode",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "workflow execution and concurrency settings persist through Save"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        }
+      ]
+    },
+    {
+      "path": "workflow row.MaxConcurrentRuns",
+      "values": [
+        {
+          "value": "number",
+          "state": "clicked",
+          "test": "workflow execution and concurrency settings persist through Save"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        }
+      ]
+    },
+    {
+      "path": "workflow row.MaxQueuedRuns",
+      "values": [
+        {
+          "value": "number",
+          "state": "clicked",
+          "test": "workflow execution and concurrency settings persist through Save"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        }
+      ]
+    },
+    {
+      "path": "workflow row.OverflowBehavior",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "workflow execution and concurrency settings persist through Save"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        }
+      ]
+    },
+    {
+      "path": "workflow row.InputParametersJson",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        },
+        {
+          "value": "blank-or-null",
+          "state": "opened",
+          "why": "a blank or null parameter list is refused",
+          "test": "Open file refuses workflow row settings the run would read as something else"
+        }
+      ]
+    },
+    {
+      "path": "workflow row.OutputParametersJson",
+      "values": [
+        {
+          "value": "string",
+          "state": "clicked",
+          "test": "workflow parameters are authored in Settings and read back"
+        },
+        {
+          "value": "absent",
+          "state": "clicked",
+          "test": "new workflow settings keep the empty spelling"
+        },
+        {
+          "value": "blank-or-null",
+          "state": "opened",
+          "why": "a blank or null parameter list is refused",
+          "test": "Open file refuses workflow row settings the run would read as something else"
+        }
+      ]
+    }
+  ],
+  "rules": [
+    {
+      "id": "cycle",
+      "state": "clicked",
+      "test": "a detached loop reports cycle and unreachable"
+    },
+    {
+      "id": "no-start-node",
+      "state": "prevented",
+      "test": "the last Workflow Input cannot be removed"
+    },
+    {
+      "id": "input-has-incoming",
+      "state": "clicked",
+      "test": "an incoming connection to Workflow Input is reported"
+    },
+    {
+      "id": "extra-root",
+      "state": "clicked",
+      "test": "dropping an unconnected block reports its editor findings"
+    },
+    {
+      "id": "unreachable",
+      "state": "clicked",
+      "test": "a detached loop reports cycle and unreachable"
+    },
+    {
+      "id": "duplicate-input-mapping",
+      "state": "clicked",
+      "test": "two mapped edges into one input report the collision"
+    },
+    {
+      "id": "structure",
+      "state": "exempt",
+      "why": "the fallback of ClassifyStructure: no document produces it"
+    },
+    {
+      "id": "block-type-unknown",
+      "state": "opened",
+      "test": "Open file reports an unknown block type and Publish refuses it"
+    },
+    {
+      "id": "sub-canvas-name-unknown",
+      "state": "prevented",
+      "why": "The breadcrumb offers only names declared by the parent block, so no control can select an undeclared branch (packages/mui/src/navigation/SubCanvasBreadcrumb.tsx:24).",
+      "test": "only declared sub-canvas names are offered"
+    },
+    {
+      "id": "edge-endpoint-unknown",
+      "state": "prevented",
+      "why": "Removing a node removes every incident edge before Save, so no canvas gesture can author an edge whose endpoint is absent (packages/core/src/editor/store.ts:298).",
+      "test": "deleting a node removes its incident edge"
+    },
+    {
+      "id": "duplicate-node-id",
+      "state": "opened",
+      "test": "Open file finds duplicate node ids and Save refuses them"
+    },
+    {
+      "id": "dotted-name",
+      "state": "opened",
+      "test": "Open file reports dotted names and import/validate refuses them"
+    },
+    {
+      "id": "required-input-unfed",
+      "state": "clicked",
+      "test": "dropping an unconnected block reports its editor findings"
+    },
+    {
+      "id": "required-config-missing",
+      "state": "clicked",
+      "test": "a required configuration field is reported when left empty"
+    },
+    {
+      "id": "wire-port-unknown",
+      "state": "clicked",
+      "test": "removing a mapped workflow output reports the unknown wire port"
+    },
+    {
+      "id": "declared-output-shadows-static",
+      "state": "clicked",
+      "test": "declaring a static output name reports the collision"
+    },
+    {
+      "id": "port-type-mismatch",
+      "state": "clicked",
+      "test": "a boolean output mapped to an integer input is refused"
+    },
+    {
+      "id": "port-type-malformed",
+      "state": "prevented",
+      "why": "Port types are selected from the registry; the control has no free-text type editor (packages/mui/src/ports/PortDeclarationTable.tsx:120-128).",
+      "test": "malformed port types are not offered by the type select"
+    },
+    {
+      "id": "port-type-map-key",
+      "state": "deferred",
+      "why": "the editor reports a bad map key as port-type-map-key, graded by the port-type-names.tsv rows in both readers, but the type select offers no Map yet, so no clicked test can reach it"
+    },
+    {
+      "id": "port-type-alias",
+      "state": "opened",
+      "test": "Open file imports alias corpus cases and refuses them",
+      "why": "an alias of a registered type is refused by the compile at import; Publish refuses a port entry that spells one, and the editor holds the file as written."
+    },
+    {
+      "id": "port-type-unregistered",
+      "state": "opened",
+      "test": "Open file imports vocabulary corpus cases and Publish refuses them",
+      "why": "a well-formed name the host's vocabulary does not register is refused by the compile at Publish; the stored document still loads."
+    },
+    {
+      "id": "definition-unreadable",
+      "state": "opened",
+      "test": "Open file reports L1 in Findings and import/validate"
+    },
+    {
+      "id": "compilation-fault",
+      "state": "exempt",
+      "why": "the compiler's own fault: no document produces it"
+    },
+    {
+      "id": "port-type-unresolved",
+      "state": "prevented",
+      "test": "the literal JSON editor refuses null and stores no null mapping",
+      "why": "MappingDialog refuses a null JSON literal before it can be written (packages/mui/src/mapping/MappingDialog.tsx)."
+    },
+    {
+      "id": "type-parameter-conflict",
+      "state": "opened",
+      "test": "Open file imports type parameter corpus cases and Publish refuses them",
+      "why": "A Filter collection literal of an Int and a String gives two lower bounds with no least upper bound; the opened corpus case reaches the compiler."
+    },
+    {
+      "id": "type-parameter-unbound",
+      "state": "opened",
+      "test": "Open file imports type parameter corpus cases and Publish refuses them",
+      "why": "A Filter collection literal with no value gives its type parameter no evidence; the opened corpus case reaches the compiler."
+    },
+    {
+      "id": "type-parameter-constraint",
+      "state": "deferred",
+      "why": "no library block declares a constrained type parameter yet; the type-parameter-binding.json resolution vectors grade the constraint check instead"
+    },
+    {
+      "id": "block-port-declaration-invalid",
+      "state": "opened",
+      "test": "an opened catalogue omits a block declaring a term that does not parse from the palette",
+      "why": "Refused when the host catalogue is read, so no stored document produces it; the playground host serves a dedicated response with a port type that does not parse and a valid control, and the vectors of registration-agreement.json grade the rest on the server."
+    },
+    {
+      "id": "expression-syntax",
+      "state": "clicked",
+      "test": "an invalid expression reports syntax"
+    },
+    {
+      "id": "expression-out-of-scope",
+      "state": "clicked",
+      "test": "an undeclared parameter reference is refused"
+    },
+    {
+      "id": "expression-unknown-namespace",
+      "state": "clicked",
+      "test": "an unknown host expression namespace is refused"
+    },
+    {
+      "id": "expression-field-access-invalid",
+      "state": "clicked",
+      "test": "a member read out of a scalar is refused"
+    },
+    {
+      "id": "expression-type-mismatch",
+      "state": "deferred",
+      "why": "no playground flow authors an ill-typed expression yet; the expression-typing.json vectors grade the rule instead"
+    },
+    {
+      "id": "expression-result-type-mismatch",
+      "state": "deferred",
+      "why": "no playground flow authors an expression whose result its input cannot take yet; the compiler's tests grade the rule instead"
+    },
+    {
+      "id": "signature-unreadable",
+      "state": "opened",
+      "test": "Open file reports an unreadable signature"
+    },
+    {
+      "id": "node-ports-unresolved",
+      "state": "clicked",
+      "test": "an unselected sub-workflow reports unresolved ports"
+    },
+    {
+      "id": "reference-input-mapped",
+      "state": "clicked",
+      "test": "forwarding a workflow reference into a SubWorkflow is refused"
+    },
+    {
+      "id": "secret-input-passthrough",
+      "state": "clicked",
+      "test": "forwarding a secret-capable input by passthrough is refused on publish"
+    },
+    {
+      "id": "secret-input-key-invalid",
+      "state": "prevented",
+      "test": "a header written as a line is marked on its row and written nowhere"
+    },
+    {
+      "id": "resilience-config-invalid",
+      "state": "prevented",
+      "test": "invalid timeout is refused without replacing the last good value"
+    },
+    {
+      "id": "literal-port-value-invalid",
+      "state": "opened",
+      "test": "text stored for a numeric port is refused on open, with its finding code"
+    },
+    {
+      "id": "error-policy-in-configuration",
+      "state": "prevented",
+      "why": "Reserved config keys are filtered from the generated value editor (packages/mui/src/config/NodeConfigPanel.tsx:117-120).",
+      "test": "reserved error policy config is not editable as node configuration"
+    },
+    {
+      "id": "error-policy-route-unread",
+      "state": "prevented",
+      "why": "The Error Handling section removes routeToErrorPort from every policy it sends to the store (packages/mui/src/config/ErrorHandlingSection.tsx:50-52).",
+      "test": "routeToErrorPort is not offered by error policy controls"
+    },
+    {
+      "id": "error-policy-on-boundary-node",
+      "state": "opened",
+      "test": "Open file refuses an error policy on a workflow's entry or exit node at both doors"
+    },
+    {
+      "id": "node-id-too-long",
+      "state": "opened",
+      "test": "Open file reports an overlong node id at Publish"
+    },
+    {
+      "id": "block-type-id-too-long",
+      "state": "opened",
+      "test": "Open file reports an overlong block type id at Publish"
+    },
+    {
+      "id": "L1",
+      "state": "opened",
+      "test": "Open file reports L1 in Findings and import/validate"
+    },
+    {
+      "id": "L2",
+      "state": "opened",
+      "test": "Open file reports L2 in Findings and import/validate"
+    },
+    {
+      "id": "L3",
+      "state": "opened",
+      "test": "Open file reports L3 in Findings and import/validate"
+    },
+    {
+      "id": "L4",
+      "state": "opened",
+      "test": "Open file reports L4 in Findings and import/validate"
+    },
+    {
+      "id": "L5",
+      "state": "opened",
+      "test": "Open file reports L5 in Findings and import/validate"
+    },
+    {
+      "id": "L7",
+      "state": "opened",
+      "test": "Open file reports L7 in Findings and import/validate"
+    },
+    {
+      "id": "stored-key-unknown",
+      "state": "opened",
+      "test": "Open file refuses an unlisted key at this object"
+    },
+    {
+      "id": "definition-undrawable",
+      "state": "exempt",
+      "why": "both readers refuse what the editor cannot draw: no document produces it, and a store test holds the finding"
+    },
+    {
+      "id": "duplicate-edge-id",
+      "state": "opened",
+      "test": "Open file refuses duplicate edge id is refused"
+    },
+    {
+      "id": "output-mappings-unread",
+      "state": "opened",
+      "test": "Open file refuses canvas.outputMappings array is refused"
+    },
+    {
+      "id": "duplicate-edge-pair",
+      "state": "prevented",
+      "why": "addEdge selects the wire already joining the pair instead of adding a second (packages/core/src/editor/store.ts).",
+      "test": "a second wire between the same two blocks is not added"
+    },
+    {
+      "id": "port-list-without-dynamic-ports",
+      "state": "opened",
+      "test": "Open file refuses a port list on a block without dynamic ports at both doors"
+    },
+    {
+      "id": "declared-outputs-unsupported",
+      "state": "opened",
+      "test": "Open file refuses declared outputs on a block that supports none at both doors"
+    },
+    {
+      "id": "declared-output-source-unknown",
+      "state": "opened",
+      "test": "Open file refuses a declared output sourced from a branch the block lacks at both doors"
+    },
+    {
+      "id": "port-type-json-position",
+      "state": "clicked",
+      "test": "a dynamic input typed Json in the port table is refused at Publish"
+    },
+    {
+      "id": "type-argument-unknown",
+      "state": "deferred",
+      "why": "the editor has no type-argument picker yet, so no clicked test can author one"
+    },
+    {
+      "id": "json-projection-invalid",
+      "state": "clicked",
+      "test": "a projection type on an input whose term names no parameter is refused at Publish"
+    }
+  ]
+}

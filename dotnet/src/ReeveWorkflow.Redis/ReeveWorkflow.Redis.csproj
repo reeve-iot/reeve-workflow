@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <IsPackable>true</IsPackable>
+    <PackageId>ReeveWorkflow.Redis</PackageId>
+    <Description>The Redis half of a workflow cluster: the cluster-wide run budget, fire de-duplication, and the pub/sub transport every cross-replica signal travels on. Three seams, one connection, no schema.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="StackExchange.Redis" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReeveWorkflow.Core\ReeveWorkflow.Core.csproj" />
+    <ProjectReference Include="..\ReeveWorkflow.DependencyInjection\ReeveWorkflow.DependencyInjection.csproj" />
+  </ItemGroup>
+
+</Project>

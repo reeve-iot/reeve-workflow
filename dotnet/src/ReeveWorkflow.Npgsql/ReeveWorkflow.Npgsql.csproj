@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <IsPackable>true</IsPackable>
+    <PackageId>ReeveWorkflow.Npgsql</PackageId>
+    <Description>The PostgreSQL half of a workflow cluster: the one-permit run lock over advisory locks, and the leader gate derived from it. One session per process, no schema, no migration.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" />
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="Reeve.EntityFrameworkCore.AdvisoryLocks" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReeveWorkflow.Core\ReeveWorkflow.Core.csproj" />
+    <ProjectReference Include="..\ReeveWorkflow.DependencyInjection\ReeveWorkflow.DependencyInjection.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ReeveWorkflow.Npgsql.Tests" />
+  </ItemGroup>
+
+</Project>

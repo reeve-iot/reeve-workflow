@@ -1,0 +1,52 @@
+{
+  "name": "@reeve-iot/workflow-adapters",
+  "version": "1.1.0",
+  "description": "Ready-made implementations of the seams @reeve-iot/workflow-core declares, over @reeve-iot/workflow-client. Wire these and the editor works without writing a fetch layer.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reeve-iot/reeve-workflow.git",
+    "directory": "packages/adapters"
+  },
+  "homepage": "https://github.com/reeve-iot/reeve-workflow/tree/main/packages/adapters#readme",
+  "bugs": {
+    "url": "https://github.com/reeve-iot/reeve-workflow/issues"
+  },
+  "keywords": [
+    "workflow",
+    "editor",
+    "react",
+    "adapter",
+    "client"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "@reeve-iot/workflow-client": "1.1.0",
+    "@reeve-iot/workflow-core": "1.1.0"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

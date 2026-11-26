@@ -1,0 +1,420 @@
+{
+  "$note": [
+    "Written by hand (least upper bound and type-parameter binding, with worked cases); never generated. Read by C# only (TypeParameterBindingContractTests, TypeParameterBindingMutationTests).",
+    "`vocabulary` adds host types to the library's: an atom names a CLR stand-in of the test (`clr`), its rows (`widensTo`) and claims; a constructor its allowed arguments.",
+    "`literalTerms`: a literal as JSON and its term, null when it has none.",
+    "`evidence`: what a site gives for the parameters of its declared term, from a closed `source` term (`null` is the null literal) or a `literal`. `T >= X` is lower-bound evidence, `T = X` exact evidence.",
+    "`resolution`: one parameter's evidence and constraints, and what the binding pass answers: a `term`, `unbound`, or a `refusal` rule id.",
+    "`lub`: the least upper bound table; null is undefined.",
+    "`cases`: worked graphs. `blocks` declares the shapes they use: `typeParameters`, `inputs` and `outputs` as name to declared term, `required` inputs, `subCanvases` with their own `inputs` and `outputs`, Enum `configuration` fields; IterateOver and Filter shaped as the library's blocks of those names. A canvas lists `nodes` (`id`, `block`, optional `config`, `typeArguments` and `subCanvases`), `wires` from `node.output` to `node.input` (a bare `node` to `node` orders two nodes and maps nothing), and `literals` on `node.input`. Every canvas gets a WorkflowInput node (`start` at the root, `entry` in a body) wired to every node nothing else feeds, and a literal is a mapping on that node's wire. `expect.refusals` is the whole list of rule, canvas, node and port (null where the diagnostic names none), in any order; `expect.ports` maps `<canvas>:<node>.<in|out>.<port>` to its effective term, or to `unbound`; the root canvas is empty and a body is `<node>/<branch>`."
+  ],
+  "version": 1,
+  "vocabulary": {
+    "atoms": [
+      { "name": "Reading", "clr": "Reading", "claims": ["Equatable"] },
+      { "name": "Celsius", "clr": "Celsius", "widensTo": ["Reading"] },
+      { "name": "Shipment", "clr": "Shipment" },
+      { "name": "ReeferShipment", "clr": "ReeferShipment", "widensTo": ["Shipment"] },
+      { "name": "TankerShipment", "clr": "TankerShipment", "widensTo": ["Shipment"] },
+      { "name": "Up", "clr": "IUp" },
+      { "name": "Down", "clr": "IDown" },
+      { "name": "Left", "clr": "Left", "widensTo": ["Up", "Down"] },
+      { "name": "Right", "clr": "Right", "widensTo": ["Up", "Down"] },
+      { "name": "Thermometer", "clr": "Thermometer", "widensTo": ["Gauge<Number>"] },
+      { "name": "Hygrometer", "clr": "Hygrometer", "widensTo": ["Reading"] }
+    ],
+    "constructors": [
+      { "name": "Gauge", "clr": "GaugeRef", "allowedArguments": ["Boolean", "Int", "Number", "String"] },
+      { "name": "Box", "clr": "BoxRef", "allowedArguments": ["Int", "Int?"] }
+    ]
+  },
+  "literalTerms": [
+    { "literal": 1, "term": "Int" },
+    { "literal": -3, "term": "Int" },
+    { "literal": 1.5, "term": "Number" },
+    { "literal": "5", "term": "String" },
+    { "literal": "2026-01-01T00:00:00Z", "term": "String" },
+    { "literal": true, "term": "Boolean" },
+    { "literal": null, "term": "null" },
+    { "literal": [1, 2], "term": "Collection<Int>" },
+    { "literal": [1, 2.5], "term": "Collection<Number>" },
+    { "literal": [1, null], "term": "Collection<Int?>" },
+    { "literal": [[1], [2.5]], "term": "Collection<Collection<Number>>" },
+    { "literal": [1, "a"], "term": null },
+    { "literal": [], "term": null },
+    { "literal": [null], "term": null },
+    { "literal": [{"a": 1}], "term": null },
+    { "literal": {"a": 1}, "term": null },
+    { "literal": {"a": 1, "b": 2.5}, "term": null },
+    { "literal": {"a": [1, 2]}, "term": null },
+    { "literal": {}, "term": null }
+  ],
+  "evidence": [
+    { "declared": "$T", "source": "Int", "evidence": ["T >= Int"] },
+    { "declared": "$T", "source": "Int?", "evidence": ["T >= Int?"] },
+    { "declared": "$T", "source": "null", "evidence": ["T >= null"] },
+    { "declared": "$T?", "source": "Int?", "evidence": ["T >= Int"] },
+    { "declared": "$T?", "source": "Int", "evidence": ["T >= Int"] },
+    { "declared": "$T?", "source": "null", "evidence": [] },
+    { "declared": "$T", "source": "Json", "evidence": ["T >= Json"] },
+    { "declared": "Collection<$T>", "source": "Collection<Int>", "evidence": ["T >= Int"] },
+    { "declared": "Collection<$T>?", "source": "Collection<Int>?", "evidence": ["T >= Int"] },
+    { "declared": "Collection<$T>?", "source": "Collection<Int>", "evidence": ["T >= Int"] },
+    { "declared": "Collection<$T>", "source": "Collection<Int>?", "evidence": [] },
+    { "declared": "Collection<$T?>", "source": "Collection<Int?>", "evidence": ["T >= Int"] },
+    { "declared": "Collection<$T>", "source": "Int", "evidence": [] },
+    { "declared": "Collection<$T>", "source": "null", "evidence": [] },
+    { "declared": "Gauge<$T>", "source": "Gauge<Number>", "evidence": ["T = Number"] },
+    { "declared": "Gauge<$T>", "source": "Gauge<Number>?", "evidence": [] },
+    { "declared": "Gauge<$T>", "source": "Thermometer", "evidence": ["T = Number"] },
+    { "declared": "Gauge<$T>", "source": "Hygrometer", "evidence": [] },
+    { "declared": "Gauge<$T>", "source": "Number", "evidence": [] },
+    { "declared": "Box<$T>", "source": "Box<Int?>", "evidence": ["T = Int?"] },
+    { "declared": "Box<$T?>", "source": "Box<Int?>", "evidence": ["T = Int"] },
+    { "declared": "Box<$T?>", "source": "Box<Int>", "evidence": ["T = Int"] },
+    { "declared": "Collection<Gauge<$T>>", "source": "Collection<Gauge<Int>>", "evidence": ["T = Int"] },
+    { "declared": "Int", "source": "Int", "evidence": [] },
+    { "declared": "Collection<$T>", "literal": [1, "a"], "evidence": ["T >= Int", "T >= String"] },
+    { "declared": "Collection<$T>", "literal": [1, null], "evidence": ["T >= Int", "T >= null"] },
+    { "declared": "Collection<$T>", "literal": [], "evidence": [] },
+    { "declared": "Collection<$T>", "literal": [{"a": 1}], "evidence": [] },
+    { "declared": "$T", "literal": [1, 2], "evidence": ["T >= Collection<Int>"] },
+    { "declared": "$T", "literal": [1, "a"], "evidence": [] },
+    { "declared": "$T", "literal": [], "evidence": [] },
+    { "declared": "$T", "literal": {"a": 1}, "evidence": [] },
+    { "declared": "Map<String,$T>", "literal": {"a": 1, "b": 2.5}, "evidence": ["T >= Int", "T >= Number"] },
+    { "declared": "Map<String,$T>", "literal": {"a": 1, "b": null}, "evidence": ["T >= Int", "T >= null"] },
+    { "declared": "Map<String,$T>", "literal": {"a": 1, "b": "x"}, "evidence": ["T >= Int", "T >= String"] },
+    { "declared": "Map<String,$T>", "literal": {}, "evidence": [] },
+    { "declared": "Map<String,$T>", "literal": {"a": {"b": 1}}, "evidence": [] },
+    { "declared": "Map<String,$T>", "literal": {"a": [{"b": 1}]}, "evidence": [] },
+    { "declared": "Map<String,$T>", "literal": {"a": 1, "b": {"c": 2}}, "evidence": ["T >= Int"] },
+    { "declared": "Map<String,$T>", "literal": [1], "evidence": [] },
+    { "declared": "Collection<$T>", "literal": {"a": 1}, "evidence": [] },
+    { "declared": "Map<String,Collection<$T>>", "literal": {"a": [1, 2]}, "evidence": ["T >= Int"] },
+    { "declared": "Map<String,$T>", "source": "Map<String,Int>", "evidence": ["T >= Int"] },
+    { "declared": "Map<String,$T>", "source": "Map<String,Int?>", "evidence": ["T >= Int?"] },
+    { "declared": "Map<String,$T>", "source": "Map<String,Int>?", "evidence": [] },
+    { "declared": "Map<String,$T>?", "source": "Map<String,Int>?", "evidence": ["T >= Int"] },
+    { "declared": "Map<String,$T>", "source": "Collection<Int>", "evidence": [] },
+    { "declared": "Collection<$T>", "source": "Map<String,Int>", "evidence": [] },
+    { "declared": "Map<String,Collection<$T>>", "source": "Map<String,Collection<Int>>", "evidence": ["T >= Int"] },
+    { "declared": "Collection<Map<String,$T>>", "source": "Collection<Map<String,Int>>", "evidence": ["T >= Int"] },
+    { "declared": "$T", "source": "Map<String,Int>", "evidence": ["T >= Map<String,Int>"] },
+    { "declared": "$T", "literal": "5", "evidence": ["T >= String"] },
+    { "declared": "$T", "literal": null, "evidence": ["T >= null"] },
+    { "declared": "$T?", "literal": null, "evidence": [] }
+  ],
+  "resolution": [
+    { "evidence": ["T >= Int", "T >= Number"], "term": "Number" },
+    { "evidence": ["T >= Int", "T >= Int?"], "term": "Int?" },
+    { "evidence": ["T >= Int", "T >= null"], "term": "Int?" },
+    { "evidence": ["T >= Int", "T >= String"], "refusal": "type-parameter-conflict" },
+    { "evidence": ["T >= null"], "unbound": true },
+    { "evidence": [], "unbound": true },
+    { "evidence": ["T = Int", "T = Number"], "refusal": "type-parameter-conflict" },
+    { "evidence": ["T = Int", "T = Int"], "term": "Int" },
+    { "evidence": ["T = Number", "T >= Int"], "term": "Number" },
+    { "evidence": ["T = Int", "T >= Number"], "term": "Int" },
+    { "evidence": ["T = Int", "T >= String"], "term": "Int" },
+    { "evidence": ["T >= ReeferShipment", "T >= TankerShipment"], "term": "Shipment" },
+    { "evidence": ["T >= Left", "T >= Right"], "refusal": "type-parameter-conflict" },
+    { "evidence": ["T >= Collection<Int>", "T >= Collection<Number>"], "term": "Collection<Number>" },
+    { "evidence": ["T >= Collection<Int?>", "T >= Collection<Number>"], "term": "Collection<Number?>" },
+    { "evidence": ["T >= Int", "T >= Json"], "refusal": "type-parameter-conflict" },
+    { "evidence": ["T >= Json"], "refusal": "port-type-json-position" },
+    { "evidence": ["T >= Json", "T >= null"], "refusal": "port-type-json-position" },
+    { "evidence": ["T >= Collection<Json>"], "refusal": "port-type-json-position" },
+    { "evidence": ["T = Json"], "refusal": "port-type-json-position" },
+    { "constraints": ["Numeric"], "evidence": ["T >= Int"], "term": "Int" },
+    { "constraints": ["Numeric"], "evidence": ["T >= Int", "T >= Number"], "term": "Number" },
+    { "constraints": ["Numeric"], "evidence": ["T >= String"], "refusal": "type-parameter-constraint" },
+    { "constraints": ["Numeric"], "evidence": ["T >= Int", "T >= null"], "refusal": "type-parameter-constraint" },
+    { "constraints": ["Equatable"], "evidence": ["T >= Reading"], "term": "Reading" },
+    { "constraints": ["Equatable"], "evidence": ["T >= Celsius"], "refusal": "type-parameter-constraint" },
+    { "constraints": ["Comparable"], "evidence": ["T = Boolean"], "refusal": "type-parameter-constraint" },
+    { "constraints": ["Equatable"], "evidence": ["T >= Collection<Int>"], "term": "Collection<Int>" }
+  ],
+  "lub": [
+    { "evidence": ["Int", "Number"], "lub": "Number" },
+    { "evidence": ["Int", "Int?"], "lub": "Int?" },
+    { "evidence": ["Int", "null"], "lub": "Int?" },
+    { "evidence": ["Int?", "Number"], "lub": "Number?" },
+    { "evidence": ["Collection<Int>", "Collection<Number>"], "lub": "Collection<Number>" },
+    { "evidence": ["Collection<Int?>", "Collection<Number>"], "lub": "Collection<Number?>" },
+    { "evidence": ["Collection<Int>?", "Collection<Number>"], "lub": "Collection<Number>?" },
+    { "evidence": ["Json", "Json?"], "lub": "Json?" },
+    { "evidence": ["Json", "null"], "lub": "Json?" },
+    { "evidence": ["Int", "Json"], "lub": null },
+    { "evidence": ["Int", "String"], "lub": null },
+    { "evidence": ["Gauge<Boolean>", "Gauge<Number>"], "lub": null },
+    { "evidence": ["Map<String,Int>", "Map<String,Number>"], "lub": "Map<String,Number>" },
+    { "evidence": ["Map<String,Int>", "Map<String,Int>"], "lub": "Map<String,Int>" },
+    { "evidence": ["Map<String,Int?>", "Map<String,Number>"], "lub": "Map<String,Number?>" },
+    { "evidence": ["Map<String,Int>?", "Map<String,Number>"], "lub": "Map<String,Number>?" },
+    { "evidence": ["Map<String,Int>", "null"], "lub": "Map<String,Int>?" },
+    { "evidence": ["Map<String,Int>", "Map<String,Int>?"], "lub": "Map<String,Int>?" },
+    { "evidence": ["Map<String,Collection<Int>>", "Map<String,Collection<Number>>"], "lub": "Map<String,Collection<Number>>" },
+    { "evidence": ["Map<String,Map<String,Int>>", "Map<String,Map<String,Number>>"], "lub": "Map<String,Map<String,Number>>" },
+    { "evidence": ["Collection<Map<String,Int>>", "Collection<Map<String,Number>>"], "lub": "Collection<Map<String,Number>>" },
+    { "evidence": ["Map<String,ReeferShipment>", "Map<String,TankerShipment>"], "lub": "Map<String,Shipment>" },
+    { "evidence": ["Map<String,Int>", "Map<String,String>"], "lub": null },
+    { "evidence": ["Map<String,Int>", "Collection<Int>"], "lub": null },
+    { "evidence": ["Map<String,Int>", "Int"], "lub": null },
+    { "evidence": ["Map<String,Int>", "Json"], "lub": null },
+    { "evidence": ["Map<String,Gauge<Boolean>>", "Map<String,Gauge<Number>>"], "lub": null },
+    { "evidence": ["ReeferShipment", "TankerShipment"], "lub": "Shipment" },
+    { "evidence": ["Left", "Right"], "lub": null },
+    { "evidence": ["null"], "lub": null },
+    { "evidence": [], "lub": null }
+  ],
+  "blocks": {
+    "Filter": { "typeParameters": [{"name": "T"}], "inputs": {"Collection": "Collection<$T>"}, "required": ["Collection"], "outputs": {"Filtered": "Collection<$T>"} },
+    "IterateOver": { "typeParameters": [{"name": "T"}, {"name": "R"}], "inputs": {"Collection": "Collection<$T>"}, "required": ["Collection"], "outputs": {"Results": "Collection<$R>"}, "subCanvases": {"Body": {"inputs": {"Index": "Int", "Item": "$T"}, "outputs": {"Result": "$R"}}} },
+    "Math": { "typeParameters": [{"name": "T", "constraints": ["Numeric"]}], "inputs": {"A": "$T", "B": "$T"}, "required": ["A", "B"], "outputs": {"Result": "Number"}, "configuration": [{"name": "Op", "allowedValues": ["Add", "Div"]}] },
+    "SetGauge": { "typeParameters": [{"name": "T"}], "inputs": {"Target": "Gauge<$T>", "Value": "$T"}, "required": ["Target", "Value"], "outputs": {} },
+    "Coalesce": { "typeParameters": [{"name": "T"}], "inputs": {"Value": "$T?", "Default": "$T"}, "required": ["Default"], "outputs": {"Result": "$T"} },
+    "Expression": { "typeParameters": [{"name": "T"}], "inputs": {"Value": "$T"}, "outputs": {"Result": "$T"} },
+    "Sum": { "typeParameters": [{"name": "T", "constraints": ["Numeric"]}], "inputs": {"Items": "Collection<$T>"}, "outputs": {"Total": "$T"} },
+    "IntValue": { "outputs": {"Out": "Int"} },
+    "NullableInt": { "outputs": {"Out": "Int?"} },
+    "NumberValue": { "outputs": {"Out": "Number"} },
+    "StringValue": { "outputs": {"Out": "String"} },
+    "IntList": { "outputs": {"Out": "Collection<Int>"} },
+    "NumberGauge": { "outputs": {"Out": "Gauge<Number>"} },
+    "ThermometerValue": { "outputs": {"Out": "Thermometer"} },
+    "IntListSink": { "inputs": {"In": "Collection<Int>"}, "required": ["In"] },
+    "Note": { "inputs": {"Message": "String"} },
+    "NumberSink": { "inputs": {"In": "Number"}, "required": ["In"] },
+    "StoreValue": { "typeParameters": [{"name": "T"}], "inputs": {"Value": "$T"}, "required": ["Value"] }
+  },
+  "cases": [
+    {
+      "name": "filter-empty-literal-read",
+      "why": "Filter.Collection <- [], no argument, Filtered read: T unbound; the literal needs it, and the reader reports",
+      "canvas": {"nodes": [{"id": "filter", "block": "Filter"}, {"id": "sink", "block": "IntListSink"}], "wires": [{"from": "filter.Filtered", "to": "sink.In"}], "literals": [{"to": "filter.Collection", "value": []}]},
+      "expect": {
+        "refusals": [{"rule": "type-parameter-unbound", "canvas": "", "node": "filter", "port": "Collection"}, {"rule": "type-parameter-unbound", "canvas": "", "node": "sink", "port": "In"}],
+        "ports": {":filter.out.Filtered": "unbound"}
+      }
+    },
+    {
+      "name": "filter-empty-literal-argument",
+      "why": "same, typeArguments {T: Int}: T = Int, and [] is a literal of Collection<Int>",
+      "canvas": {"nodes": [{"id": "filter", "block": "Filter", "typeArguments": {"T": "Int"}}, {"id": "sink", "block": "IntListSink"}], "wires": [{"from": "filter.Filtered", "to": "sink.In"}], "literals": [{"to": "filter.Collection", "value": []}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":filter.in.Collection": "Collection<Int>", ":filter.out.Filtered": "Collection<Int>"}
+      }
+    },
+    {
+      "name": "iterate-mixed-literal",
+      "why": "IterateOver.Collection <- [1, \"a\"]: T >= Int and T >= String have no least upper bound",
+      "canvas": {"nodes": [{"id": "loop", "block": "IterateOver"}], "literals": [{"to": "loop.Collection", "value": [1, "a"]}]},
+      "expect": {
+        "refusals": [{"rule": "type-parameter-conflict", "canvas": "", "node": "loop", "port": "T"}]
+      }
+    },
+    {
+      "name": "iterate-argument-widens-item",
+      "why": "IterateOver.Collection <- Collection<Int>, typeArguments {T: Number}: Body.Item is Number",
+      "canvas": {"nodes": [{"id": "ints", "block": "IntList"}, {"id": "loop", "block": "IterateOver", "typeArguments": {"T": "Number"}}], "wires": [{"from": "ints.Out", "to": "loop.Collection"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {"loop/Body:entry.out.Item": "Number", ":loop.in.Collection": "Collection<Number>"}
+      }
+    },
+    {
+      "name": "iterate-no-result-unread",
+      "why": "IterateOver whose body wires nothing into Result, Results unread: R unbound, and the graph compiles",
+      "canvas": {"nodes": [{"id": "ints", "block": "IntList"}, {"id": "loop", "block": "IterateOver"}], "wires": [{"from": "ints.Out", "to": "loop.Collection"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":loop.out.Results": "unbound", "loop/Body:entry.out.Item": "Int"}
+      }
+    },
+    {
+      "name": "iterate-no-result-wired",
+      "why": "same, Results wired onward: the reader reports",
+      "canvas": {"nodes": [{"id": "ints", "block": "IntList"}, {"id": "loop", "block": "IterateOver"}, {"id": "sink", "block": "IntListSink"}], "wires": [{"from": "ints.Out", "to": "loop.Collection"}, {"from": "loop.Results", "to": "sink.In"}]},
+      "expect": {
+        "refusals": [{"rule": "type-parameter-unbound", "canvas": "", "node": "sink", "port": "In"}]
+      }
+    },
+    {
+      "name": "iterate-no-result-expression",
+      "why": "same, Results read by ${previous.loop.Results}: the expression reports",
+      "canvas": {"nodes": [{"id": "ints", "block": "IntList"}, {"id": "loop", "block": "IterateOver"}, {"id": "note", "block": "Note", "config": {"Message": "expr:${previous.loop.Results}"}}], "wires": [{"from": "ints.Out", "to": "loop.Collection"}, {"from": "loop", "to": "note"}]},
+      "expect": {
+        "refusals": [{"rule": "type-parameter-unbound", "canvas": "", "node": "note", "port": null}]
+      }
+    },
+    {
+      "name": "iterate-null-result-unread",
+      "why": "IterateOver whose body maps the literal null into Result, Results unread: R >= null only is unbound, and the graph compiles",
+      "canvas": {"nodes": [{"id": "ints", "block": "IntList"}, {"id": "loop", "block": "IterateOver", "subCanvases": {"Body": {"nodes": [{"id": "exit", "block": "WorkflowOutput"}], "literals": [{"to": "exit.Result", "value": null}]}}}], "wires": [{"from": "ints.Out", "to": "loop.Collection"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":loop.out.Results": "unbound"}
+      }
+    },
+    {
+      "name": "iterate-null-result-argument",
+      "why": "same, typeArguments {R: Int}: the body's null is graded against Int",
+      "canvas": {"nodes": [{"id": "ints", "block": "IntList"}, {"id": "loop", "block": "IterateOver", "typeArguments": {"R": "Int"}, "subCanvases": {"Body": {"nodes": [{"id": "exit", "block": "WorkflowOutput"}], "literals": [{"to": "exit.Result", "value": null}]}}}], "wires": [{"from": "ints.Out", "to": "loop.Collection"}]},
+      "expect": {
+        "refusals": [{"rule": "literal-port-value-invalid", "canvas": "loop/Body", "node": "exit", "port": "Result"}],
+        "ports": {":loop.out.Results": "Collection<Int>"}
+      }
+    },
+    {
+      "name": "iterate-int-result-argument",
+      "why": "IterateOver whose body wires an Int into Result, typeArguments {R: Number}: R = Number, and the body's wire is accepted",
+      "canvas": {"nodes": [{"id": "ints", "block": "IntList"}, {"id": "loop", "block": "IterateOver", "typeArguments": {"R": "Number"}, "subCanvases": {"Body": {"nodes": [{"id": "n", "block": "IntValue"}, {"id": "exit", "block": "WorkflowOutput"}], "wires": [{"from": "n.Out", "to": "exit.Result"}]}}}], "wires": [{"from": "ints.Out", "to": "loop.Collection"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":loop.out.Results": "Collection<Number>"}
+      }
+    },
+    {
+      "name": "iterate-json-argument",
+      "why": "same, typeArguments {R: Json}: refused on the argument",
+      "canvas": {"nodes": [{"id": "ints", "block": "IntList"}, {"id": "loop", "block": "IterateOver", "typeArguments": {"R": "Json"}, "subCanvases": {"Body": {"nodes": [{"id": "n", "block": "IntValue"}, {"id": "exit", "block": "WorkflowOutput"}], "wires": [{"from": "n.Out", "to": "exit.Result"}]}}}], "wires": [{"from": "ints.Out", "to": "loop.Collection"}]},
+      "expect": {
+        "refusals": [{"rule": "port-type-json-position", "canvas": "", "node": "loop", "port": "R"}]
+      }
+    },
+    {
+      "name": "math-add-joins",
+      "why": "Math(A <- Int, B <- Number, Op = Add): T = Number by the join, and Result is Number",
+      "canvas": {"nodes": [{"id": "a", "block": "IntValue"}, {"id": "b", "block": "NumberValue"}, {"id": "m", "block": "Math", "config": {"Op": "Add"}}], "wires": [{"from": "a.Out", "to": "m.A"}, {"from": "b.Out", "to": "m.B"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":m.in.A": "Number", ":m.out.Result": "Number"}
+      }
+    },
+    {
+      "name": "math-int-operands-answer-a-number",
+      "why": "Math(A <- Int, B <- Int, Op = Div): T = Int, and Result is Number, as for every Op",
+      "canvas": {"nodes": [{"id": "a", "block": "IntValue"}, {"id": "b", "block": "IntValue"}, {"id": "m", "block": "Math", "config": {"Op": "Div"}}], "wires": [{"from": "a.Out", "to": "m.A"}, {"from": "b.Out", "to": "m.B"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":m.in.A": "Int", ":m.out.Result": "Number"}
+      }
+    },
+    {
+      "name": "math-op-absent",
+      "why": "Math(A <- Int, B <- Int), Op absent: T = Int, and Result is Number",
+      "canvas": {"nodes": [{"id": "a", "block": "IntValue"}, {"id": "b", "block": "IntValue"}, {"id": "m", "block": "Math"}], "wires": [{"from": "a.Out", "to": "m.A"}, {"from": "b.Out", "to": "m.B"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":m.in.A": "Int", ":m.out.Result": "Number"}
+      }
+    },
+    {
+      "name": "math-no-join",
+      "why": "Math(A <- Int, B <- String): no least upper bound",
+      "canvas": {"nodes": [{"id": "a", "block": "IntValue"}, {"id": "b", "block": "StringValue"}, {"id": "m", "block": "Math", "config": {"Op": "Add"}}], "wires": [{"from": "a.Out", "to": "m.A"}, {"from": "b.Out", "to": "m.B"}]},
+      "expect": {
+        "refusals": [{"rule": "type-parameter-conflict", "canvas": "", "node": "m", "port": "T"}]
+      }
+    },
+    {
+      "name": "gauge-exact-target",
+      "why": "SetGauge(Target <- Gauge<Number>, Value <- Int): T = Number from the invariant target, and Int is assignable to Number",
+      "canvas": {"nodes": [{"id": "g", "block": "NumberGauge"}, {"id": "v", "block": "IntValue"}, {"id": "set", "block": "SetGauge"}], "wires": [{"from": "g.Out", "to": "set.Target"}, {"from": "v.Out", "to": "set.Value"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":set.in.Value": "Number"}
+      }
+    },
+    {
+      "name": "gauge-exact-target-mismatch",
+      "why": "SetGauge(Target <- Gauge<Number>, Value <- String): T = Number, and the Value wire is refused",
+      "canvas": {"nodes": [{"id": "g", "block": "NumberGauge"}, {"id": "v", "block": "StringValue"}, {"id": "set", "block": "SetGauge"}], "wires": [{"from": "g.Out", "to": "set.Target"}, {"from": "v.Out", "to": "set.Value"}]},
+      "expect": {
+        "refusals": [{"rule": "port-type-mismatch", "canvas": "", "node": "set", "port": "Value"}]
+      }
+    },
+    {
+      "name": "gauge-through-row",
+      "why": "SetGauge(Target <- Thermometer, Value <- Int): the row Thermometer -> Gauge<Number> binds T = Number",
+      "canvas": {"nodes": [{"id": "g", "block": "ThermometerValue"}, {"id": "v", "block": "IntValue"}, {"id": "set", "block": "SetGauge"}], "wires": [{"from": "g.Out", "to": "set.Target"}, {"from": "v.Out", "to": "set.Value"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":set.in.Value": "Number"}
+      }
+    },
+    {
+      "name": "coalesce-nullable-value",
+      "why": "Coalesce(Value <- Int?, Default <- Int): T >= Int twice, so Result is Int",
+      "canvas": {"nodes": [{"id": "a", "block": "NullableInt"}, {"id": "b", "block": "IntValue"}, {"id": "c", "block": "Coalesce"}], "wires": [{"from": "a.Out", "to": "c.Value"}, {"from": "b.Out", "to": "c.Default"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":c.in.Value": "Int?", ":c.out.Result": "Int"}
+      }
+    },
+    {
+      "name": "expression-result",
+      "why": "Expression with ${previous.a.Out} + 1, Out: Int: T >= Int, so Result is Int",
+      "canvas": {"nodes": [{"id": "a", "block": "IntValue"}, {"id": "x", "block": "Expression", "config": {"Value": "expr:${previous.a.Out} + 1"}}], "wires": [{"from": "a", "to": "x"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":x.out.Result": "Int"}
+      }
+    },
+    {
+      "name": "expression-null-literal",
+      "why": "Expression with the literal null, no argument: T >= null only is unbound, and the literal needs it",
+      "canvas": {"nodes": [{"id": "x", "block": "Expression"}], "literals": [{"to": "x.Value", "value": null}]},
+      "expect": {
+        "refusals": [{"rule": "type-parameter-unbound", "canvas": "", "node": "x", "port": "Value"}]
+      }
+    },
+    {
+      "name": "constraint-refused",
+      "why": "Sum(Items <- [\"a\"]): T = String does not implement Numeric",
+      "canvas": {"nodes": [{"id": "s", "block": "Sum"}], "literals": [{"to": "s.Items", "value": ["a"]}]},
+      "expect": {
+        "refusals": [{"rule": "type-parameter-constraint", "canvas": "", "node": "s", "port": "T"}]
+      }
+    },
+    {
+      "name": "store-value-argument",
+      "why": "StoreValue.Value <- Int, typeArguments {T: Number}, a stand-in for the host's helper type: T = Number, and Int widens to it",
+      "canvas": {"nodes": [{"id": "a", "block": "IntValue"}, {"id": "store", "block": "StoreValue", "typeArguments": {"T": "Number"}}], "wires": [{"from": "a.Out", "to": "store.Value"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":store.in.Value": "Number"}
+      }
+    },
+    {
+      "name": "expression-now-into-number",
+      "why": "Expression with ${now.hour}, Result wired into a Number input: now.hour is Int, so T = Int, and Int widens to Number",
+      "canvas": {"nodes": [{"id": "x", "block": "Expression", "config": {"Value": "expr:${now.hour}"}}, {"id": "sink", "block": "NumberSink"}], "wires": [{"from": "x.Result", "to": "sink.In"}]},
+      "expect": {
+        "refusals": [],
+        "ports": {":x.out.Result": "Int", ":sink.in.In": "Number"}
+      }
+    },
+    {
+      "name": "coalesce-two-sources-into-value",
+      "why": "Coalesce.Value <- Int and <- String on two edges: both are sites, so T >= Int and T >= String have no least upper bound; the second mapping is also a duplicate",
+      "canvas": {"nodes": [{"id": "a", "block": "IntValue"}, {"id": "s", "block": "StringValue"}, {"id": "b", "block": "IntValue"}, {"id": "c", "block": "Coalesce"}], "wires": [{"from": "a.Out", "to": "c.Value"}, {"from": "s.Out", "to": "c.Value"}, {"from": "b.Out", "to": "c.Default"}]},
+      "expect": {
+        "refusals": [
+          {"rule": "duplicate-input-mapping", "canvas": "", "node": null, "port": null},
+          {"rule": "type-parameter-conflict", "canvas": "", "node": "c", "port": "T"}
+        ]
+      }
+    },
+    {
+      "name": "iterate-int-wire-no-shape",
+      "why": "IterateOver.Collection <- Int, no argument: an Int matches no Collection<$T>, so the wire is refused for any binding",
+      "canvas": {"nodes": [{"id": "a", "block": "IntValue"}, {"id": "loop", "block": "IterateOver"}], "wires": [{"from": "a.Out", "to": "loop.Collection"}]},
+      "expect": {
+        "refusals": [{"rule": "port-type-mismatch", "canvas": "", "node": "loop", "port": "Collection"}]
+      }
+    }
+  ]
+}

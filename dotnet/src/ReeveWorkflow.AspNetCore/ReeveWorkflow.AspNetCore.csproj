@@ -1,0 +1,30 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <IsPackable>true</IsPackable>
+    <PackageId>ReeveWorkflow.AspNetCore</PackageId>
+    <Description>The workflow HTTP surface as a minimal-API extension: MapWorkflowApi returns a RouteGroupBuilder the host mounts under its own policy. Separate from the engine so a host that runs workflows without exposing them takes no ASP.NET dependency.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ReeveWorkflow.Core\ReeveWorkflow.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="workflow-api-surface.json" Pack="true" PackagePath="contracts/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\AuthorizationIntent.cs" Link="Shared\AuthorizationIntent.cs" />
+    <Compile Include="..\Shared\JsonRequestBody.cs" Link="Shared\JsonRequestBody.cs" />
+  </ItemGroup>
+
+</Project>

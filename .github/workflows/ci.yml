@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  node:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npx tsc -b
+      - run: npx tsc -p tsconfig.tests.json
+      - run: npx vitest run --reporter=dot
+      - run: |
+          for ws in core mui client adapters; do
+            npm pack --dry-run --workspace "@reeve-iot/workflow-$ws"
+          done
+      - name: vitest on React 18
+        run: |
+          npm install --no-save react@18.3.1 react-dom@18.3.1
+          npx vitest run --reporter=dot
+
+  dotnet:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 11.0.x
+      - run: dotnet build dotnet/ReeveWorkflow.slnx -c Release
+      - run: dotnet pack dotnet/ReeveWorkflow.slnx -c Release --no-build -o artifacts/nupkg
+      - run: dotnet test dotnet/ReeveWorkflow.slnx -c Release --no-build --filter "Category!=Docker" -m:1
+
+  dotnet-docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 11.0.x
+      - run: >
+          dotnet test examples/dispatch-host/Dispatch.Host.Tests/Dispatch.Host.Tests.csproj
+          -c Release --filter "Category=Docker"
+
+  e2e-editor:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 11.0.x
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - run: >
+          dotnet publish examples/dispatch-host/Dispatch.Host/Dispatch.Host.csproj
+          -c Release -r linux-x64 --self-contained true -o artifacts/dispatch-host
+      - run: npm ci --no-audit --no-fund
+      - run: npx playwright install --with-deps chromium
+        working-directory: examples/playground
+      - run: npm run build --workspace @reeve-iot/workflow-playground
+      - run: npm run e2e --workspace @reeve-iot/workflow-playground
+      - if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: e2e-editor-report
+          path: |
+            examples/playground/e2e/test-results/
+            examples/playground/e2e/report/
+          retention-days: 7

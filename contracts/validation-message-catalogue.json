@@ -1,0 +1,586 @@
+{
+  "rows": [
+    {
+      "code": "cycle",
+      "requiredParams": [
+        "location"
+      ],
+      "otherParams": [],
+      "english": "Workflow contains a cycle{location}"
+    },
+    {
+      "code": "block-port-declaration-invalid",
+      "requiredParams": [
+        "blockTypeId",
+        "where",
+        "reason"
+      ],
+      "otherParams": [],
+      "english": "Block '{blockTypeId}' {where} {reason}."
+    },
+    {
+      "code": "no-start-node",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "Workflow has no start node. Add a Workflow Input node as the single entry point."
+    },
+    {
+      "code": "input-has-incoming",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "The Workflow Input node must be the single start point and cannot have incoming connections"
+    },
+    {
+      "code": "extra-root",
+      "requiredParams": [
+        "nodeLabel"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' has no incoming connection — the workflow must start only from the Workflow Input node"
+    },
+    {
+      "code": "unreachable",
+      "requiredParams": [
+        "nodeLabel"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' is not reachable from the Workflow Input start node"
+    },
+    {
+      "code": "duplicate-input-mapping",
+      "requiredParams": [
+        "nodeLabel",
+        "inputName",
+        "location"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' input '{inputName}' is mapped from multiple incoming connections{location} — only one will apply"
+    },
+    {
+      "code": "duplicate-edge-pair",
+      "requiredParams": [
+        "location",
+        "sourceNodeId",
+        "targetNodeId"
+      ],
+      "otherParams": [],
+      "english": "More than one connection joins '{sourceNodeId}' to '{targetNodeId}'{location}"
+    },
+    {
+      "code": "duplicate-edge-id",
+      "requiredParams": [
+        "fault"
+      ],
+      "otherParams": [],
+      "english": "Connection id is duplicated: {fault}."
+    },
+    {
+      "code": "edge-endpoint-unknown",
+      "requiredParams": [
+        "edgeId",
+        "location",
+        "end",
+        "nodeId"
+      ],
+      "otherParams": [],
+      "english": "Connection '{edgeId}'{location} names {end} node '{nodeId}', which does not exist on its canvas"
+    },
+    {
+      "code": "duplicate-node-id",
+      "requiredParams": [
+        "duplicateId",
+        "location"
+      ],
+      "otherParams": [],
+      "english": "Node id '{duplicateId}' is used by more than one node{location}"
+    },
+    {
+      "code": "dotted-name",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "literal-port-value-invalid",
+      "requiredParams": [
+        "nodeLabel",
+        "portName",
+        "expectedType"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' has a value for '{portName}' that cannot be read as {expectedType}."
+    },
+    {
+      "code": "literal-port-value-invalid.enum",
+      "requiredParams": [
+        "nodeLabel",
+        "portName",
+        "allowedValues"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' must set '{portName}' to one of {allowedValues}."
+    },
+    {
+      "code": "required-input-unfed",
+      "requiredParams": [
+        "nodeLabel",
+        "portLabel"
+      ],
+      "otherParams": [
+        "portName"
+      ],
+      "english": "Node '{nodeLabel}' is missing required mapping for '{portLabel}'"
+    },
+    {
+      "code": "required-input-unfed.exit",
+      "requiredParams": [
+        "exitNoun",
+        "portLabel"
+      ],
+      "otherParams": [
+        "portName"
+      ],
+      "english": "{exitNoun} '{portLabel}' is not connected"
+    },
+    {
+      "code": "reference-input-mapped",
+      "requiredParams": [
+        "nodeLabel",
+        "reference"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' takes the workflow it runs from its '{reference}' setting only; a mapping into it is refused"
+    },
+    {
+      "code": "node-ports-unresolved",
+      "requiredParams": [
+        "nodeLabel",
+        "reference"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' names no workflow to run in '{reference}'"
+    },
+    {
+      "code": "sub-canvas-name-unknown",
+      "requiredParams": [
+        "nodeLabel",
+        "branchName"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' has a branch '{branchName}' its block does not declare"
+    },
+    {
+      "code": "required-config-missing",
+      "requiredParams": [
+        "nodeLabel",
+        "fieldLabel"
+      ],
+      "otherParams": [
+        "fieldName"
+      ],
+      "english": "Node '{nodeLabel}' is missing required configuration field '{fieldLabel}'"
+    },
+    {
+      "code": "resilience-config-invalid",
+      "requiredParams": [
+        "nodeLabel",
+        "key",
+        "value",
+        "expectation"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' has '{key}' set to {value}, which the engine cannot read as {expectation}"
+    },
+    {
+      "code": "resilience-config-invalid.timeout-too-long",
+      "requiredParams": [
+        "nodeLabel",
+        "key",
+        "value",
+        "maxSeconds"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' sets '{key}' to {value}, and the longest deadline the engine applies is {maxSeconds} seconds (one day)"
+    },
+    {
+      "code": "declared-output-shadows-static",
+      "requiredParams": [
+        "nodeLabel",
+        "portName"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' declared output '{portName}' shadows a static output — rename it to avoid collision"
+    },
+    {
+      "code": "error-policy-in-configuration",
+      "requiredParams": [
+        "nodeLabel"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' keeps its error policy in its configuration, where the run never reads it: set the policy on the node instead"
+    },
+    {
+      "code": "error-policy-in-configuration.boundary",
+      "requiredParams": [
+        "nodeLabel"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' keeps an error policy in its configuration, where the run never reads it, and an entry or exit node has none: remove the key"
+    },
+    {
+      "code": "error-policy-route-unread",
+      "requiredParams": [
+        "nodeLabel"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' sets 'routeToErrorPort', which no run reads: remove it. A node offers '_error' under EmitError alone"
+    },
+    {
+      "code": "wire-port-unknown.output",
+      "requiredParams": [
+        "nodeLabel",
+        "portName",
+        "edgeId"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' has no output '{portName}' for connection '{edgeId}' to map"
+    },
+    {
+      "code": "wire-port-unknown.input",
+      "requiredParams": [
+        "nodeLabel",
+        "portName",
+        "edgeId"
+      ],
+      "otherParams": [],
+      "english": "Node '{nodeLabel}' has no input '{portName}' for connection '{edgeId}' to feed"
+    },
+    {
+      "code": "port-type-malformed",
+      "requiredParams": [
+        "portName",
+        "detail",
+        "origin"
+      ],
+      "otherParams": [
+        "rawType"
+      ],
+      "english": "Port type of '{portName}' is not a well-formed name: {detail} It is {origin}."
+    },
+    {
+      "code": "port-type-map-key",
+      "requiredParams": [
+        "portName",
+        "detail",
+        "origin"
+      ],
+      "otherParams": [
+        "rawType"
+      ],
+      "english": "Port type of '{portName}' has a Map type whose key is not String: {detail} It is {origin}."
+    },
+    {
+      "code": "port-type-json-position",
+      "requiredParams": [
+        "portName"
+      ],
+      "otherParams": [],
+      "english": "Port type '{portName}' contains Json, which is not allowed here."
+    },
+    {
+      "code": "type-argument-unknown",
+      "requiredParams": [
+        "name",
+        "blockType"
+      ],
+      "otherParams": [],
+      "english": "Type argument '{name}' names no type parameter of block '{blockType}'."
+    },
+    {
+      "code": "signature-unreadable",
+      "requiredParams": [
+        "subject",
+        "fault"
+      ],
+      "otherParams": [],
+      "english": "{subject} cannot be read: {fault}."
+    },
+    {
+      "code": "definition-unreadable",
+      "requiredParams": [
+        "subject",
+        "fault"
+      ],
+      "otherParams": [],
+      "english": "{subject} cannot be read: {fault}."
+    },
+    {
+      "code": "stored-key-unknown",
+      "requiredParams": [
+        "subject",
+        "fault"
+      ],
+      "otherParams": [],
+      "english": "{subject} cannot be read: {fault}."
+    },
+    {
+      "code": "output-mappings-unread",
+      "requiredParams": [
+        "subject",
+        "fault"
+      ],
+      "otherParams": [],
+      "english": "{subject} cannot be read: {fault}."
+    },
+    {
+      "code": "definition-undrawable",
+      "requiredParams": [
+        "fault"
+      ],
+      "otherParams": [],
+      "english": "The editor cannot draw this workflow: {fault}."
+    },
+    {
+      "code": "branch-output-unset",
+      "requiredParams": [
+        "branchName",
+        "nodeLabel",
+        "portName"
+      ],
+      "otherParams": [],
+      "english": "Branch '{branchName}' of '{nodeLabel}' does not set output '{portName}' (returns null)"
+    },
+    {
+      "code": "branch-output-maybe-unset",
+      "requiredParams": [
+        "nodeLabel",
+        "portName",
+        "satisfyingBranches"
+      ],
+      "otherParams": [],
+      "english": "Output '{portName}' of '{nodeLabel}' may be null on some execution path (set it {satisfyingBranches})"
+    },
+    {
+      "code": "validation-rule-failed",
+      "requiredParams": [
+        "nodeLabel",
+        "reason"
+      ],
+      "otherParams": [],
+      "english": "A validation rule failed on '{nodeLabel}': {reason}"
+    },
+    {
+      "code": "host-metadata-invalid",
+      "requiredParams": [
+        "detail"
+      ],
+      "otherParams": [],
+      "english": "The workflow's host metadata cannot be stored. {detail}"
+    },
+    {
+      "code": "secret-value-unmatched",
+      "requiredParams": [
+        "detail"
+      ],
+      "otherParams": [],
+      "english": "A hidden or protected value cannot be kept. {detail}"
+    },
+    {
+      "code": "secret-codec-missing",
+      "requiredParams": [
+        "detail"
+      ],
+      "otherParams": [],
+      "english": "A value cannot be hidden because this host stores no protected values. {detail}"
+    },
+    {
+      "code": "secret-refused",
+      "requiredParams": [
+        "detail"
+      ],
+      "otherParams": [],
+      "english": "The host did not accept a secret in this workflow. {detail}"
+    },
+    {
+      "code": "secret-key-invalid",
+      "requiredParams": [
+        "detail"
+      ],
+      "otherParams": [],
+      "english": "A header name is not valid. {detail}"
+    },
+    {
+      "code": "origin-not-accepted",
+      "requiredParams": [
+        "detail"
+      ],
+      "otherParams": [],
+      "english": "This request cannot declare that origin. {detail}"
+    },
+    {
+      "code": "structure",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "block-type-unknown",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "wire-port-unknown",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "port-type-mismatch",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "secret-input-passthrough",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "secret-input-key-invalid",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "compilation-fault",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "port-type-unresolved",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "port-type-alias",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "port-type-unregistered",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "port-list-without-dynamic-ports",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "declared-outputs-unsupported",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "declared-output-source-unknown",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "json-projection-invalid",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "error-policy-on-boundary-node",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "type-parameter-conflict",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "type-parameter-unbound",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "type-parameter-constraint",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "expression-syntax",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "expression-out-of-scope",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "expression-unknown-namespace",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "expression-field-access-invalid",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "expression-type-mismatch",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "expression-result-type-mismatch",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "node-id-too-long",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "block-type-id-too-long",
+      "requiredParams": [],
+      "otherParams": [],
+      "english": "the diagnostic's own message"
+    },
+    {
+      "code": "secret-unresolved",
+      "requiredParams": [
+        "input",
+        "entry"
+      ],
+      "otherParams": [],
+      "english": "Input '{input}' {entry} holds a secret that could not be revealed."
+    }
+  ]
+}

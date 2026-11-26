@@ -1,0 +1,34 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ReeveWorkflow.Abstractions/ReeveWorkflow.Abstractions.csproj" />
+    <Project Path="src/ReeveWorkflow.Core/ReeveWorkflow.Core.csproj" />
+    <Project Path="src/ReeveWorkflow.DependencyInjection/ReeveWorkflow.DependencyInjection.csproj" />
+    <Project Path="src/ReeveWorkflow.EntityFrameworkCore/ReeveWorkflow.EntityFrameworkCore.csproj" />
+    <Project Path="src/ReeveWorkflow.EntityFrameworkCore.PostgreSql/ReeveWorkflow.EntityFrameworkCore.PostgreSql.csproj" />
+    <Project Path="src/ReeveWorkflow.AspNetCore/ReeveWorkflow.AspNetCore.csproj" />
+    <Project Path="src/ReeveWorkflow.Editor/ReeveWorkflow.Editor.csproj" />
+    <Project Path="src/ReeveWorkflow.History/ReeveWorkflow.History.csproj" />
+    <Project Path="src/ReeveWorkflow.Debug/ReeveWorkflow.Debug.csproj" />
+    <Project Path="src/ReeveWorkflow.Redis/ReeveWorkflow.Redis.csproj" />
+    <Project Path="src/ReeveWorkflow.Npgsql/ReeveWorkflow.Npgsql.csproj" />
+    <Project Path="src/ReeveWorkflow.Blocks/ReeveWorkflow.Blocks.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ReeveWorkflow.Core.Tests/ReeveWorkflow.Core.Tests.csproj" />
+    <Project Path="tests/ReeveWorkflow.AspNetCore.Tests/ReeveWorkflow.AspNetCore.Tests.csproj" />
+    <Project Path="tests/ReeveWorkflow.Editor.Tests/ReeveWorkflow.Editor.Tests.csproj" />
+    <Project Path="tests/ReeveWorkflow.Debug.Tests/ReeveWorkflow.Debug.Tests.csproj" />
+    <Project Path="tests/ReeveWorkflow.EntityFrameworkCore.Tests/ReeveWorkflow.EntityFrameworkCore.Tests.csproj" />
+    <Project Path="tests/ReeveWorkflow.EntityFrameworkCore.PostgreSql.Tests/ReeveWorkflow.EntityFrameworkCore.PostgreSql.Tests.csproj" />
+    <Project Path="tests/ReeveWorkflow.Redis.Tests/ReeveWorkflow.Redis.Tests.csproj" />
+    <Project Path="tests/ReeveWorkflow.Npgsql.Tests/ReeveWorkflow.Npgsql.Tests.csproj" />
+    <Project Path="tests/ReeveWorkflow.Blocks.Tests/ReeveWorkflow.Blocks.Tests.csproj" />
+  </Folder>
+  <Folder Name="/benchmarks/">
+    <Project Path="benchmarks/ReeveWorkflow.Benchmarks/ReeveWorkflow.Benchmarks.csproj" />
+  </Folder>
+  <Folder Name="/examples/">
+    <Project Path="../examples/dispatch-host/Dispatch.Host/Dispatch.Host.csproj" />
+    <Project Path="../examples/dispatch-host/Dispatch.Host.Tests/Dispatch.Host.Tests.csproj" />
+  </Folder>
+</Solution>

@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReeveWorkflow.Core.Tests\Hosting\RestartGenerationsContract.cs" Link="RestartGenerationsContract.cs" />
+    <Compile Include="..\ReeveWorkflow.Core.Tests\Hosting\SuspensionParkIdentityContract.cs" Link="SuspensionParkIdentityContract.cs" />
+    <Compile Include="..\ReeveWorkflow.Core.Tests\Compilation\CompilationScopes.cs" Link="CompilationScopes.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ReeveWorkflow.EntityFrameworkCore\ReeveWorkflow.EntityFrameworkCore.csproj" />
+    <ProjectReference Include="..\..\src\ReeveWorkflow.Blocks\ReeveWorkflow.Blocks.csproj" />
+  </ItemGroup>
+
+</Project>

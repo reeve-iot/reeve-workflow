@@ -1,0 +1,686 @@
+{
+  "$note": [
+    "Written by hand, never generated. DraftAnalysisEndpointTests (Editor.Tests) posts each request and compares the answer to `response`; the adapters test reads each response with readDraftAnalysis.",
+    "request: `definition` is the stored document object, stringified into definitionJson; `inputParameters` and `outputParameters` are stringified into inputParametersJson and outputParametersJson when present; `revision` is posted as it stands. The test host registers Filter, IterateOver, ForLoop, TextToJson and Expression from ReeveWorkflow.Blocks over a fresh type registry, so registryGeneration is 0.",
+    "response: `revision` and `registryGeneration` are compared. `diagnostics` are compared as a set by ruleId, nodeId, portName and canvasPath (null where the diagnostic names none); message and blockSource are shown as the host answered them and are not compared. `nodes` are keyed by canvasPath and nodeId; each node's typeArguments and each port, by name within inputs and outputs, are compared in full, a key that is absent in `response` being absent in the answer.",
+    "canvasPath is an array of { nodeId, branchName }, empty on the root canvas, as it is on a diagnostic. A port's `effective` is null unless its state is `bound`; `unbound` lists the type parameters a port's declared term names that nothing binds, without the `$`. `declared` may name a type parameter; the effective term of an Expression<T> input is T.",
+    "A name a `passthrough` entry gives and a wire, a literal, a configuration value or an expr: value feeds is listed as an input and an output of its node, and as an output of the entry node of each sub-canvas the node owns, with `declared` null and the `effective` term of its feed (a wire's source term, the type a projection states, the term of a literal, a configuration value or an expr: value); `refused` and null where the feed has none. A name nothing feeds is no port and is not listed. `declared` is null for no other port."
+  ],
+  "cases": [
+    {
+      "name": "a Filter nothing feeds leaves its item type unbound",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [{"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "f", "blockTypeId": "Filter", "position": {"x": 0, "y": 0}, "configuration": {}}],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "f", "mappings": {}}]
+        }
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [
+          {"ruleId": "required-input-unfed", "message": "Input 'Collection' of node 'Filter Collection' is fed by neither a connection nor a configuration value.", "nodeId": "f", "portName": "Collection", "blockSource": null, "canvasPath": []},
+          {"ruleId": "required-input-unfed", "message": "Input 'Predicate' of node 'Filter Collection' is fed by neither a connection nor a configuration value.", "nodeId": "f", "portName": "Predicate", "blockSource": null, "canvasPath": []}
+        ],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": []},
+          {
+            "canvasPath": [],
+            "nodeId": "f",
+            "typeArguments": {"T": null},
+            "inputs": [{"name": "Collection", "declared": "Collection<$T>", "effective": null, "state": "unbound", "unbound": ["T"]}, {"name": "Predicate", "declared": "Expression<Boolean>", "effective": "Boolean", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Filtered", "declared": "Collection<$T>", "effective": null, "state": "unbound", "unbound": ["T"]}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a Collection<String> source binds the item type of a Filter",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [{"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "f", "blockTypeId": "Filter", "position": {"x": 0, "y": 0}, "configuration": {"Predicate": "expr:true"}}],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "f", "mappings": {"Collection": {"type": "direct", "sourceOutputName": "Names"}}}]
+        },
+        "inputParameters": [{"name": "Names", "type": "Collection<String>", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Names", "declared": "Collection<String>", "effective": "Collection<String>", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "f",
+            "typeArguments": {"T": "String"},
+            "inputs": [
+              {"name": "Collection", "declared": "Collection<$T>", "effective": "Collection<String>", "state": "bound", "unbound": []},
+              {"name": "Predicate", "declared": "Expression<Boolean>", "effective": "Boolean", "state": "bound", "unbound": [], "expression": "Boolean"}
+            ],
+            "outputs": [{"name": "Filtered", "declared": "Collection<$T>", "effective": "Collection<String>", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a type argument fixes the binding and a wire that does not fit is a mismatch",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [{"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "f", "blockTypeId": "Filter", "position": {"x": 0, "y": 0}, "configuration": {"Predicate": "expr:true"}, "typeArguments": {"T": "Int"}}],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "f", "mappings": {"Collection": {"type": "direct", "sourceOutputName": "Names"}}}]
+        },
+        "inputParameters": [{"name": "Names", "type": "Collection<String>", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [{"ruleId": "port-type-mismatch", "message": "Output 'Names' of 'Workflow Input' carries Collection<String>, which input 'Collection' of 'Filter Collection' cannot take (Collection<Int>).", "nodeId": "f", "portName": "Collection", "blockSource": null, "canvasPath": []}],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Names", "declared": "Collection<String>", "effective": "Collection<String>", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "f",
+            "typeArguments": {"T": "Int"},
+            "inputs": [
+              {"name": "Collection", "declared": "Collection<$T>", "effective": "Collection<Int>", "state": "bound", "unbound": []},
+              {"name": "Predicate", "declared": "Expression<Boolean>", "effective": "Boolean", "state": "bound", "unbound": [], "expression": "Boolean"}
+            ],
+            "outputs": [{"name": "Filtered", "declared": "Collection<$T>", "effective": "Collection<Int>", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a type argument the vocabulary does not register refuses the type parameter",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [{"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "f", "blockTypeId": "Filter", "position": {"x": 0, "y": 0}, "configuration": {"Predicate": "expr:true"}, "typeArguments": {"T": "Mystery"}}],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "f", "mappings": {"Collection": {"type": "direct", "sourceOutputName": "Names"}}}]
+        },
+        "inputParameters": [{"name": "Names", "type": "Collection<String>", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [
+          {
+            "ruleId": "port-type-unregistered",
+            "message": "Type argument 'T' of node 'f' has the type 'Mystery', which the host's port type vocabulary does not register ('Mystery' is not a registered type)",
+            "nodeId": "f",
+            "portName": "T",
+            "blockSource": null,
+            "canvasPath": []
+          }
+        ],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Names", "declared": "Collection<String>", "effective": "Collection<String>", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "f",
+            "typeArguments": {"T": null},
+            "inputs": [{"name": "Collection", "declared": "Collection<$T>", "effective": null, "state": "refused", "unbound": []}, {"name": "Predicate", "declared": "Expression<Boolean>", "effective": "Boolean", "state": "bound", "unbound": [], "expression": "Boolean"}],
+            "outputs": [{"name": "Filtered", "declared": "Collection<$T>", "effective": null, "state": "refused", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "an expr: configuration value gives its result term",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [{"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "x", "blockTypeId": "Expression", "position": {"x": 0, "y": 0}, "configuration": {"Expression": "expr:1 + 2"}}],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "x", "mappings": {}}]
+        }
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": []},
+          {
+            "canvasPath": [],
+            "nodeId": "x",
+            "typeArguments": {"T": "Int"},
+            "inputs": [{"name": "Expression", "declared": "$T", "effective": "Int", "state": "bound", "unbound": [], "expression": "Int"}],
+            "outputs": [{"name": "Result", "declared": "$T", "effective": "Int", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "an expr: literal mapping gives its result term",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [{"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "x", "blockTypeId": "Expression", "position": {"x": 0, "y": 0}, "configuration": {}}],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "x", "mappings": {"Expression": {"type": "literal", "literalValue": "expr:2.5 + 1"}}}]
+        }
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": []},
+          {
+            "canvasPath": [],
+            "nodeId": "x",
+            "typeArguments": {"T": "Number"},
+            "inputs": [{"name": "Expression", "declared": "$T", "effective": "Number", "state": "bound", "unbound": [], "expression": "Number"}],
+            "outputs": [{"name": "Result", "declared": "$T", "effective": "Number", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a projection wire states the term it delivers",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "f", "blockTypeId": "Filter", "position": {"x": 0, "y": 0}, "configuration": {"Predicate": "expr:true"}}
+          ],
+          "edges": [
+            {"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}},
+            {"id": "e1", "sourceNodeId": "j", "targetNodeId": "f", "mappings": {"Collection": {"type": "direct", "sourceOutputName": "Value", "projection": {"path": "$.names", "type": "Collection<String>"}}}}
+          ]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}]
+          },
+          {
+            "canvasPath": [],
+            "nodeId": "f",
+            "typeArguments": {"T": "String"},
+            "inputs": [
+              {"name": "Collection", "declared": "Collection<$T>", "effective": "Collection<String>", "state": "bound", "unbound": [], "projection": "Collection<String>"},
+              {"name": "Predicate", "declared": "Expression<Boolean>", "effective": "Boolean", "state": "bound", "unbound": [], "expression": "Boolean"}
+            ],
+            "outputs": [{"name": "Filtered", "declared": "Collection<$T>", "effective": "Collection<String>", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "an IterateOver body is typed one canvas down",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {
+              "id": "it",
+              "blockTypeId": "IterateOver",
+              "position": {"x": 0, "y": 0},
+              "configuration": {},
+              "subCanvases": {
+                "Body": {
+                  "nodes": [{"id": "entry", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "exit", "blockTypeId": "WorkflowOutput", "position": {"x": 0, "y": 0}, "configuration": {}}],
+                  "edges": [{"id": "b0", "sourceNodeId": "entry", "targetNodeId": "exit", "mappings": {"Result": {"type": "direct", "sourceOutputName": "Item"}}}]
+                }
+              }
+            }
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "it", "mappings": {"Collection": {"type": "direct", "sourceOutputName": "Names"}}}]
+        },
+        "inputParameters": [{"name": "Names", "type": "Collection<String>", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Names", "declared": "Collection<String>", "effective": "Collection<String>", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "it",
+            "typeArguments": {"T": "String", "R": "String"},
+            "inputs": [{"name": "Collection", "declared": "Collection<$T>", "effective": "Collection<String>", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Results", "declared": "Collection<$R>", "effective": "Collection<String>", "state": "bound", "unbound": []}]
+          },
+          {
+            "canvasPath": [{"nodeId": "it", "branchName": "Body"}],
+            "nodeId": "entry",
+            "typeArguments": {},
+            "inputs": [],
+            "outputs": [{"name": "Index", "declared": "Int", "effective": "Int", "state": "bound", "unbound": []}, {"name": "Item", "declared": "$T", "effective": "String", "state": "bound", "unbound": []}]
+          },
+          {"canvasPath": [{"nodeId": "it", "branchName": "Body"}], "nodeId": "exit", "typeArguments": {}, "inputs": [{"name": "Result", "declared": "$R", "effective": "String", "state": "bound", "unbound": []}], "outputs": []}
+        ]
+      }
+    },
+    {
+      "name": "a collecting declared output is declared as the collection of its nullable stored type",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {
+              "id": "loop",
+              "blockTypeId": "ForLoop",
+              "position": {"x": 0, "y": 0},
+              "configuration": {"To": 3},
+              "outputPorts": [{"name": "Squares", "displayName": "Squares", "type": "Int", "sources": {"Body": "v"}}],
+              "subCanvases": {
+                "Body": {
+                  "nodes": [{"id": "entry", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "exit", "blockTypeId": "WorkflowOutput", "position": {"x": 0, "y": 0}, "configuration": {}}],
+                  "edges": [{"id": "b0", "sourceNodeId": "entry", "targetNodeId": "exit", "mappings": {"v": {"type": "direct", "sourceOutputName": "Index"}}}]
+                }
+              }
+            }
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "loop", "mappings": {}}]
+        }
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": []},
+          {
+            "canvasPath": [],
+            "nodeId": "loop",
+            "typeArguments": {},
+            "inputs": [
+              {"name": "From", "declared": "Number", "effective": "Number", "state": "bound", "unbound": []},
+              {"name": "To", "declared": "Number", "effective": "Number", "state": "bound", "unbound": []},
+              {"name": "Step", "declared": "Number", "effective": "Number", "state": "bound", "unbound": []}
+            ],
+            "outputs": [{"name": "Iterations", "declared": "Int", "effective": "Int", "state": "bound", "unbound": []}, {"name": "Squares", "declared": "Collection<Int?>", "effective": "Collection<Int?>", "state": "bound", "unbound": []}]
+          },
+          {
+            "canvasPath": [{"nodeId": "loop", "branchName": "Body"}],
+            "nodeId": "entry",
+            "typeArguments": {},
+            "inputs": [],
+            "outputs": [{"name": "Index", "declared": "Int", "effective": "Int", "state": "bound", "unbound": []}, {"name": "Current", "declared": "Number", "effective": "Number", "state": "bound", "unbound": []}]
+          },
+          {"canvasPath": [{"nodeId": "loop", "branchName": "Body"}], "nodeId": "exit", "typeArguments": {}, "inputs": [{"name": "v", "declared": "Int", "effective": "Int", "state": "bound", "unbound": []}], "outputs": []}
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name takes the term of the wire that feeds it",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}, "passthrough": ["Title"]}
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}, "Title": {"type": "direct", "sourceOutputName": "Title"}}}]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}, {"name": "Title", "type": "Int", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Title", "declared": "Int", "effective": "Int", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Title", "declared": null, "effective": "Int", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}, {"name": "Title", "declared": null, "effective": "Int", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name fed by a projection wire takes the type the wire states, not Json",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "k", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}, "passthrough": ["Name"]}
+          ],
+          "edges": [
+            {"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}},
+            {"id": "e1", "sourceNodeId": "start", "targetNodeId": "k", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}},
+            {"id": "e2", "sourceNodeId": "j", "targetNodeId": "k", "mappings": {"Name": {"type": "direct", "sourceOutputName": "Value", "projection": {"path": "$.name", "type": "String"}}}}
+          ]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {"canvasPath": [], "nodeId": "j", "typeArguments": {}, "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}], "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "k",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Name", "declared": null, "effective": "String", "state": "bound", "unbound": [], "projection": "String"}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}, {"name": "Name", "declared": null, "effective": "String", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name fed by a projection wire that states no type is refused",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "k", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}, "passthrough": ["Name"]}
+          ],
+          "edges": [
+            {"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}},
+            {"id": "e1", "sourceNodeId": "start", "targetNodeId": "k", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}},
+            {"id": "e2", "sourceNodeId": "j", "targetNodeId": "k", "mappings": {"Name": {"type": "direct", "sourceOutputName": "Value", "projection": {"path": "$.name"}}}}
+          ]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [{"ruleId": "port-type-unresolved", "message": "Port 'Name' of node 'JSON Text → JSON' (k) is fed by a projection that states no type, so the name it passes on has none.", "nodeId": "k", "portName": "Name", "blockSource": null, "canvasPath": []}],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {"canvasPath": [], "nodeId": "j", "typeArguments": {}, "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}], "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "k",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Name", "declared": null, "effective": null, "state": "refused", "unbound": []}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}, {"name": "Name", "declared": null, "effective": null, "state": "refused", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name fed by a configuration value takes the term of the value",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {"Label": "door"}, "passthrough": ["Label"]}
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}}]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": "String", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": "String", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name reaches the entry node of the sub-canvas the node owns",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {
+              "id": "it",
+              "blockTypeId": "IterateOver",
+              "position": {"x": 0, "y": 0},
+              "configuration": {},
+              "passthrough": ["Title"],
+              "subCanvases": {
+                "Body": {
+                  "nodes": [{"id": "entry", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}}, {"id": "exit", "blockTypeId": "WorkflowOutput", "position": {"x": 0, "y": 0}, "configuration": {}}],
+                  "edges": [{"id": "b0", "sourceNodeId": "entry", "targetNodeId": "exit", "mappings": {"Result": {"type": "direct", "sourceOutputName": "Item"}}}]
+                }
+              }
+            }
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "it", "mappings": {"Collection": {"type": "direct", "sourceOutputName": "Names"}, "Title": {"type": "direct", "sourceOutputName": "Title"}}}]
+        },
+        "inputParameters": [{"name": "Names", "type": "Collection<String>", "isRequired": true}, {"name": "Title", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Names", "declared": "Collection<String>", "effective": "Collection<String>", "state": "bound", "unbound": []}, {"name": "Title", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "it",
+            "typeArguments": {"T": "String", "R": "String"},
+            "inputs": [{"name": "Collection", "declared": "Collection<$T>", "effective": "Collection<String>", "state": "bound", "unbound": []}, {"name": "Title", "declared": null, "effective": "String", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Results", "declared": "Collection<$R>", "effective": "Collection<String>", "state": "bound", "unbound": []}, {"name": "Title", "declared": null, "effective": "String", "state": "bound", "unbound": []}]
+          },
+          {
+            "canvasPath": [{"nodeId": "it", "branchName": "Body"}],
+            "nodeId": "entry",
+            "typeArguments": {},
+            "inputs": [],
+            "outputs": [{"name": "Index", "declared": "Int", "effective": "Int", "state": "bound", "unbound": []}, {"name": "Item", "declared": "$T", "effective": "String", "state": "bound", "unbound": []}, {"name": "Title", "declared": null, "effective": "String", "state": "bound", "unbound": []}]
+          },
+          {"canvasPath": [{"nodeId": "it", "branchName": "Body"}], "nodeId": "exit", "typeArguments": {}, "inputs": [{"name": "Result", "declared": "$R", "effective": "String", "state": "bound", "unbound": []}], "outputs": []}
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name fed by a literal mapping takes the term of the literal",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}, "passthrough": ["Label"]}
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}, "Label": {"type": "literal", "literalValue": "door"}}}]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": "String", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": "String", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a map input parameter is a bound output",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}}
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}}]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}, {"name": "Meta", "type": "Map<String,Int>", "isRequired": false}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Meta", "declared": "Map<String,Int>", "effective": "Map<String,Int>", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name fed by an expr: literal mapping takes the result term",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}, "passthrough": ["Label"]}
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}, "Label": {"type": "literal", "literalValue": "expr:2.5 + 1"}}}]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": "Number", "state": "bound", "unbound": [], "expression": "Number"}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": "Number", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name fed by an expr: configuration value takes the result term",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {"Label": "expr:1 + 2"}, "passthrough": ["Label"]}
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}}]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": "Int", "state": "bound", "unbound": [], "expression": "Int"}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": "Int", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name fed a configuration value with no term is refused",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {"Label": []}, "passthrough": ["Label"]}
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}}]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [{"ruleId": "port-type-unresolved", "message": "Port 'Label' of node 'JSON Text → JSON' is fed a value that has no type (an array that is empty or whose elements have no common type), so the name it passes on has none.", "nodeId": "j", "portName": "Label", "blockSource": null, "canvasPath": []}],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": null, "state": "refused", "unbound": []}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}, {"name": "Label", "declared": null, "effective": null, "state": "refused", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a passthrough name nothing feeds is not listed",
+      "request": {
+        "revision": 3,
+        "definition": {
+          "nodes": [
+            {"id": "start", "blockTypeId": "WorkflowInput", "position": {"x": 0, "y": 0}, "configuration": {}},
+            {"id": "j", "blockTypeId": "TextToJson", "position": {"x": 0, "y": 0}, "configuration": {}, "passthrough": ["Ghost"]}
+          ],
+          "edges": [{"id": "e0", "sourceNodeId": "start", "targetNodeId": "j", "mappings": {"Text": {"type": "direct", "sourceOutputName": "Text"}}}]
+        },
+        "inputParameters": [{"name": "Text", "type": "String", "isRequired": true}]
+      },
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [],
+        "nodes": [
+          {"canvasPath": [], "nodeId": "start", "typeArguments": {}, "inputs": [], "outputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}]},
+          {
+            "canvasPath": [],
+            "nodeId": "j",
+            "typeArguments": {},
+            "inputs": [{"name": "Text", "declared": "String", "effective": "String", "state": "bound", "unbound": []}],
+            "outputs": [{"name": "Value", "declared": "Json?", "effective": "Json?", "state": "bound", "unbound": []}]
+          }
+        ]
+      }
+    },
+    {
+      "name": "a definition the reader does not read answers definition-unreadable and no nodes",
+      "request": {"revision": 3, "definition": {"nodes": {}, "edges": []}},
+      "response": {
+        "revision": 3,
+        "registryGeneration": 0,
+        "diagnostics": [{"ruleId": "definition-unreadable", "message": "The workflow definition cannot be read: an object where an array is required (rule L7, at '/nodes').", "nodeId": null, "portName": null, "blockSource": null, "canvasPath": []}],
+        "nodes": []
+      }
+    }
+  ]
+}

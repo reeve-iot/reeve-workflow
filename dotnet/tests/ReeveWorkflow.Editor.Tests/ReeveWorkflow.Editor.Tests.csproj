@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="FluentAssertions" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" />
+    <PackageReference Include="Microsoft.Extensions.Logging" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\ReeveWorkflow.Editor\ReeveWorkflow.Editor.csproj" />
+    <ProjectReference Include="..\..\src\ReeveWorkflow.AspNetCore\ReeveWorkflow.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\ReeveWorkflow.History\ReeveWorkflow.History.csproj" />
+    <ProjectReference Include="..\..\src\ReeveWorkflow.Blocks\ReeveWorkflow.Blocks.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\ReeveWorkflow.AspNetCore.Tests\WorkflowApiSurface.cs" Link="WorkflowApiSurface.cs" />
+    <Compile Include="..\ReeveWorkflow.Core.Tests\TestSupport\SecretSaveSupport.cs" Link="SecretSaveSupport.cs" />
+  </ItemGroup>
+
+</Project>

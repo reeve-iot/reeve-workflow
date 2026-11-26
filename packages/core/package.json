@@ -1,0 +1,52 @@
+{
+  "name": "@reeve-iot/workflow-core",
+  "version": "1.1.0",
+  "description": "Headless workflow-graph model, editor store, port-type registry and validation. No design system.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reeve-iot/reeve-workflow.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/reeve-iot/reeve-workflow/tree/main/packages/core#readme",
+  "bugs": {
+    "url": "https://github.com/reeve-iot/reeve-workflow/issues"
+  },
+  "keywords": [
+    "workflow",
+    "graph",
+    "editor",
+    "headless",
+    "automation",
+    "node-editor"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "typecheck": "tsc -b"
+  },
+  "dependencies": {
+    "zustand": "^5.0.13"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0 || ^19.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

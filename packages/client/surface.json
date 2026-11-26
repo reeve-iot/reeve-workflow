@@ -1,0 +1,1450 @@
+{
+  "formatVersion": 1,
+  "source": "ReeveWorkflow.AspNetCore.WorkflowApiEndpoints",
+  "endpoints": [
+    {
+      "operation": "previewExpression",
+      "method": "POST",
+      "path": "api/expressions/preview",
+      "pathParameters": [],
+      "queryParameters": [],
+      "requestBody": {
+        "type": "#ExpressionPreviewRequest",
+        "required": true
+      },
+      "responses": [
+        {
+          "status": 200,
+          "type": "#ExpressionPreviewResponse"
+        },
+        {
+          "status": 400,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getBlockTypes",
+      "method": "GET",
+      "path": "api/workflow-blocks",
+      "pathParameters": [],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowBlockTypeResponse[]"
+        }
+      ]
+    },
+    {
+      "operation": "getWorkflows",
+      "method": "GET",
+      "path": "api/workflows",
+      "pathParameters": [],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowSummaryResponse[]"
+        }
+      ]
+    },
+    {
+      "operation": "validateImport",
+      "method": "POST",
+      "path": "api/workflows/import/validate",
+      "pathParameters": [],
+      "queryParameters": [],
+      "requestBody": {
+        "type": "#WorkflowExportDto",
+        "required": true
+      },
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowImportValidationResult"
+        },
+        {
+          "status": 400,
+          "type": "#CompilationProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getWorkflow",
+      "method": "GET",
+      "path": "api/workflows/{id:guid}",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowResponse"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "executeWorkflow",
+      "method": "POST",
+      "path": "api/workflows/{id:guid}/execute",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "requestBody": {
+        "type": "#ExecuteWorkflowRequest",
+        "required": false
+      },
+      "responses": [
+        {
+          "status": 200,
+          "type": "map\u003Cunknown\u003E"
+        },
+        {
+          "status": 400,
+          "type": "#CompilationProblemDetails"
+        },
+        {
+          "status": 403,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 409,
+          "type": "#WorkflowConcurrencyConflictResponse"
+        },
+        {
+          "status": 499
+        },
+        {
+          "status": 503,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getExecutions",
+      "method": "GET",
+      "path": "api/workflows/{id:guid}/executions",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [
+        {
+          "name": "hasErrors",
+          "type": "boolean?",
+          "required": false
+        },
+        {
+          "name": "skip",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "status",
+          "type": "string?",
+          "required": false
+        },
+        {
+          "name": "take",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#PagedWorkflowExecutionsResponse"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getExecution",
+      "method": "GET",
+      "path": "api/workflows/{id:guid}/executions/{executionId:guid}",
+      "pathParameters": [
+        {
+          "name": "executionId",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowExecutionDetailResponse"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getExecutionReplay",
+      "method": "GET",
+      "path": "api/workflows/{id:guid}/executions/{executionId:guid}/replay",
+      "pathParameters": [
+        {
+          "name": "executionId",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowExecutionStepResponse[]"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getVersions",
+      "method": "GET",
+      "path": "api/workflows/{id:guid}/versions",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        }
+      ],
+      "queryParameters": [
+        {
+          "name": "page",
+          "type": "integer",
+          "required": false
+        },
+        {
+          "name": "pageSize",
+          "type": "integer",
+          "required": false
+        }
+      ],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowVersionSummaryResponse[]"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "diffVersions",
+      "method": "GET",
+      "path": "api/workflows/{id:guid}/versions/{versionA:int}/diff/{versionB:int}",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "versionA",
+          "type": "integer",
+          "required": true
+        },
+        {
+          "name": "versionB",
+          "type": "integer",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowDiffResponse"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        },
+        {
+          "status": 422,
+          "type": "#ProblemDetails"
+        }
+      ]
+    },
+    {
+      "operation": "getVersion",
+      "method": "GET",
+      "path": "api/workflows/{id:guid}/versions/{versionNumber:int}",
+      "pathParameters": [
+        {
+          "name": "id",
+          "type": "uuid",
+          "required": true
+        },
+        {
+          "name": "versionNumber",
+          "type": "integer",
+          "required": true
+        }
+      ],
+      "queryParameters": [],
+      "responses": [
+        {
+          "status": 200,
+          "type": "#WorkflowVersionResponse"
+        },
+        {
+          "status": 404,
+          "type": "#ProblemDetails"
+        }
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "BlockConfigFieldResponse",
+      "properties": [
+        {
+          "name": "allowedValues",
+          "type": "string[]?"
+        },
+        {
+          "name": "defaultValue",
+          "type": "string?"
+        },
+        {
+          "name": "description",
+          "type": "string?"
+        },
+        {
+          "name": "label",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "required",
+          "type": "boolean"
+        },
+        {
+          "name": "type",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "BlockPortResponse",
+      "properties": [
+        {
+          "name": "allowedValues",
+          "type": "string[]?"
+        },
+        {
+          "name": "displayName",
+          "type": "string"
+        },
+        {
+          "name": "isRequired",
+          "type": "boolean"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "scopeVariables",
+          "type": "#BlockScopeVariableResponse[]"
+        },
+        {
+          "name": "secretValues",
+          "type": "boolean"
+        },
+        {
+          "name": "type",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "BlockScopeVariableResponse",
+      "properties": [
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "BlockTypeParameterResponse",
+      "properties": [
+        {
+          "name": "constraints",
+          "type": "string[]"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CanvasPathSegment",
+      "properties": [
+        {
+          "name": "branchName",
+          "type": "string"
+        },
+        {
+          "name": "nodeId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CompilationDiagnostic",
+      "properties": [
+        {
+          "name": "blockSource",
+          "type": "string?"
+        },
+        {
+          "name": "canvasPath",
+          "type": "#CanvasPathSegment[]"
+        },
+        {
+          "name": "message",
+          "type": "string"
+        },
+        {
+          "name": "nodeId",
+          "type": "string?"
+        },
+        {
+          "name": "portName",
+          "type": "string?"
+        },
+        {
+          "name": "ruleId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "CompilationProblemDetails",
+      "properties": [
+        {
+          "name": "code",
+          "type": "string?"
+        },
+        {
+          "name": "detail",
+          "type": "string"
+        },
+        {
+          "name": "diagnostics",
+          "type": "#CompilationDiagnostic[]"
+        },
+        {
+          "name": "status",
+          "type": "integer"
+        },
+        {
+          "name": "title",
+          "type": "string"
+        },
+        {
+          "name": "type",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ExecuteWorkflowRequest",
+      "properties": [
+        {
+          "name": "debugMode",
+          "type": "boolean"
+        },
+        {
+          "name": "inputParameters",
+          "type": "map\u003Cunknown?\u003E?"
+        }
+      ]
+    },
+    {
+      "name": "ExpressionPreviewErrorDto",
+      "properties": [
+        {
+          "name": "message",
+          "type": "string"
+        },
+        {
+          "name": "position",
+          "type": "integer"
+        },
+        {
+          "name": "ruleId",
+          "type": "string?"
+        },
+        {
+          "name": "suggestion",
+          "type": "string?"
+        }
+      ]
+    },
+    {
+      "name": "ExpressionPreviewRequest",
+      "properties": [
+        {
+          "name": "contextScope",
+          "type": "string?"
+        },
+        {
+          "name": "expression",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "ExpressionPreviewResponse",
+      "properties": [
+        {
+          "name": "elapsedMicroseconds",
+          "type": "integer"
+        },
+        {
+          "name": "error",
+          "type": "#ExpressionPreviewErrorDto?"
+        },
+        {
+          "name": "ok",
+          "type": "boolean"
+        },
+        {
+          "name": "type",
+          "type": "string?"
+        },
+        {
+          "name": "value",
+          "type": "unknown?"
+        }
+      ]
+    },
+    {
+      "name": "PagedWorkflowExecutionsResponse",
+      "properties": [
+        {
+          "name": "items",
+          "type": "#WorkflowExecutionResponse[]"
+        },
+        {
+          "name": "skip",
+          "type": "integer"
+        },
+        {
+          "name": "take",
+          "type": "integer"
+        },
+        {
+          "name": "totalCount",
+          "type": "integer"
+        }
+      ]
+    },
+    {
+      "name": "ProblemDetails",
+      "properties": [
+        {
+          "name": "detail",
+          "type": "string?"
+        },
+        {
+          "name": "instance",
+          "type": "string?"
+        },
+        {
+          "name": "status",
+          "type": "integer?"
+        },
+        {
+          "name": "title",
+          "type": "string?"
+        },
+        {
+          "name": "type",
+          "type": "string?"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowBlockTypeResponse",
+      "properties": [
+        {
+          "name": "blockTypeId",
+          "type": "string"
+        },
+        {
+          "name": "category",
+          "type": "string"
+        },
+        {
+          "name": "configurationSchema",
+          "type": "#BlockConfigFieldResponse[]"
+        },
+        {
+          "name": "declaredOutputsCollect",
+          "type": "boolean"
+        },
+        {
+          "name": "description",
+          "type": "string"
+        },
+        {
+          "name": "displayName",
+          "type": "string"
+        },
+        {
+          "name": "hasDynamicPorts",
+          "type": "boolean"
+        },
+        {
+          "name": "inputs",
+          "type": "#BlockPortResponse[]"
+        },
+        {
+          "name": "outputs",
+          "type": "#BlockPortResponse[]"
+        },
+        {
+          "name": "runsWorkflowFrom",
+          "type": "string?"
+        },
+        {
+          "name": "subCanvasInputs",
+          "type": "map\u003C#BlockPortResponse[]\u003E"
+        },
+        {
+          "name": "subCanvasNames",
+          "type": "string[]"
+        },
+        {
+          "name": "subCanvasOutputs",
+          "type": "map\u003C#BlockPortResponse[]\u003E"
+        },
+        {
+          "name": "supportsDeclaredOutputs",
+          "type": "boolean"
+        },
+        {
+          "name": "typeParameters",
+          "type": "#BlockTypeParameterResponse[]"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowConcurrencyConflictResponse",
+      "properties": [
+        {
+          "name": "message",
+          "type": "string"
+        },
+        {
+          "name": "mode",
+          "type": "string"
+        },
+        {
+          "name": "outcome",
+          "type": "string"
+        },
+        {
+          "name": "workflowId",
+          "type": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDiffCanvas",
+      "properties": [
+        {
+          "name": "canvasPath",
+          "type": "#WorkflowDiffCanvasStep[]"
+        },
+        {
+          "name": "changedFields",
+          "type": "string[]"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDiffCanvasStep",
+      "properties": [
+        {
+          "name": "nodeId",
+          "type": "string"
+        },
+        {
+          "name": "subCanvas",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDiffEdge",
+      "properties": [
+        {
+          "name": "canvasPath",
+          "type": "#WorkflowDiffCanvasStep[]"
+        },
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "mappingsJson",
+          "type": "string"
+        },
+        {
+          "name": "sourceNodeId",
+          "type": "string"
+        },
+        {
+          "name": "targetNodeId",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDiffModifiedNode",
+      "properties": [
+        {
+          "name": "canvasPath",
+          "type": "#WorkflowDiffCanvasStep[]"
+        },
+        {
+          "name": "changedFields",
+          "type": "string[]"
+        },
+        {
+          "name": "configChanges",
+          "type": "map\u003C#WorkflowDiffValueChange\u003E"
+        },
+        {
+          "name": "errorPolicyChanged",
+          "type": "boolean"
+        },
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "retryPolicyChanged",
+          "type": "boolean"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDiffNode",
+      "properties": [
+        {
+          "name": "blockTypeId",
+          "type": "string"
+        },
+        {
+          "name": "canvasPath",
+          "type": "#WorkflowDiffCanvasStep[]"
+        },
+        {
+          "name": "id",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDiffParameters",
+      "properties": [
+        {
+          "name": "added",
+          "type": "string[]"
+        },
+        {
+          "name": "modified",
+          "type": "string[]"
+        },
+        {
+          "name": "removed",
+          "type": "string[]"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDiffResponse",
+      "properties": [
+        {
+          "name": "addedEdges",
+          "type": "#WorkflowDiffEdge[]"
+        },
+        {
+          "name": "addedNodes",
+          "type": "#WorkflowDiffNode[]"
+        },
+        {
+          "name": "modifiedCanvases",
+          "type": "#WorkflowDiffCanvas[]"
+        },
+        {
+          "name": "modifiedNodes",
+          "type": "#WorkflowDiffModifiedNode[]"
+        },
+        {
+          "name": "outputParameterChanges",
+          "type": "#WorkflowDiffParameters"
+        },
+        {
+          "name": "parameterChanges",
+          "type": "#WorkflowDiffParameters"
+        },
+        {
+          "name": "removedEdges",
+          "type": "#WorkflowDiffEdge[]"
+        },
+        {
+          "name": "removedNodes",
+          "type": "#WorkflowDiffNode[]"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDiffValueChange",
+      "properties": [
+        {
+          "name": "from",
+          "type": "unknown?"
+        },
+        {
+          "name": "to",
+          "type": "unknown?"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowDroppedSecret",
+      "properties": [
+        {
+          "name": "canvasPath",
+          "type": "string"
+        },
+        {
+          "name": "edgeId",
+          "type": "string?"
+        },
+        {
+          "name": "input",
+          "type": "string"
+        },
+        {
+          "name": "key",
+          "type": "string"
+        },
+        {
+          "name": "nodeId",
+          "type": "string"
+        },
+        {
+          "name": "reason",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowExecutionDetailResponse",
+      "properties": [
+        {
+          "name": "automationId",
+          "type": "uuid?"
+        },
+        {
+          "name": "completedAtUtc",
+          "type": "date-time?"
+        },
+        {
+          "name": "durationMs",
+          "type": "number?"
+        },
+        {
+          "name": "entries",
+          "type": "#WorkflowExecutionLogEntryResponse[]"
+        },
+        {
+          "name": "errorMessage",
+          "type": "string?"
+        },
+        {
+          "name": "failureReason",
+          "type": "string?"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "outputsJson",
+          "type": "string?"
+        },
+        {
+          "name": "startedAtUtc",
+          "type": "date-time"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "steps",
+          "type": "#WorkflowExecutionStepResponse[]"
+        },
+        {
+          "name": "triggerId",
+          "type": "uuid?"
+        },
+        {
+          "name": "workflowId",
+          "type": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowExecutionLogEntryResponse",
+      "properties": [
+        {
+          "name": "blockTypeId",
+          "type": "string"
+        },
+        {
+          "name": "callStackJson",
+          "type": "string?"
+        },
+        {
+          "name": "dataJson",
+          "type": "string?"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "iterationIndex",
+          "type": "integer?"
+        },
+        {
+          "name": "level",
+          "type": "string"
+        },
+        {
+          "name": "message",
+          "type": "string"
+        },
+        {
+          "name": "nodeId",
+          "type": "string"
+        },
+        {
+          "name": "timestamp",
+          "type": "date-time"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowExecutionResponse",
+      "properties": [
+        {
+          "name": "automationId",
+          "type": "uuid?"
+        },
+        {
+          "name": "completedAtUtc",
+          "type": "date-time?"
+        },
+        {
+          "name": "durationMs",
+          "type": "number?"
+        },
+        {
+          "name": "errorMessage",
+          "type": "string?"
+        },
+        {
+          "name": "failureReason",
+          "type": "string?"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "startedAtUtc",
+          "type": "date-time"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        },
+        {
+          "name": "triggerId",
+          "type": "uuid?"
+        },
+        {
+          "name": "workflowId",
+          "type": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowExecutionStepResponse",
+      "properties": [
+        {
+          "name": "durationMs",
+          "type": "integer"
+        },
+        {
+          "name": "endedAt",
+          "type": "date-time"
+        },
+        {
+          "name": "errorJson",
+          "type": "string?"
+        },
+        {
+          "name": "errorMessage",
+          "type": "string?"
+        },
+        {
+          "name": "errorStackTrace",
+          "type": "string?"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "inputsJson",
+          "type": "string?"
+        },
+        {
+          "name": "nodeId",
+          "type": "string"
+        },
+        {
+          "name": "nodeType",
+          "type": "string"
+        },
+        {
+          "name": "outputsJson",
+          "type": "string?"
+        },
+        {
+          "name": "sortOrder",
+          "type": "integer"
+        },
+        {
+          "name": "startedAt",
+          "type": "date-time"
+        },
+        {
+          "name": "status",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowExportDto",
+      "properties": [
+        {
+          "name": "checkpointPolicyJson",
+          "type": "string?"
+        },
+        {
+          "name": "definitionJson",
+          "type": "string?"
+        },
+        {
+          "name": "description",
+          "type": "string?"
+        },
+        {
+          "name": "executionTimeoutSeconds",
+          "type": "integer?"
+        },
+        {
+          "name": "exportedAtUtc",
+          "type": "date-time"
+        },
+        {
+          "name": "inputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "maxConcurrentRuns",
+          "type": "integer?"
+        },
+        {
+          "name": "maxQueuedRuns",
+          "type": "integer?"
+        },
+        {
+          "name": "mode",
+          "type": "string?"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "outputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "overflowBehavior",
+          "type": "string?"
+        },
+        {
+          "name": "retryPolicyJson",
+          "type": "string?"
+        },
+        {
+          "name": "schemaVersion",
+          "type": "string"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowImportValidationResult",
+      "properties": [
+        {
+          "name": "definitionJson",
+          "type": "string"
+        },
+        {
+          "name": "droppedSecrets",
+          "type": "#WorkflowDroppedSecret[]"
+        },
+        {
+          "name": "inputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "missingBlockTypeIds",
+          "type": "string[]"
+        },
+        {
+          "name": "missingWorkflowIds",
+          "type": "string[]"
+        },
+        {
+          "name": "outputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "referenceIdsByPortType",
+          "type": "map\u003Cstring[]\u003E"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowResponse",
+      "properties": [
+        {
+          "name": "checkpointPolicyJson",
+          "type": "string?"
+        },
+        {
+          "name": "createdAtUtc",
+          "type": "date-time"
+        },
+        {
+          "name": "createdByUserId",
+          "type": "uuid"
+        },
+        {
+          "name": "currentVersionId",
+          "type": "uuid?"
+        },
+        {
+          "name": "currentVersionNumber",
+          "type": "integer?"
+        },
+        {
+          "name": "definitionJson",
+          "type": "string"
+        },
+        {
+          "name": "description",
+          "type": "string?"
+        },
+        {
+          "name": "documentsFrom",
+          "type": "string?"
+        },
+        {
+          "name": "draftVersionId",
+          "type": "uuid?"
+        },
+        {
+          "name": "draftVersionNumber",
+          "type": "integer?"
+        },
+        {
+          "name": "executionTimeoutSeconds",
+          "type": "integer?"
+        },
+        {
+          "name": "hasImportWarnings",
+          "type": "boolean"
+        },
+        {
+          "name": "hostMetadata",
+          "type": "map\u003Cstring\u003E?"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "importWarningsJson",
+          "type": "string?"
+        },
+        {
+          "name": "inputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "maxConcurrentRuns",
+          "type": "integer"
+        },
+        {
+          "name": "maxQueuedRuns",
+          "type": "integer"
+        },
+        {
+          "name": "mode",
+          "type": "string"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "outputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "overflowBehavior",
+          "type": "string"
+        },
+        {
+          "name": "retryPolicyJson",
+          "type": "string?"
+        },
+        {
+          "name": "revision",
+          "type": "integer"
+        },
+        {
+          "name": "updatedAtUtc",
+          "type": "date-time"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowSummaryResponse",
+      "properties": [
+        {
+          "name": "currentVersionNumber",
+          "type": "integer?"
+        },
+        {
+          "name": "description",
+          "type": "string?"
+        },
+        {
+          "name": "executionCount",
+          "type": "integer"
+        },
+        {
+          "name": "hasImportWarnings",
+          "type": "boolean"
+        },
+        {
+          "name": "hasInputParameters",
+          "type": "boolean"
+        },
+        {
+          "name": "hasOutputParameters",
+          "type": "boolean"
+        },
+        {
+          "name": "hasUnpublishedChanges",
+          "type": "boolean"
+        },
+        {
+          "name": "hostMetadata",
+          "type": "map\u003Cstring\u003E?"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "importWarningsJson",
+          "type": "string?"
+        },
+        {
+          "name": "lastExecutedAtUtc",
+          "type": "date-time?"
+        },
+        {
+          "name": "lastExecutionStatus",
+          "type": "string?"
+        },
+        {
+          "name": "name",
+          "type": "string"
+        },
+        {
+          "name": "updatedAtUtc",
+          "type": "date-time"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowVersionResponse",
+      "properties": [
+        {
+          "name": "changeMessage",
+          "type": "string?"
+        },
+        {
+          "name": "createdAtUtc",
+          "type": "date-time"
+        },
+        {
+          "name": "createdByUserId",
+          "type": "uuid"
+        },
+        {
+          "name": "definitionJson",
+          "type": "string"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "inputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "isPublished",
+          "type": "boolean"
+        },
+        {
+          "name": "outputParametersJson",
+          "type": "string?"
+        },
+        {
+          "name": "publishedAtUtc",
+          "type": "date-time?"
+        },
+        {
+          "name": "versionNumber",
+          "type": "integer"
+        },
+        {
+          "name": "workflowId",
+          "type": "uuid"
+        }
+      ]
+    },
+    {
+      "name": "WorkflowVersionSummaryResponse",
+      "properties": [
+        {
+          "name": "changeMessage",
+          "type": "string?"
+        },
+        {
+          "name": "createdAtUtc",
+          "type": "date-time"
+        },
+        {
+          "name": "createdByUserId",
+          "type": "uuid"
+        },
+        {
+          "name": "id",
+          "type": "uuid"
+        },
+        {
+          "name": "isPublished",
+          "type": "boolean"
+        },
+        {
+          "name": "publishedAtUtc",
+          "type": "date-time?"
+        },
+        {
+          "name": "versionNumber",
+          "type": "integer"
+        }
+      ]
+    }
+  ]
+}

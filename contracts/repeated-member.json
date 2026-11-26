@@ -1,0 +1,24 @@
+{
+  "$note": ["Written by hand. RepeatedMemberNameTests (C#) and repeatedMember.test.ts (TypeScript) run every row, so both halves name the same member and path for the same text.", "`repeat` is the first member name, in document order, that its object already holds, with the path of that object; `name` null is a member name that does not decode (an unpaired surrogate). `repeat` null is text with none."],
+  "rows": [
+    {"name": "at the root", "text": "{\"a\":1,\"a\":2}", "repeat": {"name": "a", "path": "$"}},
+    {"name": "inside a member", "text": "{\"m\":{\"x\":1,\"x\":2}}", "repeat": {"name": "x", "path": "$.m"}},
+    {"name": "inside an array element, however deep", "text": "{\"m\":[1,{\"k\":[{\"b\":null,\"b\":true}]}]}", "repeat": {"name": "b", "path": "$.m[1].k[0]"}},
+    {"name": "in an object that is a root array element", "text": "[{\"a\":1,\"a\":2}]", "repeat": {"name": "a", "path": "$[0]"}},
+    {"name": "when the later spelling is escaped", "text": "{\"a\":1,\"\\u0061\":2}", "repeat": {"name": "a", "path": "$"}},
+    {"name": "when the earlier spelling is escaped", "text": "{\"\\u0061\":1,\"a\":2}", "repeat": {"name": "a", "path": "$"}},
+    {"name": "under a name that is not an identifier", "text": "{\"a b\":{\"c\":1,\"c\":2}}", "repeat": {"name": "c", "path": "$['a b']"}},
+    {"name": "under a name holding a quote", "text": "{\"it's\":{\"c\":1,\"c\":2}}", "repeat": {"name": "c", "path": "$['it\\'s']"}},
+    {"name": "an empty name", "text": "{\"\":1,\"\":2}", "repeat": {"name": "", "path": "$"}},
+    {"name": "after commas and colons inside strings", "text": "{\"s\":\"a,\\\"b\\\":\",\"t\":{\"u\":1,\"u\":2}}", "repeat": {"name": "u", "path": "$.t"}},
+    {"name": "the first in document order, not the first object checked", "text": "{\"x\":{\"a\":1,\"a\":2},\"y\":{\"b\":1,\"b\":2}}", "repeat": {"name": "a", "path": "$.x"}},
+    {"name": "a name inside a member that is itself repeated later", "text": "{\"m\":{\"k\":1,\"k\":2},\"m\":3}", "repeat": {"name": "k", "path": "$.m"}},
+    {"name": "a name repeated across a nested object that comes first", "text": "{\"m\":{\"k\":1},\"m\":{\"k\":2}}", "repeat": {"name": "m", "path": "$"}},
+    {"name": "a member name that is an unpaired surrogate", "text": "{\"\\ud800\":1}", "repeat": {"name": null, "path": "$"}},
+    {"name": "names that differ in case", "text": "{\"X-A\":1,\"x-a\":2}", "repeat": null},
+    {"name": "one name in two objects", "text": "{\"a\":{\"k\":1},\"b\":{\"k\":2},\"c\":[{\"k\":1},{\"k\":2}]}", "repeat": null},
+    {"name": "a scalar", "text": "3", "repeat": null},
+    {"name": "a name inside a string value", "text": "{\"a\":\"a\",\"b\":\"\\\"a\\\":1\"}", "repeat": null},
+    {"name": "a surrogate pair in a name", "text": "{\"\\ud83d\\ude00\":1,\"b\":2}", "repeat": null}
+  ]
+}

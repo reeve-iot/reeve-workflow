@@ -1,0 +1,537 @@
+{
+  "$note": [
+    "Written by hand, never generated. Each row is one overload the typer can bind and one implementation the evaluator runs;",
+    "ExpressionFunctionsContractTests holds the rows and the implementations to each other, in both directions, and holds the signature table the typer reads to the rows.",
+    "`parameters` are closed terms, or `$T` for the type parameter of a generic row (`typeParameters` names its capability); a result `$type` is the term the call's `type` literal names. `variadic` lets the last parameter repeat: at least as many arguments as parameters, any more of the last.",
+    "`failures` are the run-time categories the row can throw.",
+    "TypeScript reads this file for completion only."
+  ],
+  "version": 1,
+  "rows": [
+    {
+      "id": "int-add",
+      "kind": "operator",
+      "name": "+",
+      "parameters": ["Int", "Int"],
+      "result": "Int",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "number-add",
+      "kind": "operator",
+      "name": "+",
+      "parameters": ["Number", "Number"],
+      "result": "Number",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "string-concat",
+      "kind": "operator",
+      "name": "+",
+      "parameters": ["String", "String"],
+      "result": "String",
+      "failures": [],
+      "note": "An Int, Number, Boolean or DateTime operand beside a String is converted by an explicit ToText node, formatted invariantly."
+    },
+    {
+      "id": "int-sub",
+      "kind": "operator",
+      "name": "-",
+      "parameters": ["Int", "Int"],
+      "result": "Int",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "number-sub",
+      "kind": "operator",
+      "name": "-",
+      "parameters": ["Number", "Number"],
+      "result": "Number",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "int-mul",
+      "kind": "operator",
+      "name": "*",
+      "parameters": ["Int", "Int"],
+      "result": "Int",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "number-mul",
+      "kind": "operator",
+      "name": "*",
+      "parameters": ["Number", "Number"],
+      "result": "Number",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "int-rem",
+      "kind": "operator",
+      "name": "%",
+      "parameters": ["Int", "Int"],
+      "result": "Int",
+      "failures": ["division-by-zero"]
+    },
+    {
+      "id": "number-rem",
+      "kind": "operator",
+      "name": "%",
+      "parameters": ["Number", "Number"],
+      "result": "Number",
+      "failures": ["division-by-zero"]
+    },
+    {
+      "id": "number-div",
+      "kind": "operator",
+      "name": "/",
+      "parameters": ["Number", "Number"],
+      "result": "Number",
+      "failures": ["division-by-zero", "overflow"],
+      "note": "Two Int operands are both widened."
+    },
+    {
+      "id": "int-neg",
+      "kind": "operator",
+      "name": "-",
+      "parameters": ["Int"],
+      "result": "Int",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "number-neg",
+      "kind": "operator",
+      "name": "-",
+      "parameters": ["Number"],
+      "result": "Number",
+      "failures": []
+    },
+    {
+      "id": "lt-int",
+      "kind": "operator",
+      "name": "<",
+      "parameters": ["Int", "Int"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "lt-number",
+      "kind": "operator",
+      "name": "<",
+      "parameters": ["Number", "Number"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "lt-string",
+      "kind": "operator",
+      "name": "<",
+      "parameters": ["String", "String"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "lt-datetime",
+      "kind": "operator",
+      "name": "<",
+      "parameters": ["DateTime", "DateTime"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "le-int",
+      "kind": "operator",
+      "name": "<=",
+      "parameters": ["Int", "Int"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "le-number",
+      "kind": "operator",
+      "name": "<=",
+      "parameters": ["Number", "Number"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "le-string",
+      "kind": "operator",
+      "name": "<=",
+      "parameters": ["String", "String"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "le-datetime",
+      "kind": "operator",
+      "name": "<=",
+      "parameters": ["DateTime", "DateTime"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "gt-int",
+      "kind": "operator",
+      "name": ">",
+      "parameters": ["Int", "Int"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "gt-number",
+      "kind": "operator",
+      "name": ">",
+      "parameters": ["Number", "Number"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "gt-string",
+      "kind": "operator",
+      "name": ">",
+      "parameters": ["String", "String"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "gt-datetime",
+      "kind": "operator",
+      "name": ">",
+      "parameters": ["DateTime", "DateTime"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "ge-int",
+      "kind": "operator",
+      "name": ">=",
+      "parameters": ["Int", "Int"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "ge-number",
+      "kind": "operator",
+      "name": ">=",
+      "parameters": ["Number", "Number"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "ge-string",
+      "kind": "operator",
+      "name": ">=",
+      "parameters": ["String", "String"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "ge-datetime",
+      "kind": "operator",
+      "name": ">=",
+      "parameters": ["DateTime", "DateTime"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "equal",
+      "kind": "operator",
+      "name": "==",
+      "parameters": ["$T", "$T"],
+      "result": "Boolean",
+      "failures": [],
+      "typeParameters": {
+        "T": "Equatable"
+      },
+      "note": "Equal terms after numeric widening, either side nullable; T? with null. Json is never Equatable."
+    },
+    {
+      "id": "not-equal",
+      "kind": "operator",
+      "name": "!=",
+      "parameters": ["$T", "$T"],
+      "result": "Boolean",
+      "failures": [],
+      "typeParameters": {
+        "T": "Equatable"
+      },
+      "note": "As equal."
+    },
+    {
+      "id": "and",
+      "kind": "operator",
+      "name": "&&",
+      "parameters": ["Boolean", "Boolean"],
+      "result": "Boolean",
+      "failures": [],
+      "note": "Short-circuits."
+    },
+    {
+      "id": "or",
+      "kind": "operator",
+      "name": "||",
+      "parameters": ["Boolean", "Boolean"],
+      "result": "Boolean",
+      "failures": [],
+      "note": "Short-circuits."
+    },
+    {
+      "id": "not",
+      "kind": "operator",
+      "name": "!",
+      "parameters": ["Boolean"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "conditional",
+      "kind": "operator",
+      "name": "?:",
+      "parameters": ["Boolean", "$T", "$T"],
+      "result": "LUB($T)",
+      "failures": [],
+      "note": "The result is the least upper bound of the branches; each branch whose representation differs is converted by an explicit Convert node."
+    },
+    {
+      "id": "coalesce",
+      "kind": "operator",
+      "name": "??",
+      "parameters": ["$T?", "$T"],
+      "result": "LUB($T)",
+      "failures": [],
+      "note": "The left operand must be nullable; the result is the least upper bound of its non-null term and the right operand."
+    },
+    {
+      "id": "min-int",
+      "kind": "function",
+      "name": "min",
+      "parameters": ["Int"],
+      "result": "Int",
+      "failures": [],
+      "variadic": true,
+      "note": "One or more arguments."
+    },
+    {
+      "id": "min-number",
+      "kind": "function",
+      "name": "min",
+      "parameters": ["Number"],
+      "result": "Number",
+      "failures": [],
+      "variadic": true,
+      "note": "Any Number argument widens every Int argument."
+    },
+    {
+      "id": "max-int",
+      "kind": "function",
+      "name": "max",
+      "parameters": ["Int"],
+      "result": "Int",
+      "failures": [],
+      "variadic": true
+    },
+    {
+      "id": "max-number",
+      "kind": "function",
+      "name": "max",
+      "parameters": ["Number"],
+      "result": "Number",
+      "failures": [],
+      "variadic": true
+    },
+    {
+      "id": "abs-int",
+      "kind": "function",
+      "name": "abs",
+      "parameters": ["Int"],
+      "result": "Int",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "abs-number",
+      "kind": "function",
+      "name": "abs",
+      "parameters": ["Number"],
+      "result": "Number",
+      "failures": []
+    },
+    {
+      "id": "round-number",
+      "kind": "function",
+      "name": "round",
+      "parameters": ["Number"],
+      "result": "Int",
+      "failures": ["overflow"],
+      "note": "Round half away from zero."
+    },
+    {
+      "id": "round-int",
+      "kind": "function",
+      "name": "round",
+      "parameters": ["Int"],
+      "result": "Int",
+      "failures": []
+    },
+    {
+      "id": "floor-number",
+      "kind": "function",
+      "name": "floor",
+      "parameters": ["Number"],
+      "result": "Int",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "floor-int",
+      "kind": "function",
+      "name": "floor",
+      "parameters": ["Int"],
+      "result": "Int",
+      "failures": []
+    },
+    {
+      "id": "ceil-number",
+      "kind": "function",
+      "name": "ceil",
+      "parameters": ["Number"],
+      "result": "Int",
+      "failures": ["overflow"]
+    },
+    {
+      "id": "ceil-int",
+      "kind": "function",
+      "name": "ceil",
+      "parameters": ["Int"],
+      "result": "Int",
+      "failures": []
+    },
+    {
+      "id": "len",
+      "kind": "function",
+      "name": "len",
+      "parameters": ["String"],
+      "result": "Int",
+      "failures": []
+    },
+    {
+      "id": "contains",
+      "kind": "function",
+      "name": "contains",
+      "parameters": ["String", "String"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "starts-with",
+      "kind": "function",
+      "name": "startsWith",
+      "parameters": ["String", "String"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "ends-with",
+      "kind": "function",
+      "name": "endsWith",
+      "parameters": ["String", "String"],
+      "result": "Boolean",
+      "failures": []
+    },
+    {
+      "id": "to-number-int",
+      "kind": "function",
+      "name": "toNumber",
+      "parameters": ["Int"],
+      "result": "Number",
+      "failures": []
+    },
+    {
+      "id": "to-number-string",
+      "kind": "function",
+      "name": "toNumber",
+      "parameters": ["String"],
+      "result": "Number?",
+      "failures": [],
+      "note": "Null when the text does not parse as a finite number."
+    },
+    {
+      "id": "to-string-boolean",
+      "kind": "function",
+      "name": "toString",
+      "parameters": ["Boolean"],
+      "result": "String",
+      "failures": []
+    },
+    {
+      "id": "to-string-int",
+      "kind": "function",
+      "name": "toString",
+      "parameters": ["Int"],
+      "result": "String",
+      "failures": []
+    },
+    {
+      "id": "to-string-number",
+      "kind": "function",
+      "name": "toString",
+      "parameters": ["Number"],
+      "result": "String",
+      "failures": []
+    },
+    {
+      "id": "to-string-string",
+      "kind": "function",
+      "name": "toString",
+      "parameters": ["String"],
+      "result": "String",
+      "failures": []
+    },
+    {
+      "id": "to-string-datetime",
+      "kind": "function",
+      "name": "toString",
+      "parameters": ["DateTime"],
+      "result": "String",
+      "failures": []
+    },
+    {
+      "id": "to-json-text",
+      "kind": "function",
+      "name": "toJsonText",
+      "parameters": ["$T"],
+      "result": "String",
+      "failures": [],
+      "typeParameters": {
+        "T": "JsonSerializable"
+      },
+      "note": "A term that cannot be null and is not Json; the text is the canonical text of the JSON the term's registered JsonTypeInfo writes: ordinal keys, no whitespace, relaxed escapes, and a number as an Int64 when it fits, otherwise a double."
+    },
+    {
+      "id": "parse-json",
+      "kind": "function",
+      "name": "parseJson",
+      "parameters": ["String"],
+      "result": "Json?",
+      "failures": ["json-parse"],
+      "note": "The text null gives null; text that is not one JSON value, or that repeats a member name in any object, fails."
+    },
+    {
+      "id": "json-path",
+      "kind": "function",
+      "name": "jsonPath",
+      "parameters": ["Json?", "String", "String"],
+      "result": "$type",
+      "failures": ["value-absent", "narrowing", "too-large"],
+      "note": "The first argument is a Json or Json? value; path and type are string literals, path an RFC 9535 query and type a library scalar term, a collection of them, or Map<String,V> with V a library scalar, which is the result's term. The nodes are graded as a projection wire grades them (contracts/json-projection.json); a map term needs a singular path that selects one object, whose members become the entries, and a node that is no object, a member off V, and a null member into a non-nullable V fail as narrowing, as does a repeated member name anywhere in the source. An empty nodelist gives null for a nullable term that is not a collection, an empty collection for a collection term, and value-absent for another, a non-nullable map term included. A path that takes more than 100000 steps over all its segments (each selector applied to a node, and each value a wildcard or slice passes over), or whose nodes hold more than 16 MiB of JSON, fails as too-large."
+    },
+    {
+      "id": "json-path-text",
+      "kind": "function",
+      "name": "jsonPathText",
+      "parameters": ["Json?", "String", "String"],
+      "result": "$type",
+      "failures": ["value-absent", "narrowing", "too-large"],
+      "note": "As jsonPath in jsonText mode: each node is delivered as its JSON text, so the type's atom is String."
+    }
+  ]
+}

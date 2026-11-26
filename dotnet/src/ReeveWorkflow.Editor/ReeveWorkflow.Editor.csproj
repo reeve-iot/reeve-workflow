@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <IsPackable>true</IsPackable>
+    <PackageId>ReeveWorkflow.Editor</PackageId>
+    <Description>The write side: the store that creates, updates, versions and publishes workflow definitions, and the HTTP surface over it. Nothing in the Executor references this package — a workflow written into the tables by something else is legitimate input to it.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
+    <ProjectReference Include="..\ReeveWorkflow.EntityFrameworkCore\ReeveWorkflow.EntityFrameworkCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="workflow-editor-api-surface.json" Pack="true" PackagePath="contracts/" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\AuthorizationIntent.cs" Link="Shared\AuthorizationIntent.cs" />
+    <Compile Include="..\Shared\JsonRequestBody.cs" Link="Shared\JsonRequestBody.cs" />
+  </ItemGroup>
+
+</Project>

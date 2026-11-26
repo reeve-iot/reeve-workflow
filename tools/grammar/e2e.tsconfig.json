@@ -1,0 +1,14 @@
+{
+  "extends": "../../examples/playground/tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "../..",
+    "composite": false,
+    "noEmit": true,
+    "paths": {
+      "@reeve-iot/workflow-core": ["packages/core/src/index.ts"],
+      "@reeve-iot/workflow-client": ["packages/client/src/index.ts"],
+      "@reeve-iot/workflow-mui": ["packages/mui/src/index.ts"],
+      "@reeve-iot/workflow-adapters": ["packages/adapters/src/index.ts"]
+    }
+  }
+}

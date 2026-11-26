@@ -1,0 +1,388 @@
+{
+  "$note": [
+    "Every rule id of CompilationRules, classed once. RuleParityTests.cs fails naming an id the file and the catalogue",
+    "do not share. 'depth' is where the compiler grades the rule: 'every' canvas the run enters, 'root' alone (with the",
+    "reason the run executes it as drawn below the root), 'document' for the stored text, or 'none' for a rule no",
+    "document raises; 'registration' for a catalogue-shape refusal. class 'editor': the editor grades it at the same depth,",
+    "and 'agreement' names the file both halves",
+    "grade it by. class 'compiler-only': 'why' says why the editor cannot know it from the document it holds. 'part'",
+    "names the half of an editor rule that is compiler-only. Decided by the two refusal rules: never refuse what the run",
+    "executes as drawn; refuse what it tolerates by doing nothing, or by doing what the author did not draw."
+  ],
+  "rules": [
+    {
+      "id": "cycle",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the canvas's wires. The run sorts every canvas it enters and fails on a cycle at any depth."
+    },
+    {
+      "id": "no-start-node",
+      "class": "editor",
+      "depth": "root",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "The run refuses a root without an entry node; a sub-canvas runs every node it holds in sort order, entry node or not, so there it runs as drawn."
+    },
+    {
+      "id": "input-has-incoming",
+      "class": "editor",
+      "depth": "root",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "The run refuses it at the root; in a sub-canvas the entry node is seeded, never run, so a bare wire into it only orders its source first, as drawn, and a mapping on it names an input the entry node lacks (wire-port-unknown)."
+    },
+    {
+      "id": "extra-root",
+      "class": "editor",
+      "depth": "root",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "The run refuses it at the root; a sub-canvas runs a node with no wire into it, as drawn."
+    },
+    {
+      "id": "unreachable",
+      "class": "editor",
+      "depth": "root",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "The run refuses it at the root; a sub-canvas runs every node whether its entry node reaches it or not."
+    },
+    {
+      "id": "duplicate-input-mapping",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the canvas's mappings. Two feeds into one input: the run applies the later and drops the other without a word, at any depth."
+    },
+    {
+      "id": "structure",
+      "class": "compiler-only",
+      "depth": "none",
+      "why": "The fallback for a structure message the classifier does not know; every message the structure checks raise classifies to its own id, so no document produces it."
+    },
+    {
+      "id": "block-type-unknown",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "The editor's catalogue is the host's adapted view: createBlockCatalogueSource leaves out a type it cannot read, and a host may load it late, so a type absent there may be bound on the server, and refusing it would refuse what the compiler passes. Below such a node the editor skips what the compiler skips."
+    },
+    {
+      "id": "sub-canvas-name-unknown",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's branches and its block's declared branch names, for a block the catalogue holds."
+    },
+    {
+      "id": "edge-endpoint-unknown",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json and contracts/dangling-edge-agreement.json",
+      "why": "Reads the canvas's wires and node ids, and the root's outputMappings, which the editor's save writes back."
+    },
+    {
+      "id": "duplicate-node-id",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the canvas's node ids."
+    },
+    {
+      "id": "required-input-unfed",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's required inputs, a branch's required outputs from its container's block, the workflow's required outputs, and what feeds each.",
+      "part": "The inputs a host resolver files for a node whose ports are resolved elsewhere are compiler-only: the resolver answers on the server."
+    },
+    {
+      "id": "required-config-missing",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's configuration and its block's required fields."
+    },
+    {
+      "id": "wire-port-unknown",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads each wire's mapping names against the ports of its two ends: a block's declared, dynamic and declared-output ports, the entry and exit nodes' canvas ports, passthrough names, and '_error' on a node whose policy is EmitError. The run finds nothing under a name its end lacks. Also reads the root's outputMappings against the workflow's declared outputs, as a wire into its exit node: the run writes any name one holds.",
+      "part": "An end whose ports a host resolver files (a block that runs a workflow), a port declared as a relation to an input nothing feeds (IterateOver's Item without a Collection), and a passthrough name the editor cannot trace to its end (through such a block, or a block its catalogue lacks) are compiler-only: the editor leaves such an end unchecked and counts every relation name, and every passthrough name it cannot trace, as a port. It traces the rest as the compiler does: a declared input, the last mapping into the name, then a configuration value. A key of a ContinueWithDefault node's defaultOutputJson that names no output is compiler-only too: the editor does not grade the key."
+    },
+    {
+      "id": "declared-output-shadows-static",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's declared outputs and its block's static outputs."
+    },
+    {
+      "id": "port-type-mismatch",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "Port types come from the compiler's effective port model, which types a passthrough name only once it traces and takes a resolver's answer for a block that runs a workflow, compared under the host's widening table. The editor's type resolver is a second model; grading from it would refuse, or pass, where the two models differ."
+    },
+    {
+      "id": "literal-port-value-invalid",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/literal-coercion.json and contracts/rule-agreement.json",
+      "why": "A literal or configuration value is checked against the target's declared scalar type and text policy using the shared coercion vectors; a literal into a workflow output or an ordinary node is also measured on both halves by the rule-agreement file. A string beginning 'expr:' is an expression, graded by what it yields, never by its text.",
+      "part": "A literal into a passthrough name, into an input whose ports a host resolver files, or into an input whose declared term names a type parameter is graded by the compiler alone, against the term the binding pass gives it: the editor leaves such an end unchecked. So is a configuration value on a passthrough name, a ContinueWithDefault node's defaultOutputJson value, and the format of a DateTime or Uuid literal, which the editor reads as a JSON string only. A host type that declares no literal form refuses every literal on both halves. Body-exit `Sources` raw keys projected from a declared branch output are also compiler-only: .NET grades them against the projected port type, while the editor does not grade those raw keys."
+    },
+    {
+      "id": "port-type-malformed",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json, contracts/workflow-documents.json (sites) and contracts/port-type-names.tsv (grammar)",
+      "why": "Reads each stored type name with the grammar both halves share."
+    },
+    {
+      "id": "port-type-map-key",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/port-type-names.tsv (grammar)",
+      "why": "Reads the key of each stored Map type with the grammar both halves share."
+    },
+    {
+      "id": "definition-unreadable",
+      "class": "editor",
+      "depth": "document",
+      "agreement": "contracts/workflow-documents.json",
+      "why": "The one reader refuses the stored text; the editor reads it with the same rules (storedDocument.ts)."
+    },
+    {
+      "id": "compilation-fault",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "An exception in the compiler or in host code it called: a fault, not a property of the document."
+    },
+    {
+      "id": "port-type-unresolved",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "A passthrough port gets its term from its feed, and a literal of null, [] or an array without an element least upper bound gives none; the editor holds no effective types."
+    },
+    {
+      "id": "port-type-alias",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "The vocabulary is the host's compile table (its declared and widened names and its aliases). The editor holds a registry for authoring and keeps a name it does not register through load (normalize passes it unchanged), so it cannot grade a stored name against the table the compile uses."
+    },
+    {
+      "id": "port-type-unregistered",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "The vocabulary is the host's compile table (its declared and widened names and its aliases). The editor holds a registry for authoring and keeps a name it does not register through load (normalize passes it unchanged), so it cannot grade a stored name against the table the compile uses."
+    },
+    {
+      "id": "type-parameter-conflict",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "A node's type parameter is bound from the terms its sites carry: wires, expressions, literals and typeArguments. Two exact bindings that differ, or lower bounds with no least upper bound, are found only from those terms, and the editor holds no effective types."
+    },
+    {
+      "id": "type-parameter-unbound",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "A site needs a type parameter that no site of the node binds: a literal such as [] or null on a port whose term names it, or a read of a port whose term names it. Whether anything binds it is known only from the terms the binding pass gives, which the editor does not hold."
+    },
+    {
+      "id": "type-parameter-constraint",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "A type parameter's binding is graded against the capabilities the block declares for it; the binding is the binding pass's, which the editor does not hold."
+    },
+    {
+      "id": "block-port-declaration-invalid",
+      "class": "editor",
+      "depth": "registration",
+      "agreement": "contracts/registration-agreement.json",
+      "part": "Every declaration rule but the parse check is compiler-only: the server refuses an undeclared or repeated type parameter, an unknown capability, a body-bound parameter on an input, Json off an output or a misplaced Expression<T> when it reads its catalogue, and the editor's catalogue reader does not grade them.",
+      "why": "A declared term (a port type or a scope variable type) that does not parse under the declaration grammar is refused when the host catalogue is read. The declaration belongs to the catalogue, not the stored document."
+    },
+    {
+      "id": "expression-syntax",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "The expression language belongs to whoever evaluates it (docs/faq.md): the library's editor owns the expr: protocol only, and a host plugs its own editor into renderExpressionEditor."
+    },
+    {
+      "id": "expression-out-of-scope",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "Needs the expression language (see expression-syntax) and the compiler's scope, its sort order and port model."
+    },
+    {
+      "id": "expression-unknown-namespace",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "The compiler recognizes the library namespaces and host registrations; an unregistered namespace has no resolver and is refused."
+    },
+    {
+      "id": "expression-field-access-invalid",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "Needs the expression language and the declared type of the value a member or index is read out of: the port model, a parameter's type or a host check's answer. No term allows a member or an index: a scalar, a collection (read whole), a Json value (opaque, read only through a projection) and a type with no stated shape are refused."
+    },
+    {
+      "id": "expression-type-mismatch",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "Needs the expression typer: the terms of the operands, the overloads of expression-functions.json and the vocabulary's least upper bound, none of which the editor evaluates."
+    },
+    {
+      "id": "expression-result-type-mismatch",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "Needs the expression typer's result term and the effective term of its target, which the binding pass gives a port: the editor types no expression and binds no parameter."
+    },
+    {
+      "id": "stored-key-unknown",
+      "class": "editor",
+      "depth": "document",
+      "agreement": "contracts/workflow-documents.json",
+      "why": "The stored-document reader refuses a key absent from the grammar at any listed object position, in a definition or a parameter list; the editor reads both through the same grammar and reports the same code."
+    },
+    {
+      "id": "duplicate-edge-id",
+      "class": "editor",
+      "depth": "document",
+      "agreement": "contracts/workflow-documents.json",
+      "why": "The stored-document reader refuses two connections with one id; the editor reads the same rules and reports the same code."
+    },
+    {
+      "id": "output-mappings-unread",
+      "class": "editor",
+      "depth": "document",
+      "agreement": "contracts/workflow-documents.json",
+      "why": "The stored-document reader refuses a stored outputMappings key; the editor reads the same rules and reports the same code."
+    },
+    {
+      "id": "signature-unreadable",
+      "class": "editor",
+      "depth": "document",
+      "agreement": "contracts/workflow-documents.json",
+      "why": "The one reader refuses a stored parameter list; the editor reads it with the same rules (readParameterListText)."
+    },
+    {
+      "id": "node-ports-unresolved",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the reference input a block names (runsWorkflowFrom), its configured value and the mappings into it.",
+      "part": "A configured reference no host resolver answered for is compiler-only: the resolver answers on the server."
+    },
+    {
+      "id": "reference-input-mapped",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the mappings into the reference input a block names (runsWorkflowFrom)."
+    },
+    {
+      "id": "secret-input-passthrough",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "Reads the block's SecretValues declaration, which the editor's adapted catalogue view carries only for the blocks it could read; the run would copy the stored forms into the outputs."
+    },
+    {
+      "id": "secret-input-key-invalid",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "Reads the block's SecretValues declaration, which the editor's adapted catalogue view carries only for the blocks it could read; the key/value rows refuse such a key, and the run would refuse it too."
+    },
+    {
+      "id": "resilience-config-invalid",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's resilience configuration values."
+    },
+    {
+      "id": "error-policy-in-configuration",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's configuration keys."
+    },
+    {
+      "id": "error-policy-route-unread",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's error policy."
+    },
+    {
+      "id": "error-policy-on-boundary-node",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "Only the compile grades an errorPolicy on an entry or exit node, whatever the policy: the editor offers no policy control on such a node and does not grade one it is handed. A configuration key errorPolicy on such a node stays error-policy-in-configuration."
+    },
+    {
+      "id": "dotted-name",
+      "class": "compiler-only",
+      "depth": "every",
+      "agreement": "contracts/workflow-documents.json",
+      "why": "The stored-document grammar refuses authored dotted names and the compiler checks host-resolved ports that the reader cannot see."
+    },
+    {
+      "id": "node-id-too-long",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "The bound is the library's own model's, not the document's: a node id is text the editor holds, but the width it has to fit is automation.execution_node_log's NodeId column, and the editor holds no schema — a host may map its own, wider one. Graded by the compiler, which is the gate every publish and every admission passes; the editor's own node ids are what createId writes."
+    },
+    {
+      "id": "block-type-id-too-long",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "The same table and the same width, and the id is the host's registry's rather than the document's: the editor's catalogue is the host's adapted view (see block-type-unknown), so a type absent there may be bound on the server with an id the editor never sees."
+    },
+    {
+      "id": "duplicate-edge-pair",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "The editor and compiler refuse repeated wires with the same source and target; the store prevents authoring them."
+    },
+    {
+      "id": "port-list-without-dynamic-ports",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's InputPorts and OutputPorts configuration and whether its block has dynamic ports."
+    },
+    {
+      "id": "declared-outputs-unsupported",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the node's declared outputs and whether its block supports declared outputs."
+    },
+    {
+      "id": "declared-output-source-unknown",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "Reads the keys of a declared output's sources and the sub-canvas names of its block."
+    },
+    {
+      "id": "port-type-json-position",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "The editor has no compiler vocabulary or resolver answers to decide whether this type term contains Json."
+    },
+    {
+      "id": "json-projection-invalid",
+      "class": "compiler-only",
+      "depth": "every",
+      "why": "A projection is checked against its source's and its target's effective terms after binding, which only the compiler holds; the editor never grades binding or assignability between wires."
+    },
+    {
+      "id": "type-argument-unknown",
+      "class": "editor",
+      "depth": "every",
+      "agreement": "contracts/rule-agreement.json",
+      "why": "A stored typeArguments key must name a parameter declared by the node block."
+    }
+  ]
+}
