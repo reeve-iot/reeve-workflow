@@ -1,6 +1,6 @@
 {
   "name": "@reeve-iot/workflow-mui",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Material UI presentation layer for @reeve-iot/workflow-core: canvas, block nodes, palette and config panels.",
   "license": "MIT",
   "type": "module",
@@ -41,7 +41,7 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@reeve-iot/workflow-core": "1.1.0"
+    "@reeve-iot/workflow-core": "1.1.1"
   },
   "peerDependencies": {
     "@emotion/react": "^11.0.0",

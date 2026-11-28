@@ -19,7 +19,7 @@ import {
 import { useEditorColors } from '../theme/editorColors.js'
 import { NODE_HEADER_HEIGHT, NODE_ITEM_HEIGHT, NODE_WIDTH } from './geometry.js'
 import { PORT_RADIUS, PORT_STROKE_WIDTH } from './portGeometry.js'
-import { PORT_LABEL_FONT_SIZE, PORT_LABEL_INSET, layoutPortLabelRow } from './portLabelLayout.js'
+import { PORT_LABEL_FONT_SIZE, PORT_LABEL_INSET, layoutFittedPortLabelRow } from './portLabelLayout.js'
 import type { NodeDiffKind, NodeHighlight } from './highlights.js'
 import { useNodePorts } from './nodePorts.js'
 import { useGraphTopology } from './graphTopology.js'
@@ -219,10 +219,17 @@ export const BlockNode = memo(function BlockNode({
 
   const inputTerms = inputs.map((port) => termOf('inputs', port))
   const outputTerms = outputs.map((port) => termOf('outputs', port))
-  const inputLabels = inputs.map((port, index) => `${port.displayName}${port.isRequired ? '*' : ''}${typeSuffix(inputTerms[index])}`)
-  const outputLabels = outputs.map((port, index) => `${port.displayName}${typeSuffix(outputTerms[index])}`)
+  const inputNames = inputs.map((port) => `${port.displayName}${port.isRequired ? '*' : ''}`)
+  const outputNames = outputs.map((port) => port.displayName)
+  const inputLabels = inputNames.map((name, index) => `${name}${typeSuffix(inputTerms[index])}`)
+  const outputLabels = outputNames.map((name, index) => `${name}${typeSuffix(outputTerms[index])}`)
+  const labelText = (labels: string[], names: string[], index: number) => {
+    const full = labels[index]
+    const name = names[index]
+    return full === undefined || name === undefined ? undefined : { full, name }
+  }
   const labelRows = Array.from({ length: Math.max(inputs.length, outputs.length) }, (_, index) =>
-    layoutPortLabelRow(inputLabels[index], outputLabels[index], NODE_WIDTH))
+    layoutFittedPortLabelRow(labelText(inputLabels, inputNames, index), labelText(outputLabels, outputNames, index), NODE_WIDTH))
 
   const displayName = isEntry ? entryNodeLabel : isExit ? exitNodeLabel : (unavailable?.title ?? blockType?.displayName ?? '')
   const subCanvasNames = isSynthetic ? [] : (blockType?.subCanvasNames ?? [])
@@ -379,7 +386,7 @@ export const BlockNode = memo(function BlockNode({
               fill={inputTerms[index]?.knowledge === 'refused' ? c.danger : c.textDim}
               style={{ fontSize: PORT_LABEL_FONT_SIZE, ...(inputTerms[index]?.stale === true ? { fontStyle: 'italic', opacity: 0.7 } : {}) }}
             >
-              {inputLabels[index]}
+              {labelRows[index]?.input}
             </text>
           </g>
         </g>
@@ -412,7 +419,7 @@ export const BlockNode = memo(function BlockNode({
                 fill={isErrorPort || outputTerms[index]?.knowledge === 'refused' ? c.danger : c.textDim}
                 style={{ fontSize: PORT_LABEL_FONT_SIZE, ...(outputTerms[index]?.stale === true ? { fontStyle: 'italic', opacity: 0.7 } : {}) }}
               >
-                {outputLabels[index]}
+                {labelRows[index]?.output}
               </text>
             </g>
           </g>

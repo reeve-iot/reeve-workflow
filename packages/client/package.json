@@ -1,6 +1,6 @@
 {
   "name": "@reeve-iot/workflow-client",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Typed HTTP client for the ReeveWorkflow endpoint surface. Generated from the surface the server publishes, so a signature change is a build error.",
   "license": "MIT",
   "type": "module",

@@ -1,6 +1,6 @@
 {
   "name": "@reeve-iot/workflow-example-adopter",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A host that wires only the ready-made adapters, tested end to end.",
   "license": "MIT",
   "private": true,
@@ -10,10 +10,10 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@reeve-iot/workflow-adapters": "1.1.0",
-    "@reeve-iot/workflow-client": "1.1.0",
-    "@reeve-iot/workflow-core": "1.1.0",
-    "@reeve-iot/workflow-mui": "1.1.0"
+    "@reeve-iot/workflow-adapters": "1.1.1",
+    "@reeve-iot/workflow-client": "1.1.1",
+    "@reeve-iot/workflow-core": "1.1.1",
+    "@reeve-iot/workflow-mui": "1.1.1"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0"

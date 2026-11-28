@@ -88,20 +88,21 @@ function renderDispatch() {
   return api
 }
 
-const portLabel = (testId: string) => screen.getByTestId(testId).textContent
+const wholePortLabel = (testId: string) =>
+  screen.getByTestId(testId).parentElement?.querySelector(':scope > title')?.textContent?.split('\n')[0]
 
 describe('a host whose domain this library has never seen', () => {
   it('draws a port in a type the library does not ship', async () => {
     renderDispatch()
 
-    await waitFor(() => { expect(portLabel('workflow-port-label-ship-input-Carrier')).toBe('Carrier* (Carrier)') })
+    await waitFor(() => { expect(wholePortLabel('workflow-port-label-ship-input-Carrier')).toBe('Carrier* (Carrier)') })
   })
 
   it('derives the collection companion of a host type without being told to', async () => {
     renderDispatch()
 
     await waitFor(() => {
-      expect(portLabel('workflow-port-label-pull-output-Freight')).toBe('Freight (Collection<Shipment>)')
+      expect(wholePortLabel('workflow-port-label-pull-output-Freight')).toBe('Freight (Collection<Shipment>)')
     })
   })
 
@@ -109,7 +110,7 @@ describe('a host whose domain this library has never seen', () => {
     renderDispatch()
 
     await waitFor(() => {
-      expect(portLabel('workflow-port-label-ship-input-Freight')).toBe('Freight* (Collection<Shipment>)')
+      expect(wholePortLabel('workflow-port-label-ship-input-Freight')).toBe('Freight* (Collection<Shipment>)')
     })
   })
 
@@ -126,7 +127,7 @@ describe('a host whose domain this library has never seen', () => {
     renderDispatch()
 
     await waitFor(() => {
-      expect(portLabel('workflow-port-label-__workflow_input__-output-Origin')).toBe('Origin (Depot)')
+      expect(wholePortLabel('workflow-port-label-__workflow_input__-output-Origin')).toBe('Origin (Depot)')
     })
   })
 
@@ -146,6 +147,6 @@ describe('a host whose domain this library has never seen', () => {
     fireEvent.click(await screen.findByRole('button', { name: 'Gdańsk' }))
 
     await waitFor(() => { expect(screen.queryByText(/only GDN is bonded/)).not.toBeInTheDocument() })
-    expect(portLabel('workflow-port-label-ship-input-Freight')).toBe('Freight* (Collection<Shipment>)')
+    expect(wholePortLabel('workflow-port-label-ship-input-Freight')).toBe('Freight* (Collection<Shipment>)')
   })
 })

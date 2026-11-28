@@ -429,7 +429,9 @@ describe('BlockNode — a forwarded value keeps its type', () => {
     draw(placed(), { nodes: [placed()], edges: [] }, {}, [generic])
 
     expect(screen.getByTestId('workflow-port-label-g-input-Item')).toHaveTextContent('Item (T (unbound))')
-    expect(screen.getByTestId('workflow-port-label-g-output-Many')).toHaveTextContent('Many (Collection<T?> (unbound))')
+    const many = screen.getByTestId('workflow-port-label-g-output-Many')
+    expect(many).toHaveTextContent(/^Many$/)
+    expect(hint(many)).toHaveTextContent(/^Many \(Collection<T\?> \(unbound\)\)/)
   })
 })
 
@@ -628,11 +630,21 @@ describe('BlockNode — port labels', () => {
     expect(clipOf(input).end).toBeLessThan(clipOf(output).start)
   })
 
-  it('carries the full label in a hover title, whatever part of it the node can draw', () => {
+  it('draws the port name alone when the whole label does not fit, and carries the whole label in a hover title', () => {
     draw(logging(), { nodes: [logging()], edges: [] }, {}, [logger])
+    expect(label('input', 'Message')).toHaveTextContent(/^Message Template\*$/)
     expect(hint(label('input', 'Message'))).toHaveTextContent(/^Message Template\* \(String\)$/)
+    expect(label('output', 'Done')).toHaveTextContent(/^Done \(Flow\)$/)
     expect(hint(label('output', 'Done'))).toHaveTextContent(/^Done \(Flow\)$/)
-    expect(label('input', 'Message')).toHaveTextContent(/^Message Template\* \(String\)$/)
+  })
+
+  it('never draws more of a label than its share of the row holds', () => {
+    draw(logging(), { nodes: [logging()], edges: [] }, {}, [logger])
+    for (const drawn of [label('input', 'Message'), label('input', 'Previous'), label('output', 'Done')]) {
+      const clip = clipOf(drawn)
+      const room = drawn === label('output', 'Done') ? NODE_WIDTH - PORT_LABEL_INSET - clip.start : clip.end - PORT_LABEL_INSET
+      expect(estimatePortLabelWidth(drawn.textContent ?? '')).toBeLessThanOrEqual(room)
+    }
   })
 
   it('adds the node tooltip to a label title, so hovering a label hides nothing the body shows', () => {

@@ -101,7 +101,8 @@ function renderAdopter(overrides: { workflowId?: string | null; adaptBlockType?:
   return api
 }
 
-const portLabel = (testId: string) => screen.getByTestId(testId).textContent
+const wholePortLabel = (testId: string) =>
+  screen.getByTestId(testId).parentElement?.querySelector(':scope > title')?.textContent?.split('\n')[0]
 
 describe('an adopter that wires only the ready-made adapters', () => {
   it('reports a refused adapted block and still loads the rest of the palette', async () => {
@@ -135,24 +136,24 @@ describe('an adopter that wires only the ready-made adapters', () => {
     renderAdopter()
 
     await waitFor(() => {
-      expect(portLabel('workflow-port-label-__workflow_input__-output-Room')).toBe('Room (String)')
+      expect(wholePortLabel('workflow-port-label-__workflow_input__-output-Room')).toBe('Room (String)')
     })
   })
 
   it('draws a block port under the display name and the type the catalogue declared', async () => {
     renderAdopter()
 
-    await waitFor(() => { expect(portLabel('workflow-port-label-n1-input-Ms')).toBe('Milliseconds* (Number)') })
-    expect(portLabel('workflow-port-label-n1-output-Done')).toBe('Done (Boolean)')
+    await waitFor(() => { expect(wholePortLabel('workflow-port-label-n1-input-Ms')).toBe('Milliseconds* (Number)') })
+    expect(wholePortLabel('workflow-port-label-n1-output-Done')).toBe('Done (Boolean)')
   })
 
   it('takes a referencing node ports from the child workflow, through the resolver', async () => {
     renderAdopter()
 
     await waitFor(() => {
-      expect(portLabel('workflow-port-label-n2-input-Brightness')).toBe('Brightness* (Number)')
+      expect(wholePortLabel('workflow-port-label-n2-input-Brightness')).toBe('Brightness* (Number)')
     })
-    expect(portLabel('workflow-port-label-n2-output-Applied')).toBe('Applied (Boolean)')
+    expect(wholePortLabel('workflow-port-label-n2-output-Applied')).toBe('Applied (Boolean)')
   })
 
   it('never offers a wire into the input a block runs a workflow from, as the catalogue says', async () => {

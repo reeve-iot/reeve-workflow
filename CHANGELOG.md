@@ -5,6 +5,19 @@ All notable changes to Reeve Workflow are documented here. The format follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Four npm packages and twelve NuGet packages carry one
 version number. Removing or renaming a public member is a major change.
 
+## [1.1.1] - 2026-11-28
+
+### Fixed
+
+- `BlockNode` no longer cuts a port label at the node edge. A label that does not fit its share of the row is drawn as
+  the port name without its type, and a name that still does not fit ends in an ellipsis, followed by the required
+  mark of a required input. The whole label, type included, stays in the label's hover title.
+
+### Upgrading
+
+No code changes. A test that read a port's type from the drawn label text reads it from the label's `<title>`
+instead.
+
 ## [1.1.0] - 2026-11-26
 
 ### Breaking changes
@@ -118,4 +131,5 @@ Across both halves:
   compiler and the TypeScript editor must agree on.
 - `examples/dispatch-host` is a complete .NET host, tested as several replicas against real PostgreSQL and Redis.
 
+[1.1.1]: https://github.com/reeve-iot/reeve-workflow/releases/tag/v1.1.1
 [1.1.0]: https://github.com/reeve-iot/reeve-workflow/releases/tag/v1.1.0

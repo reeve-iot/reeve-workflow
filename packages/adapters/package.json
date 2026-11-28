@@ -1,6 +1,6 @@
 {
   "name": "@reeve-iot/workflow-adapters",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Ready-made implementations of the seams @reeve-iot/workflow-core declares, over @reeve-iot/workflow-client. Wire these and the editor works without writing a fetch layer.",
   "license": "MIT",
   "type": "module",
@@ -40,8 +40,8 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@reeve-iot/workflow-client": "1.1.0",
-    "@reeve-iot/workflow-core": "1.1.0"
+    "@reeve-iot/workflow-client": "1.1.1",
+    "@reeve-iot/workflow-core": "1.1.1"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0"

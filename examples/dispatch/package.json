@@ -1,6 +1,6 @@
 {
   "name": "@reeve-iot/workflow-example-dispatch",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "A freight-dispatch host used to check that the published packages cover a host's domain.",
   "license": "MIT",
   "private": true,
@@ -19,10 +19,10 @@
     "typecheck": "tsc -b"
   },
   "dependencies": {
-    "@reeve-iot/workflow-adapters": "1.1.0",
-    "@reeve-iot/workflow-client": "1.1.0",
-    "@reeve-iot/workflow-core": "1.1.0",
-    "@reeve-iot/workflow-mui": "1.1.0"
+    "@reeve-iot/workflow-adapters": "1.1.1",
+    "@reeve-iot/workflow-client": "1.1.1",
+    "@reeve-iot/workflow-core": "1.1.1",
+    "@reeve-iot/workflow-mui": "1.1.1"
   },
   "peerDependencies": {
     "react": "^18.0.0 || ^19.0.0"
